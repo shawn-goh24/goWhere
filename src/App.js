@@ -1,11 +1,17 @@
 import logo from "./logo.svg";
 import "./App.css";
+import { Index } from "./Pages/Index/Index";
+import { Box } from "@mui/material";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <div className="App-header">
+      {/* <header className="App-header"> */}
+      <Box>
+        <h1>NavBar</h1>
+      </Box>
+      <Index />
+      {/* <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
@@ -17,8 +23,8 @@ function App() {
         >
           Learn React
         </a>
-        <p>Hello!!!</p>
-      </header>
+        <p>Hello!!!</p> */}
+      {/* </header> */}
     </div>
   );
 }
