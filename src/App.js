@@ -7,8 +7,16 @@ function App() {
   return (
     <div className="App-header">
       {/* <header className="App-header"> */}
-      <Box>
-        <h1>NavBar</h1>
+      <Box
+        sx={{
+          height: "80px",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        NavBar
       </Box>
       <Index />
       {/* <img src={logo} className="App-logo" alt="logo" />
