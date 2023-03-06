@@ -8,8 +8,14 @@ import {
   Typography,
 } from "@mui/material";
 import ProfileStats from "../Components/ProfileStats";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export default function Profile(props) {
+  // Check if current screen size is xs
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <>
       <Container maxWidth="lg" sx={{ marginTop: "50px" }}>
@@ -59,12 +65,16 @@ export default function Profile(props) {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item>
-                  <ProfileStats data={2}>Countries Visited</ProfileStats>
-                </Grid>
-                <Grid item>
-                  <ProfileStats data={3}>Completed Trips</ProfileStats>
-                </Grid>
+                {isSmallScreen ? null : (
+                  <>
+                    <Grid item>
+                      <ProfileStats data={2}>Countries Visited</ProfileStats>
+                    </Grid>
+                    <Grid item>
+                      <ProfileStats data={3}>Completed Trips</ProfileStats>
+                    </Grid>
+                  </>
+                )}
               </Grid>
             </Grid>
           </Grid>
