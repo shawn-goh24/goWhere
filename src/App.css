@@ -14,14 +14,14 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: white;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   font-size: calc(10px + 2vmin);
-  color: white;
+  /* color: white; */
 }
 
 .App-link {
@@ -47,4 +47,17 @@
 
 .btn-text:hover {
   background-color: rgba(119, 166, 144, 0.1) !important;
+}
+
+.line {
+  border: 1px solid #AEAEAE;
+  width: 90px;
+  height: 0px;
+  margin-right: 15px;
+}
+
+.destination {
+  width: 164px;
+  height: 214px;
+  border-radius: 45px;
 }
