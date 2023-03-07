@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.btn-green {
+  background-color: #77a690 !important;
+}
+
+.btn-green:hover {
+  background-color: #53735e !important;
+}
+
+.btn-text:hover {
+  background-color: rgba(119, 166, 144, 0.1) !important;
+}
