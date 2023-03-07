@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Grid,
   Container,
@@ -6,15 +6,26 @@ import {
   Avatar,
   Button,
   Typography,
+  Box,
 } from "@mui/material";
 import ProfileStats from "../Components/ProfileStats";
+import TripsBox from "../Components/TripsBox";
+
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Tab, Tabs } from "@mui/material";
+import { TabPanel, TabContext, TabList } from "@mui/lab";
 
 export default function Profile(props) {
   // Check if current screen size is xs
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [value, setValue] = useState("1");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
     <>
@@ -79,6 +90,56 @@ export default function Profile(props) {
             </Grid>
           </Grid>
         </Paper>
+      </Container>
+      <Container maxWidth="lg" sx={{ marginTop: "50px" }}>
+        <Box sx={{ padding: "0 10px" }}>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>
+              Trips
+            </Typography>
+          </Box>
+          <Box sx={{ width: "100%" }}>
+            <TabContext value={value}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs
+                  textColor="primary"
+                  indicatorColor="primary"
+                  onChange={handleChange}
+                  value={value}
+                >
+                  <Tab label="Upcoming" value="1" />
+                  <Tab label="Completed" value="2" />
+                </Tabs>
+              </Box>
+              <TabPanel value="1" sx={{ padding: "24px 0" }}>
+                <Grid container gap={8}>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TripsBox />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TripsBox />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TripsBox />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TripsBox />
+                  </Grid>
+                </Grid>
+              </TabPanel>
+              <TabPanel value="2" sx={{ padding: "24px 0" }}>
+                <Grid container gap={8}>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TripsBox />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TripsBox />
+                  </Grid>
+                </Grid>
+              </TabPanel>
+            </TabContext>
+          </Box>
+        </Box>
       </Container>
     </>
   );
