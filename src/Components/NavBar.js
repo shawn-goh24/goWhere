@@ -15,36 +15,57 @@ import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { auth } from "../firebase";
 
-const settings = [
-  <div
-    style={{
-      display: "flex",
-      gap: "10px",
-      marginLeft: "-1px",
-    }}
-  >
-    <PersonIcon /> <Typography>Profile</Typography>
-  </div>,
-  <div
-    style={{
-      display: "flex",
-      gap: "10px",
-    }}
-  >
-    <LogoutIcon /> <Typography>Log out</Typography>
-  </div>,
-];
+// const settings = [
+//   <div
+//     style={{
+//       display: "flex",
+//       gap: "10px",
+//       marginLeft: "-1px",
+//     }}
+//   >
+//     <PersonIcon /> <Typography>Profile</Typography>
+//   </div>,
+//   <div
+//     style={{
+//       display: "flex",
+//       gap: "10px",
+//     }}
+//   >
+//     <LogoutIcon /> <Typography>Log out</Typography>
+//   </div>,
+// ];
 
 export default function NavBar(props) {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
-  const { isLogin, isSignup, handleDialog } = props;
+  const { handleDialog, user, handleLogout } = props;
 
   // Check if current screen size is xs
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+
+  const settings = [
+    <div
+      style={{
+        display: "flex",
+        gap: "10px",
+        marginLeft: "-1px",
+      }}
+    >
+      <PersonIcon /> <Typography>Profile</Typography>
+    </div>,
+    <div
+      style={{
+        display: "flex",
+        gap: "10px",
+      }}
+    >
+      <LogoutIcon /> <Typography onClick={handleLogout}>Log out</Typography>
+    </div>,
+  ];
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -73,7 +94,7 @@ export default function NavBar(props) {
               >
                 goWhere
               </Typography>
-              {isLoggedIn ? (
+              {user ? (
                 <IconButton onClick={(e) => handleOpenUserMenu(e)}>
                   <Avatar alt="User Photo" />
                 </IconButton>

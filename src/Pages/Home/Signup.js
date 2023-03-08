@@ -12,6 +12,11 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
+import { auth, database } from "../../firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { ref, set } from "firebase/database";
+
+const DB_USERS_KEY = "users";
 
 export function Signup(props) {
   const [avatar, setAvatar] = useState("");
@@ -21,10 +26,43 @@ export function Signup(props) {
 
   const { isOpen, handleDialog } = props;
 
-  const handleSubmit = (event) => {
+  const handleSignup = (event) => {
     event.preventDefault();
 
-    console.log(username, email, password);
+    // const newUser = {
+    //   email: email,
+    //   userId: 123,
+    // };
+
+    // const userRef = ref(database, `${DB_USERS_KEY}/test`);
+    // set(userRef, newUser);
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const newUser = {
+          email: email,
+          userId: userCredential.user.uid,
+        };
+        const userRef = ref(
+          database,
+          `${DB_USERS_KEY}/${userCredential.user.uid}`
+        );
+        set(userRef, newUser);
+      })
+      .then(() => {
+        updateProfile(auth.currentUser, {
+          displayName: username,
+        })
+          .then(() => {
+            console.log("Username added");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -67,7 +105,7 @@ export function Signup(props) {
             <Grid item>
               <form
                 style={{ display: "flex", flexDirection: "column" }}
-                onSubmit={handleSubmit}
+                onSubmit={handleSignup}
               >
                 <Input
                   required

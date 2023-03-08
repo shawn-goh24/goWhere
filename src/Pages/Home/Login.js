@@ -12,6 +12,8 @@ import {
   IconButton,
 } from "@mui/material";
 import React, { useState } from "react";
+import { auth } from "../../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export function Login(props) {
   const [email, setEmail] = useState("");
@@ -19,10 +21,12 @@ export function Login(props) {
 
   const { isOpen, handleDialog } = props;
 
-  const handleSubmit = (event) => {
+  const handleLogin = (event) => {
     event.preventDefault();
 
-    console.log(email, password);
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => console.log(userCredential))
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -68,7 +72,7 @@ export function Login(props) {
             <Grid item>
               <form
                 style={{ display: "flex", flexDirection: "column" }}
-                onSubmit={handleSubmit}
+                onSubmit={handleLogin}
               >
                 <Input
                   required
