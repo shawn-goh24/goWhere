@@ -40,6 +40,8 @@ export default function NavBar(props) {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
+  const { isLogin, isSignup, handleDialog } = props;
+
   // Check if current screen size is xs
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -78,17 +80,21 @@ export default function NavBar(props) {
               ) : (
                 <>
                   <Button
+                    name="login"
                     variant="text"
                     sx={{ color: "#000000", mr: 1 }}
                     size={isSmallScreen ? "medium" : "large"}
                     className="btn-text"
+                    onClick={handleDialog}
                   >
                     Login
                   </Button>
                   <Button
+                    name="signup"
                     variant="contained"
                     size={isSmallScreen ? "small" : "medium"}
                     className="btn-green"
+                    onClick={handleDialog}
                   >
                     Signup
                   </Button>

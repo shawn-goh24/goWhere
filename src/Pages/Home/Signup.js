@@ -6,14 +6,20 @@ import {
   Typography,
   Input,
   Button,
+  Box,
+  IconButton,
+  DialogTitle,
 } from "@mui/material";
 import React, { useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
 
-export function Signup() {
+export function Signup(props) {
   const [avatar, setAvatar] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const { isOpen, handleDialog } = props;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -23,12 +29,38 @@ export function Signup() {
 
   return (
     <>
-      <Dialog open={true}>
-        <DialogContent>
+      <Dialog open={isOpen}>
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <IconButton name="signup" onClick={handleDialog}>
+            <CloseIcon name="signup" sx={{ color: "#CCCCCC" }} />
+          </IconButton>
+        </Box>
+        <DialogContent
+          sx={{
+            width: 300,
+            mx: "auto", // margin left & right
+            p: "0px",
+            pb: 2, // padding bottom
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            borderRadius: "sm",
+            boxShadow: "md",
+          }}
+        >
+          <DialogTitle
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              fontFamily: "Work Sans",
+              fontWeight: "bold",
+              fontSize: "40px",
+              p: "0px",
+            }}
+          >
+            Join us!
+          </DialogTitle>
           <Grid container direction="column" alignItems="center" rowSpacing={3}>
-            <Grid item>
-              <Typography variant="h4">Join us!</Typography>
-            </Grid>
             <Grid item>
               <Avatar sx={{ width: "135px", height: "135px" }} />
             </Grid>

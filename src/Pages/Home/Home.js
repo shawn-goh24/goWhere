@@ -35,12 +35,12 @@ export default function Home() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  console.log(isSmallScreen);
+  // console.log(isSmallScreen);
 
-  console.log("location: " + location);
-  console.log("start date: " + startDate);
-  console.log("end date: " + endDate);
-  console.log("budget: " + budget);
+  // console.log("location: " + location);
+  // console.log("start date: " + startDate);
+  // console.log("end date: " + endDate);
+  // console.log("budget: " + budget);
 
   return (
     <>
