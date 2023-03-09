@@ -3,14 +3,16 @@ import NavBar from "./Components/NavBar";
 import Index from "./Pages/Home/Home";
 import { Login } from "./Pages/Home/Login";
 import { Signup } from "./Pages/Home/Signup";
+import Planner from "./Pages/Planner";
 
 function App() {
   return (
     <div>
-      <NavBar />
-      <Index />
+      {/* <NavBar />
+      <Index /> */}
       {/* <Login /> */}
       {/* <Signup /> */}
+      <Planner />
     </div>
   );
 }
