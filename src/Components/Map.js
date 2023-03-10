@@ -8,9 +8,6 @@ import {
 } from "@mui/material";
 
 export default function Map(props) {
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [open, setOpen] = useState(props.loading);
-
   // Function to generate a map after the script tag is added into the head
   const onScriptLoad = () => {
     const mapId = document.getElementById(props.id);
@@ -28,40 +25,52 @@ export default function Map(props) {
   };
 
   const stopLoading = () => {
-    console.log("this is to stop the loading animation");
+    props.setMapLoaded(true);
+    props.openBackDrop(false);
   };
 
-  const renderMap = () => {
-    return new Promise((resolve) => {
-      // Create a script tag
-      let script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src =
-        "https://maps.googleapis.com/maps/api/js?key=" +
-        process.env.REACT_APP_MAPS_API +
-        "&callback=stopLoading";
-      // Assign id to the script tag so that
-      // it can be used to check if this script tag has been added previously
-      script.id = "google-maps";
+  // Function to check if Google Maps script has been added to head tag
+  const addScript = () => {
+    // Create a script tag
+    let script = document.createElement("script");
+    // script.async = true;
+    script.type = "text/javascript";
+    script.src =
+      "https://maps.googleapis.com/maps/api/js?key=" +
+      process.env.REACT_APP_MAPS_API +
+      "&callback=stopLoading";
+    // Assign id to the script tag so that
+    // it can be used to check if this script tag has been added previously
+    script.id = "google-maps";
 
-      // React can't find the callback function
-      // Use the window variable to access the function name and assign the function to it
-      window.stopLoading = stopLoading;
+    // React can't find the callback function
+    // Use the window variable to access the function name and assign the function to it
+    window.stopLoading = stopLoading;
 
-      // Get the first script tag in the browser
-      let scriptElement = document.getElementsByTagName("script")[0];
+    // Get the first script tag in the browser
+    let scriptElement = document.getElementsByTagName("script")[0];
 
-      // Insert the script tag into head
-      scriptElement.parentNode.insertBefore(script, scriptElement);
+    // Insert the script tag into head
+    scriptElement.parentNode.insertBefore(script, scriptElement);
 
-      // Add event listener to the script tag
-      // Once the script tag is loaded into head,
-      // run the onSrcipLoad function
-      script.addEventListener("load", (e) => {
-        onScriptLoad();
-      });
-      resolve();
+    // Add event listener to the script tag
+    // Once the script tag is loaded into head,
+    // run the onSrcipLoad function
+    script.addEventListener("load", (e) => {
+      onScriptLoad();
     });
+  };
+
+  // Function to check if Google Maps has been loaded
+  const checkMapLoaded = () => {
+    if (!window.google) {
+      setTimeout(checkMapLoaded, 100);
+      console.log("Map not loaded");
+    } else {
+      onScriptLoad();
+      console.log("Map Loaded");
+      return true;
+    }
   };
 
   useEffect(() => {
@@ -72,31 +81,20 @@ export default function Map(props) {
     // If yes, Google Maps is loaded
     const loaded = isLoaded(allScripts);
 
-    // If Google Maps is not loaded,
+    // If Google Maps script tag is not found,
     // Add the script tag into the head
     if (!loaded) {
-      renderMap().then(() => {
-        setMapLoaded(true);
-        setOpen(false);
-        setMapLoaded(true);
-      });
+      addScript();
+    } else {
+      if (checkMapLoaded()) {
+        stopLoading();
+      }
     }
   }, []);
 
   return (
     <>
-      {mapLoaded ? (
-        <div style={{ width: "100%", height: "100vh" }} id={props.id} />
-      ) : (
-        <div style={{ width: "100%", height: "100vh" }}>
-          <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={open}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        </div>
-      )}
+      <div style={{ width: "100%", height: "100vh" }} id={props.id} />
     </>
   );
 }
