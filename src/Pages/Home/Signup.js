@@ -12,14 +12,17 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import { auth, database } from "../../firebase";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { auth, database, storage } from "../../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { ref, set } from "firebase/database";
+import { uploadBytes, getDownloadURL, ref as sRef } from "firebase/storage";
 
 const DB_USERS_KEY = "users";
 
 export function Signup(props) {
   const [avatar, setAvatar] = useState("");
+  const [tmpUrl, setTmpUrl] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,14 +31,6 @@ export function Signup(props) {
 
   const handleSignup = (event) => {
     event.preventDefault();
-
-    // const newUser = {
-    //   email: email,
-    //   userId: 123,
-    // };
-
-    // const userRef = ref(database, `${DB_USERS_KEY}/test`);
-    // set(userRef, newUser);
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -50,19 +45,36 @@ export function Signup(props) {
         set(userRef, newUser);
       })
       .then(() => {
-        updateProfile(auth.currentUser, {
-          displayName: username,
-        })
-          .then(() => {
-            console.log("Username added");
-          })
-          .catch((error) => {
-            console.log(error);
+        const storageRef = sRef(storage, `avatar/${email}`);
+        uploadBytes(storageRef, avatar).then((snapshot) => {
+          getDownloadURL(snapshot.ref).then((avatarUrl) => {
+            updateProfile(auth.currentUser, {
+              photoURL: avatarUrl,
+              displayName: username,
+            })
+              .then(() => {
+                console.log("Username and Avatar added");
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           });
+        });
       })
       .catch((error) => {
         console.log(error);
       });
+
+    // reset state
+    setTmpUrl("");
+    setAvatar("");
+
+    handleDialog();
+  };
+
+  const uploadAvatar = (event) => {
+    setAvatar(event.target.files[0]);
+    setTmpUrl(event.target.files[0]);
   };
 
   return (
@@ -70,7 +82,7 @@ export function Signup(props) {
       <Dialog open={isOpen}>
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <IconButton name="signup" onClick={handleDialog}>
-            <CloseIcon name="signup" sx={{ color: "#CCCCCC" }} />
+            <CloseIcon sx={{ color: "#CCCCCC" }} />
           </IconButton>
         </Box>
         <DialogContent
@@ -100,7 +112,23 @@ export function Signup(props) {
           </DialogTitle>
           <Grid container direction="column" alignItems="center" rowSpacing={3}>
             <Grid item>
-              <Avatar sx={{ width: "135px", height: "135px" }} />
+              <IconButton name="addAvatar" component="label">
+                <input
+                  hidden
+                  accept="image/*"
+                  type="file"
+                  onChange={uploadAvatar}
+                />
+                <Box>
+                  <Avatar
+                    src={avatar ? URL.createObjectURL(tmpUrl) : ""}
+                    sx={{ width: "135px", height: "135px" }}
+                  />
+                  <AddCircleIcon
+                    sx={{ position: "absolute", right: 12, bottom: 14 }}
+                  />
+                </Box>
+              </IconButton>
             </Grid>
             <Grid item>
               <form

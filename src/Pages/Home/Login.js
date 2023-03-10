@@ -27,6 +27,8 @@ export function Login(props) {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => console.log(userCredential))
       .catch((error) => console.log(error));
+
+    handleDialog();
   };
 
   return (

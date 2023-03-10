@@ -28,17 +28,32 @@ function App() {
       if (event.target.name === "login") {
         setIsLogin(!isLogin);
       } else if (
-        event.target.name === "signup" ||
-        event.target.innerText.toLowerCase() === "signup"
+        event.target.innerText &&
+        (event.target.name === "signup" ||
+          event.target.innerText.toLowerCase() === "signup")
       ) {
         if (isLogin) {
           setIsLogin(!isLogin);
         }
         setIsSignup(!isSignup);
+      } else {
+        setIsLogin(false);
+        setIsSignup(false);
       }
     } catch (error) {
-      console.log("Error on handleDialog");
+      console.log(error);
     }
+  };
+
+  const handleLoginDialog = (event) => {
+    setIsLogin(!isLogin);
+  };
+
+  const handleSignupDialog = (event) => {
+    if (isLogin) {
+      setIsLogin(!isLogin);
+    }
+    setIsSignup(!isSignup);
   };
 
   const handleLogout = () => {
@@ -70,8 +85,8 @@ function App() {
         <Route path="/" element={<Index />} />
         <Route path="/dashboard" element={<Profile />} />
       </Routes>
-      <Login isOpen={isLogin} handleDialog={handleDialog} />
-      <Signup isOpen={isSignup} handleDialog={handleDialog} />
+      <Login isOpen={isLogin} handleDialog={handleLoginDialog} />
+      <Signup isOpen={isSignup} handleDialog={handleSignupDialog} />
     </>
   );
 }
