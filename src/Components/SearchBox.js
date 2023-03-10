@@ -10,7 +10,11 @@ export default function SearchBox(props) {
 
   return (
     <>
-      <TextField value={inputValue} onChange={(e) => handleChange(e)} />
+      <TextField
+        value={inputValue}
+        onChange={(e) => handleChange(e)}
+        id={props.id}
+      />
     </>
   );
 }

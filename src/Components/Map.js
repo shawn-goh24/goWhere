@@ -8,10 +8,51 @@ import {
 } from "@mui/material";
 
 export default function Map(props) {
+  const [markers, setMarkers] = useState([]);
   // Function to generate a map after the script tag is added into the head
   const onScriptLoad = () => {
     const mapId = document.getElementById(props.id);
     const map = new window.google.maps.Map(mapId, props.options);
+    const autocomplete = new window.google.maps.places.Autocomplete(
+      document.getElementById(props.inputId),
+      {
+        types: ["establishment"],
+        fields: ["place_id", "geometry", "name"],
+      }
+    );
+    // const searchBox = new window.google.maps.places.SearchBox(
+    //   document.getElementById(props.inputId)
+    // );
+
+    autocomplete.addListener("place_changed", (e) => {
+      onPlaceChanged(autocomplete, map, markers);
+    });
+  };
+
+  const onPlaceChanged = (autocomplete, map, markers) => {
+    let place = autocomplete.getPlace();
+
+    if (!place.geometry || !place.geometry.location) {
+      // User entered the name of a Place that was not suggested and
+      // pressed the Enter key, or the Place Details request failed.
+      window.alert("No details available for input: '" + place.name + "'");
+      return;
+    }
+
+    // If the place has a geometry, then present it on a map.
+    if (place.geometry.viewport) {
+      setMarkers([
+        ...markers,
+        new window.google.maps.Marker({
+          position: place.geometry.location,
+          map: map,
+        }),
+      ]);
+      map.fitBounds(place.geometry.viewport);
+    } else {
+      map.setCenter(place.geometry.location);
+      map.setZoom(17);
+    }
   };
 
   // Function to check if the script tag is already in the head
@@ -33,12 +74,12 @@ export default function Map(props) {
   const addScript = () => {
     // Create a script tag
     let script = document.createElement("script");
-    // script.async = true;
+    script.async = true;
     script.type = "text/javascript";
     script.src =
       "https://maps.googleapis.com/maps/api/js?key=" +
       process.env.REACT_APP_MAPS_API +
-      "&callback=stopLoading";
+      "&libraries=places&callback=stopLoading";
     // Assign id to the script tag so that
     // it can be used to check if this script tag has been added previously
     script.id = "google-maps";
