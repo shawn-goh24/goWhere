@@ -121,6 +121,7 @@ export function Signup(props) {
                 />
                 <Box>
                   <Avatar
+                    // create temporary image url
                     src={avatar ? URL.createObjectURL(tmpUrl) : ""}
                     sx={{ width: "135px", height: "135px" }}
                   />

@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import NavBar from "./Components/NavBar";
+import NotFound from "./Pages/NotFound";
 import Index from "./Pages/Home/Home";
 import { Login } from "./Pages/Home/Login";
 import { Signup } from "./Pages/Home/Signup";
 import Profile from "./Pages/Profile";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import Protected from "./Components/Protected";
 
 // Add react router and authentication here
 
@@ -75,7 +77,8 @@ function App() {
           element={
             <NavBar
               user={user}
-              handleDialog={handleDialog}
+              handleLogin={handleLoginDialog}
+              handleSignup={handleSignupDialog}
               handleLogout={handleLogout}
             />
           }
@@ -83,7 +86,15 @@ function App() {
       </Routes>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/dashboard" element={<Profile />} />
+        <Route
+          path="/user/:id"
+          element={
+            <Protected isSignedIn={user}>
+              <Profile user={user} />
+            </Protected>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Login isOpen={isLogin} handleDialog={handleLoginDialog} />
       <Signup isOpen={isSignup} handleDialog={handleSignupDialog} />

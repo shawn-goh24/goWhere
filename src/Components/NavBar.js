@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -17,31 +18,11 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { auth } from "../firebase";
 
-// const settings = [
-//   <div
-//     style={{
-//       display: "flex",
-//       gap: "10px",
-//       marginLeft: "-1px",
-//     }}
-//   >
-//     <PersonIcon /> <Typography>Profile</Typography>
-//   </div>,
-//   <div
-//     style={{
-//       display: "flex",
-//       gap: "10px",
-//     }}
-//   >
-//     <LogoutIcon /> <Typography>Log out</Typography>
-//   </div>,
-// ];
-
 export default function NavBar(props) {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
-  const { handleDialog, user, handleLogout } = props;
+  const { handleLogin, handleSignup, user, handleLogout } = props;
 
   // Check if current screen size is xs
   const theme = useTheme();
@@ -55,7 +36,13 @@ export default function NavBar(props) {
         marginLeft: "-1px",
       }}
     >
-      <PersonIcon /> <Typography>Profile</Typography>
+      <PersonIcon />{" "}
+      <Link
+        to={user ? `/user/${user.displayName}` : ""}
+        style={{ textDecoration: "none", color: "black" }}
+      >
+        <Typography>Profile</Typography>
+      </Link>
     </div>,
     <div
       style={{
@@ -92,11 +79,16 @@ export default function NavBar(props) {
                   color: "#53735E",
                 }}
               >
-                goWhere
+                <Link
+                  to="/"
+                  style={{ textDecoration: "none", color: "#53735E" }}
+                >
+                  goWhere
+                </Link>
               </Typography>
               {user ? (
                 <IconButton onClick={(e) => handleOpenUserMenu(e)}>
-                  <Avatar alt="User Photo" />
+                  <Avatar alt="User Photo" src={user.photoURL} />
                 </IconButton>
               ) : (
                 <>
@@ -106,7 +98,7 @@ export default function NavBar(props) {
                     sx={{ color: "#000000", mr: 1 }}
                     size={isSmallScreen ? "medium" : "large"}
                     className="btn-text"
-                    onClick={handleDialog}
+                    onClick={handleLogin}
                   >
                     Login
                   </Button>
@@ -115,7 +107,7 @@ export default function NavBar(props) {
                     variant="contained"
                     size={isSmallScreen ? "small" : "medium"}
                     className="btn-green"
-                    onClick={handleDialog}
+                    onClick={handleSignup}
                   >
                     Signup
                   </Button>
