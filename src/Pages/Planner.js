@@ -9,6 +9,7 @@ import {
 import NavBar from "../Components/NavBar";
 import Map from "../Components/Map";
 import SearchBox from "../Components/SearchBox";
+import SideBar from "../Components/SideBar";
 
 export default function Planner(props) {
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -19,6 +20,7 @@ export default function Planner(props) {
       <Grid container>
         <Grid item xs={12} md={6} sx={{ padding: "20px" }}>
           <NavBar />
+          <SideBar />
           <SearchBox id="autocomplete" />
         </Grid>
         <Grid item md={6}>
