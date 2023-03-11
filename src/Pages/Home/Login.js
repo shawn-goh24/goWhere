@@ -19,7 +19,7 @@ export function Login(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { isOpen, handleDialog } = props;
+  const { isOpen, handleDialog, handleLoginDialog } = props;
 
   const handleLogin = (event) => {
     event.preventDefault();
@@ -28,14 +28,14 @@ export function Login(props) {
       .then((userCredential) => console.log(userCredential))
       .catch((error) => console.log(error));
 
-    handleDialog();
+    handleLoginDialog();
   };
 
   return (
     <>
       <Dialog open={isOpen}>
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <IconButton name="login" onClick={handleDialog}>
+          <IconButton name="login" onClick={handleLoginDialog}>
             <CloseIcon name="login" sx={{ color: "#CCCCCC" }} />
           </IconButton>
         </Box>
