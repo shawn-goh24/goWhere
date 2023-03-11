@@ -96,7 +96,11 @@ function App() {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Login isOpen={isLogin} handleDialog={handleLoginDialog} />
+      <Login
+        isOpen={isLogin}
+        handleDialog={handleDialog}
+        handleLoginDialog={handleLoginDialog}
+      />
       <Signup isOpen={isSignup} handleDialog={handleSignupDialog} />
     </>
   );
