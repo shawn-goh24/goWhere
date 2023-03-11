@@ -20,7 +20,7 @@ export default function Planner(props) {
       <Grid container>
         <Grid item xs={12} md={6} sx={{ padding: "20px" }}>
           <NavBar />
-          <SideBar />
+          {/* <SideBar /> */}
           <SearchBox id="autocomplete" />
         </Grid>
         <Grid item md={6}>

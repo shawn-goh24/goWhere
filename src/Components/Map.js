@@ -9,6 +9,7 @@ import {
 
 export default function Map(props) {
   const [markers, setMarkers] = useState([]);
+  let timeOut;
   // Function to generate a map after the script tag is added into the head
   const onScriptLoad = () => {
     const mapId = document.getElementById(props.id);
@@ -68,6 +69,7 @@ export default function Map(props) {
   const stopLoading = () => {
     props.setMapLoaded(true);
     props.openBackDrop(false);
+    clearTimeout(timeOut);
   };
 
   // Function to check if Google Maps script has been added to head tag
@@ -105,7 +107,7 @@ export default function Map(props) {
   // Function to check if Google Maps has been loaded
   const checkMapLoaded = () => {
     if (!window.google) {
-      setTimeout(checkMapLoaded, 100);
+      timeOut = setTimeout(checkMapLoaded, 100);
       console.log("Map not loaded");
     } else {
       onScriptLoad();
