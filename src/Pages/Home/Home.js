@@ -23,6 +23,9 @@ import "./Home.css";
 import countryList from "react-select-country-list";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { auth, database } from "../../firebase";
+
+const DB_TRIPS_KEY = "trips";
 
 export default function Home() {
   const [location, setLocation] = useState(null);
@@ -35,12 +38,19 @@ export default function Home() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  console.log(isSmallScreen);
+  // console.log(isSmallScreen);
 
-  console.log("location: " + location);
-  console.log("start date: " + startDate);
-  console.log("end date: " + endDate);
-  console.log("budget: " + budget);
+  // console.log("location: " + location);
+  // console.log("start date: " + startDate);
+  // console.log("end date: " + endDate);
+  // console.log("budget: " + budget);
+
+  const planNow = () => {
+    if (!auth.currentUser) {
+      return alert("Not logged in, please sign up");
+    }
+    alert("Create new trip");
+  };
 
   return (
     <>
@@ -85,11 +95,17 @@ export default function Home() {
                       sx={{ width: "215px" }}
                       variant="standard"
                       {...params}
-                      label="Select Location"
+                      label="Select Country"
                     />
                   )}
                   onChange={(event, newValue) => {
-                    setLocation(newValue);
+                    try {
+                      setLocation(
+                        JSON.stringify(newValue["label"]).replace(/["]/g, "")
+                      );
+                    } catch (error) {
+                      console.log(error);
+                    }
                   }}
                 />
               </Box>
@@ -138,7 +154,12 @@ export default function Home() {
             </Grid>
             <Divider orientation="vertical" flexItem />
             <Grid item>
-              <Button className="btn-green" variant="contained" size="small">
+              <Button
+                className="btn-green"
+                variant="contained"
+                size="small"
+                onClick={planNow}
+              >
                 Plan Now
               </Button>
             </Grid>

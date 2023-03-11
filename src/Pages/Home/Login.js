@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
   Dialog,
@@ -6,29 +7,44 @@ import {
   Typography,
   Grid,
   Divider,
+  DialogTitle,
+  Box,
+  IconButton,
 } from "@mui/material";
 import React, { useState } from "react";
+import { auth } from "../../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export function Login(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (event) => {
+  const { isOpen, handleDialog } = props;
+
+  const handleLogin = (event) => {
     event.preventDefault();
 
-    console.log(email, password);
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => console.log(userCredential))
+      .catch((error) => console.log(error));
+
+    handleDialog();
   };
 
   return (
     <>
-      <Dialog open={true}>
+      <Dialog open={isOpen}>
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <IconButton name="login" onClick={handleDialog}>
+            <CloseIcon name="login" sx={{ color: "#CCCCCC" }} />
+          </IconButton>
+        </Box>
         <DialogContent
           sx={{
             width: 300,
             mx: "auto", // margin left & right
-            mt: 2, // margin top & botom
-            pt: 3, // padding top & bottom
-            px: 2, // padding left & right
+            p: "0px",
+            pb: 2, // padding bottom
             display: "flex",
             flexDirection: "column",
             gap: 2,
@@ -36,6 +52,18 @@ export function Login(props) {
             boxShadow: "md",
           }}
         >
+          <DialogTitle
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              fontFamily: "Work Sans",
+              fontWeight: "bold",
+              fontSize: "40px",
+              p: "0px",
+            }}
+          >
+            Hola!
+          </DialogTitle>
           <Grid
             container
             direction="column"
@@ -44,14 +72,9 @@ export function Login(props) {
             rowSpacing={3}
           >
             <Grid item>
-              <Typography variant="h3" sx={{ fontFamily: "Work Sans" }}>
-                <b>Hola!</b>
-              </Typography>
-            </Grid>
-            <Grid item>
               <form
                 style={{ display: "flex", flexDirection: "column" }}
-                onSubmit={handleSubmit}
+                onSubmit={handleLogin}
               >
                 <Input
                   required
@@ -83,7 +106,7 @@ export function Login(props) {
               <Divider flexItem />
               <Typography variant="subtitle">
                 Don't have an account?{" "}
-                <a href="#" style={{ color: "#77a690" }}>
+                <a onClick={handleDialog} style={{ color: "#77a690" }}>
                   Signup
                 </a>
               </Typography>

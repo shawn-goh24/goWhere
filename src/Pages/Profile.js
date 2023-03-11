@@ -17,6 +17,8 @@ import { Tab, Tabs } from "@mui/material";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
 
 export default function Profile(props) {
+  const { user } = props;
+
   // Check if current screen size is xs
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -58,11 +60,14 @@ export default function Profile(props) {
                     sx={{ marginTop: "-90px" }}
                   >
                     <Grid item>
-                      <Avatar sx={{ width: 80, height: 80 }} />
+                      <Avatar
+                        sx={{ width: 80, height: 80 }}
+                        src={user.photoURL}
+                      />
                     </Grid>
                     <Grid item sx={{ p: 0.5 }}>
                       <Typography sx={{ fontWeight: 700, fontSize: "1.2rem" }}>
-                        John Smith
+                        {user.displayName}
                       </Typography>
                     </Grid>
                     <Grid item>
