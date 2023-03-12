@@ -9,6 +9,13 @@ import {
 
 export default function Map(props) {
   const [markers, setMarkers] = useState([]);
+
+  if (markers.length !== 0) {
+    console.log(markers);
+    console.log("Lat: " + markers[0].position.lat());
+    console.log("Lng: " + markers[0].position.lng());
+  }
+
   let timeOut;
   // Function to generate a map after the script tag is added into the head
   const onScriptLoad = () => {

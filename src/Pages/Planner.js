@@ -5,9 +5,11 @@ import {
   Paper,
   Backdrop,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import NavBar from "../Components/NavBar";
 import Map from "../Components/Map";
+import TestMap from "../Components/TestMap";
 import SearchBox from "../Components/SearchBox";
 import SideBar from "../Components/SideBar";
 
@@ -18,13 +20,14 @@ export default function Planner(props) {
   return (
     <>
       <Grid container>
-        <Grid item xs={12} md={6} sx={{ padding: "20px" }}>
-          <NavBar />
+        <Grid item xs={12} md={5} sx={{ padding: "20px" }}>
+          {/* <NavBar /> */}
           {/* <SideBar /> */}
           <SearchBox id="autocomplete" />
+          <Button>Add</Button>
         </Grid>
-        <Grid item md={6}>
-          <Map
+        <Grid item md={7}>
+          <TestMap
             id="GoogleMap"
             options={{
               center: { lat: 1.29027, lng: 103.851959 },

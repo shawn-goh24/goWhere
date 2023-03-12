@@ -10,6 +10,7 @@ import Profile from "./Pages/Profile";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Protected from "./Components/Protected";
+import Planner from "./Pages/Planner";
 
 // Add react router and authentication here
 
@@ -71,7 +72,8 @@ function App() {
 
   return (
     <>
-      <Routes>
+      <Planner />
+      {/* <Routes>
         <Route
           path="/*"
           element={
@@ -101,7 +103,7 @@ function App() {
         handleDialog={handleDialog}
         handleLoginDialog={handleLoginDialog}
       />
-      <Signup isOpen={isSignup} handleDialog={handleSignupDialog} />
+      <Signup isOpen={isSignup} handleDialog={handleSignupDialog} /> */}
     </>
   );
 }
