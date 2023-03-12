@@ -85,7 +85,7 @@ function App() {
         />
       </Routes>
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Index user={user} />} />
         <Route
           path="/user/:id"
           element={

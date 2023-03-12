@@ -24,10 +24,11 @@ import countryList from "react-select-country-list";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { auth, database } from "../../firebase";
+import { set, ref, push } from "firebase/database";
 
 const DB_TRIPS_KEY = "trips";
 
-export default function Home() {
+export default function Home(props) {
   const [location, setLocation] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -49,7 +50,28 @@ export default function Home() {
     if (!auth.currentUser) {
       return alert("Not logged in, please sign up");
     }
+    addTrip();
     alert("Create new trip");
+  };
+
+  // Add trip to database
+
+  const addTrip = () => {
+    const tripsRef = ref(database, DB_TRIPS_KEY);
+    const tripId = push(tripsRef).key;
+
+    const trip = {
+      [tripId]: {
+        loaction: location,
+        startDate: startDate,
+        endDate: endDate,
+        budget: budget,
+        creatorName: props.user.displayName,
+        creatorId: props.user.uid,
+      },
+    };
+
+    set(tripsRef, trip);
   };
 
   return (
