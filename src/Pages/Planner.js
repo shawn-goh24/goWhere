@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef } from "react";
+import React, { useState, useRef, forwardRef, useEffect } from "react";
 import {
   Grid,
   Container,
@@ -27,14 +27,17 @@ export default function Planner(props) {
           <Map
             id="GoogleMap"
             options={{
-              center: { lat: 1.29027, lng: 103.851959 },
-              zoom: 15,
+              center: {
+                lat: props.tripGeolocation.lat,
+                lng: props.tripGeolocation.lng,
+              },
+              zoom: 12,
             }}
-            location={{ lat: 1.29027, lng: 103.851959 }}
             loading={open}
             setMapLoaded={setMapLoaded}
             openBackDrop={setOpen}
             inputId="autocomplete"
+            mapViewBound={props.mapViewBound}
           />
           <Backdrop
             sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

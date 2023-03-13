@@ -7,22 +7,42 @@ import Index from "./Pages/Home/Home";
 import { Login } from "./Pages/Home/Login";
 import { Signup } from "./Pages/Home/Signup";
 import Profile from "./Pages/Profile";
-import { auth } from "./firebase";
+import { auth, database } from "./firebase";
+import { ref, onValue } from "firebase/database";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Protected from "./Components/Protected";
+import Planner from "./Pages/Planner";
 
 // Add react router and authentication here
+
+const DB_TRIPS_KEY = "trips";
+const DB_USERS_KEY = "users";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   const [user, setUser] = useState("");
+  const [userTrips, setUserTrips] = useState(null);
+
+  const [tripGeolocation, setTripGeolocation] = useState({});
+  const [mapViewBound, setMapViewBound] = useState("");
 
   useEffect(() => {
+    //Track user's login status
     onAuthStateChanged(auth, (currUser) => {
       setUser(currUser);
     });
   }, []);
+
+  useEffect(() => {
+    // Create reference to posts database
+    const userTripsRef = ref(database, `${DB_USERS_KEY}/${user.uid}/trips`);
+    // Track changes to user's trip in database and update state
+    onValue(userTripsRef, (data) => {
+      const newUserTrips = data.val();
+      setUserTrips(newUserTrips);
+    });
+  });
 
   // change isLogin/isSignup state when click
   const handleDialog = (event) => {
@@ -69,6 +89,57 @@ function App() {
       });
   };
 
+  // Function to check if the script tag is already in the head
+  const isLoaded = (scripts) => {
+    for (const script of scripts) {
+      if (script.id === "google-maps") {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Function to check if Google Maps script has been added to head tag
+  const addScript = () => {
+    // Create a script tag
+    let script = document.createElement("script");
+    script.async = true;
+    script.type = "text/javascript";
+
+    // Google Map requires a callback function to be defined in the script,
+    // Create script tag and include a noop function as the callback
+    // as we do not require any callback to be done once script is loaded
+    script.src =
+      "https://maps.googleapis.com/maps/api/js?key=" +
+      process.env.REACT_APP_MAPS_API +
+      "&libraries=places&callback=Function.prototype";
+
+    // Assign id to the script tag so that
+    // it can be used to check if this script tag has been added previously
+    script.id = "google-maps";
+
+    // Get the first script tag in the browser
+    let scriptElement = document.getElementsByTagName("script")[0];
+
+    // Insert the script tag into head
+    scriptElement.parentNode.insertBefore(script, scriptElement);
+  };
+
+  useEffect(() => {
+    // get all script tags
+    const allScripts = document.getElementsByTagName("script");
+
+    // Check if Google Maps script tag is in the head
+    // If yes, Google Maps is loaded
+    const loaded = isLoaded(allScripts);
+
+    // If Google Maps script tag is not found,
+    // Add the script tag into the head
+    if (!loaded) {
+      addScript();
+    }
+  }, []);
+
   return (
     <>
       <Routes>
@@ -85,13 +156,31 @@ function App() {
         />
       </Routes>
       <Routes>
-        <Route path="/" element={<Index user={user} />} />
+        <Route
+          path="/"
+          element={
+            <Index
+              user={user}
+              setTripGeolocation={setTripGeolocation}
+              setMapViewBound={setMapViewBound}
+            />
+          }
+        />
         <Route
           path="/user/:id"
           element={
             <Protected isSignedIn={user}>
               <Profile user={user} />
             </Protected>
+          }
+        />
+        <Route
+          path="/planner"
+          element={
+            <Planner
+              tripGeolocation={tripGeolocation}
+              mapViewBound={mapViewBound}
+            />
           }
         />
         <Route path="*" element={<NotFound />} />
