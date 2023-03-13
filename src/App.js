@@ -27,6 +27,7 @@ function App() {
   const [tripGeolocation, setTripGeolocation] = useState({});
   const [mapViewBound, setMapViewBound] = useState("");
 
+  // useEffect that run only once when component mount
   useEffect(() => {
     //Track user's login status
     onAuthStateChanged(auth, (currUser) => {
@@ -34,6 +35,8 @@ function App() {
     });
   }, []);
 
+  // useEffect that runs every time the user changes
+  // to add newly created trips
   useEffect(() => {
     // Create reference to posts database
     const userTripsRef = ref(database, `${DB_USERS_KEY}/${user.uid}/trips`);
@@ -42,7 +45,7 @@ function App() {
       const newUserTrips = data.val();
       setUserTrips(newUserTrips);
     });
-  });
+  }, [user]);
 
   // change isLogin/isSignup state when click
   const handleDialog = (event) => {
@@ -177,10 +180,12 @@ function App() {
         <Route
           path="/planner"
           element={
-            <Planner
-              tripGeolocation={tripGeolocation}
-              mapViewBound={mapViewBound}
-            />
+            <Protected isSignedIn={user}>
+              <Planner
+                tripGeolocation={tripGeolocation}
+                mapViewBound={mapViewBound}
+              />
+            </Protected>
           }
         />
         <Route path="*" element={<NotFound />} />
