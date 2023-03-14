@@ -13,6 +13,7 @@ export default function Map(props) {
   let timeOut;
   // Function to generate a map after the script tag is added into the head
   const onScriptLoad = () => {
+    console.log("Start of onscript load");
     const mapId = document.getElementById(props.id);
     const map = new window.google.maps.Map(mapId, props.options);
     map.setCenter(props.mapViewBound);
@@ -31,6 +32,7 @@ export default function Map(props) {
     autocomplete.addListener("place_changed", (e) => {
       onPlaceChanged(autocomplete, map, markers);
     });
+    console.log("End of onscript load");
   };
 
   const onPlaceChanged = (autocomplete, map, markers) => {
@@ -66,31 +68,62 @@ export default function Map(props) {
   };
 
   // Function to check if Google Maps has been loaded
-  const checkMapLoaded = () => {
-    setCheckCount(checkCount + 1);
-    if (!window.google) {
-      if (checkCount > 20) {
-        alert("Google Maps loading issue, please refresh page");
-        setCheckCount(0);
-        return false;
-      } else {
-        timeOut = setTimeout(checkMapLoaded, 100);
-        console.log("Map not loaded");
-      }
-    } else {
-      // onScriptLoad();
-      // console.log("Map Loaded");
-      //console.log(window.google);
-      console.log("Map Loaded 1");
+  // const checkMapLoaded = () => {
+  //   setCheckCount(checkCount + 1);
+  //   console.log(checkCount);
+  //   if (!window.google) {
+  //     if (checkCount > 20) {
+  //       console.log("I am inside checkcount");
+  //       alert("Google Maps loading issue, please refresh page");
+  //       setCheckCount(0);
+  //       return false;
+  //     } else {
+  //       console.log("I am inside timeout");
+  //       timeOut = setTimeout(checkMapLoaded, 100);
+  //       console.log("Map not loaded");
+  //     }
+  //   } else {
+  //     // onScriptLoad();
+  //     // console.log("Map Loaded");
+  //     //console.log(window.google);
+  //     console.log("Map Loaded 1");
+  //     return true;
+  //   }
+  // };
+
+  const checkWindowGoogleLoaded = () => {
+    if (window.google) {
       return true;
+    } else {
+      return false;
     }
+  };
+
+  const checkMapLoaded = () => {
+    let isWindowGoogleLoaded = false;
+    let count = 0;
+
+    while (!isWindowGoogleLoaded) {
+      console.log(isWindowGoogleLoaded);
+      isWindowGoogleLoaded = checkWindowGoogleLoaded();
+      count += 1;
+      //console.log(count);
+      // if (count > 5000) {
+      //   return false;
+    }
+
+    return true;
   };
 
   useEffect(() => {
     if (checkMapLoaded()) {
+      console.log("I am inside useEffect if");
       onScriptLoad();
-      stopLoading();
+      timeOut = setTimeout(stopLoading, 3000);
+      //stopLoading();
       console.log("Map Loaded 2");
+    } else {
+      alert("Google Maps loading error, please go to home page");
     }
   }, []);
 

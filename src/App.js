@@ -193,12 +193,10 @@ function App() {
         <Route
           path="/planner/:trip"
           element={
-            <Protected isSignedIn={user}>
-              <Planner
-                tripGeolocation={tripGeolocation}
-                mapViewBound={mapViewBound}
-              />
-            </Protected>
+            <Planner
+              tripGeolocation={tripGeolocation}
+              mapViewBound={mapViewBound}
+            />
           }
         />
         <Route path="*" element={<NotFound />} />
