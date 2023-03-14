@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Container,
@@ -16,8 +16,10 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { Tab, Tabs } from "@mui/material";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
 
+import { createTripArr } from "../utils";
+
 export default function Profile(props) {
-  const { user } = props;
+  const { user, trips } = props;
 
   // Check if current screen size is xs
   const theme = useTheme();
@@ -25,9 +27,17 @@ export default function Profile(props) {
 
   const [value, setValue] = useState("1");
 
+  let userTrips = createTripArr(trips);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  // useEffect(() => {
+  //   if (trips !== null) {
+  //     userTrips = createTripArr(trips);
+  //   }
+  // });
 
   return (
     <>
@@ -118,18 +128,25 @@ export default function Profile(props) {
               </Box>
               <TabPanel value="1" sx={{ padding: "24px 0" }}>
                 <Grid container gap={8}>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <TripsBox />
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <TripsBox />
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <TripsBox />
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <TripsBox />
-                  </Grid>
+                  {userTrips === null
+                    ? null
+                    : userTrips.map((trip, index) => {
+                        return (
+                          <Grid
+                            item
+                            xs={12}
+                            sm={6}
+                            md={3}
+                            key={`${trip.country}-${index}`}
+                          >
+                            <TripsBox
+                              trip={trip}
+                              setTripGeolocation={props.setTripGeolocation}
+                              setMapViewBound={props.setMapViewBound}
+                            />
+                          </Grid>
+                        );
+                      })}
                 </Grid>
               </TabPanel>
               <TabPanel value="2" sx={{ padding: "24px 0" }}>

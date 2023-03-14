@@ -15,6 +15,9 @@ export default function Planner(props) {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [open, setOpen] = useState(true);
 
+  // console.log(props.tripGeolocation);
+  // console.log(props.mapViewBound);
+
   return (
     <>
       <Grid container>

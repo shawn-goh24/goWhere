@@ -56,9 +56,9 @@ export default function Home(props) {
     if (!auth.currentUser) {
       return alert("Not logged in, please sign up");
     }
-    addTrip(location).then(() => {
+    addTrip(location).then((tripId) => {
       console.log("Create new trip");
-      navigate("/planner");
+      navigate(`/planner/${tripId}`);
     });
   };
 
@@ -74,7 +74,8 @@ export default function Home(props) {
         const { lat, lng } = JSON.parse(
           JSON.stringify(results[0].geometry.location)
         );
-        const bound = results[0].geometry.viewport;
+        // const bound = results[0].geometry.viewport;
+        const bound = { lat: lat, lng: lng };
         return [lat, lng, bound];
       })
       .then(([lat, lng, bound]) => {
@@ -92,17 +93,21 @@ export default function Home(props) {
           locationLat: lat,
           locationLng: lng,
           mapViewBound: bound,
+          tripId: tripId,
         };
         set(newTripRef, trip);
         props.setTripGeolocation({ lat: lat, lng: lng });
         props.setMapViewBound(bound);
 
-        const userRef = ref(
-          database,
-          `${DB_USERS_KEY}/${props.user.uid}/trips`
-        );
-        const updatedTrip = { [tripId]: true };
-        update(userRef, updatedTrip);
+        return tripId;
+
+        // Add Trips to user
+        // const userRef = ref(
+        //   database,
+        //   `${DB_USERS_KEY}/${props.user.uid}/trips`
+        // );
+        // const updatedTrip = { [tripId]: true };
+        // update(userRef, updatedTrip);
       })
       .catch((e) => {
         console.log(

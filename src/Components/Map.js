@@ -15,7 +15,8 @@ export default function Map(props) {
   const onScriptLoad = () => {
     const mapId = document.getElementById(props.id);
     const map = new window.google.maps.Map(mapId, props.options);
-    map.fitBounds(props.mapViewBound, 0);
+    map.setCenter(props.mapViewBound);
+    //map.fitBounds(props.mapViewBound);
     const autocomplete = new window.google.maps.places.Autocomplete(
       document.getElementById(props.inputId),
       {
@@ -71,6 +72,7 @@ export default function Map(props) {
       if (checkCount > 20) {
         alert("Google Maps loading issue, please refresh page");
         setCheckCount(0);
+        return false;
       } else {
         timeOut = setTimeout(checkMapLoaded, 100);
         console.log("Map not loaded");
@@ -78,7 +80,8 @@ export default function Map(props) {
     } else {
       // onScriptLoad();
       // console.log("Map Loaded");
-      console.log("Map Loaded");
+      console.log(window.google);
+      console.log("Map Loaded 1");
       return true;
     }
   };
@@ -87,7 +90,7 @@ export default function Map(props) {
     if (checkMapLoaded()) {
       onScriptLoad();
       stopLoading();
-      console.log("Map Loaded");
+      console.log("Map Loaded 2");
     }
   }, []);
 

@@ -12,6 +12,7 @@ import { ref, onValue } from "firebase/database";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Protected from "./Components/Protected";
 import Planner from "./Pages/Planner";
+import { findTrips } from "./utils";
 
 // Add react router and authentication here
 
@@ -39,10 +40,17 @@ function App() {
   // to add newly created trips
   useEffect(() => {
     // Create reference to posts database
-    const userTripsRef = ref(database, `${DB_USERS_KEY}/${user.uid}/trips`);
-    // Track changes to user's trip in database and update state
-    onValue(userTripsRef, (data) => {
-      const newUserTrips = data.val();
+    // const userTripsRef = ref(database, `${DB_USERS_KEY}/${user.uid}/trips`);
+    // // Track changes to user's trip in database and update state
+    // onValue(userTripsRef, (data) => {
+    //   const newUserTrips = data.val();
+    //   setUserTrips(newUserTrips);
+    // });
+
+    const tripsRef = ref(database, DB_TRIPS_KEY);
+    onValue(tripsRef, (data) => {
+      const allTrips = data.val();
+      const newUserTrips = findTrips(allTrips, user.uid);
       setUserTrips(newUserTrips);
     });
   }, [user]);
@@ -173,12 +181,17 @@ function App() {
           path="/user/:id"
           element={
             <Protected isSignedIn={user}>
-              <Profile user={user} />
+              <Profile
+                user={user}
+                trips={userTrips}
+                setTripGeolocation={setTripGeolocation}
+                setMapViewBound={setMapViewBound}
+              />
             </Protected>
           }
         />
         <Route
-          path="/planner"
+          path="/planner/:trip"
           element={
             <Protected isSignedIn={user}>
               <Planner
