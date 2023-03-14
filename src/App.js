@@ -24,6 +24,7 @@ function App() {
   const [isSignup, setIsSignup] = useState(false);
   const [user, setUser] = useState("");
   const [userTrips, setUserTrips] = useState(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   const [tripGeolocation, setTripGeolocation] = useState({});
   const [mapViewBound, setMapViewBound] = useState("");
@@ -39,14 +40,7 @@ function App() {
   // useEffect that runs every time the user changes
   // to add newly created trips
   useEffect(() => {
-    // Create reference to posts database
-    // const userTripsRef = ref(database, `${DB_USERS_KEY}/${user.uid}/trips`);
-    // // Track changes to user's trip in database and update state
-    // onValue(userTripsRef, (data) => {
-    //   const newUserTrips = data.val();
-    //   setUserTrips(newUserTrips);
-    // });
-
+    // Create reference to trips database
     const tripsRef = ref(database, DB_TRIPS_KEY);
     onValue(tripsRef, (data) => {
       const allTrips = data.val();
@@ -104,9 +98,11 @@ function App() {
   const isLoaded = (scripts) => {
     for (const script of scripts) {
       if (script.id === "google-maps") {
+        setMapLoaded(true);
         return true;
       }
     }
+    setMapLoaded(false);
     return false;
   };
 
@@ -134,6 +130,8 @@ function App() {
 
     // Insert the script tag into head
     scriptElement.parentNode.insertBefore(script, scriptElement);
+
+    setMapLoaded(true);
   };
 
   useEffect(() => {
@@ -193,10 +191,14 @@ function App() {
         <Route
           path="/planner/:trip"
           element={
-            <Planner
-              tripGeolocation={tripGeolocation}
-              mapViewBound={mapViewBound}
-            />
+            <Protected isSignedIn={user}>
+              <Planner
+                tripGeolocation={tripGeolocation}
+                mapViewBound={mapViewBound}
+                mapLoaded={mapLoaded}
+                addScript={addScript}
+              />
+            </Protected>
           }
         />
         <Route path="*" element={<NotFound />} />

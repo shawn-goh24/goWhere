@@ -30,7 +30,6 @@ import { set, ref, push, update } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 
 const DB_TRIPS_KEY = "trips";
-const DB_USERS_KEY = "users";
 
 export default function Home(props) {
   const [location, setLocation] = useState(null);
@@ -100,14 +99,6 @@ export default function Home(props) {
         props.setMapViewBound(bound);
 
         return tripId;
-
-        // Add Trips to user
-        // const userRef = ref(
-        //   database,
-        //   `${DB_USERS_KEY}/${props.user.uid}/trips`
-        // );
-        // const updatedTrip = { [tripId]: true };
-        // update(userRef, updatedTrip);
       })
       .catch((e) => {
         console.log(
