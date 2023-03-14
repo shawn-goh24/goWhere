@@ -7,11 +7,30 @@ import {
   Typography,
 } from "@mui/material";
 
+import { convertTripDate } from "../utils";
+import { useNavigate } from "react-router-dom";
+
 export default function TripsBox(props) {
+  let dateString = convertTripDate(props.trip.startDate, props.trip.endDate);
+
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    const tripGeolocation = {
+      lat: props.trip.locationLat,
+      lng: props.trip.locationLng,
+    };
+    // console.log(tripGeolocation);
+    // console.log(props.trip.mapViewBound);
+    props.setTripGeolocation(tripGeolocation);
+    props.setMapViewBound(props.trip.mapViewBound);
+    navigate(`/planner/${props.trip.tripId}`);
+  };
+
   return (
     <>
       <Card sx={{ maxWidth: 345, borderRadius: "15px" }}>
-        <CardActionArea>
+        <CardActionArea onClick={handleClick}>
           <CardMedia
             component="img"
             height="140"
@@ -19,11 +38,16 @@ export default function TripsBox(props) {
             alt="tokyo"
           />
           <CardContent>
-            <Typography gutterBottom variant="h6" component="div">
-              Japan
+            <Typography
+              gutterBottom
+              variant="h6"
+              component="div"
+              sx={{ lineHeight: "1.2rem", fontSize: "1.1rem" }}
+            >
+              {props.trip.country}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              1 - 15 August 2023
+              {dateString}
             </Typography>
           </CardContent>
         </CardActionArea>

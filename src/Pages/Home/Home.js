@@ -23,16 +23,22 @@ import "./Home.css";
 import countryList from "react-select-country-list";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+
 import { auth, database } from "../../firebase";
+import { set, ref, push, update } from "firebase/database";
+
+import { useNavigate } from "react-router-dom";
 
 const DB_TRIPS_KEY = "trips";
 
-export default function Home() {
+export default function Home(props) {
   const [location, setLocation] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [budget, setBudget] = useState(0);
   const options = useMemo(() => countryList().getData(), []);
+
+  const navigate = useNavigate();
 
   // check if screen is small
   const theme = useTheme();
@@ -49,7 +55,56 @@ export default function Home() {
     if (!auth.currentUser) {
       return alert("Not logged in, please sign up");
     }
-    alert("Create new trip");
+    addTrip(location).then((tripId) => {
+      console.log("Create new trip");
+      navigate(`/planner/${tripId}`);
+    });
+  };
+
+  // Function to get geolocation and add trip to database
+  const addTrip = (country) => {
+    const google = window.google;
+    let geocoder = new google.maps.Geocoder();
+
+    return geocoder
+      .geocode({ address: country })
+      .then((result) => {
+        const { results } = result;
+        const { lat, lng } = JSON.parse(
+          JSON.stringify(results[0].geometry.location)
+        );
+        // const bound = results[0].geometry.viewport;
+        const bound = { lat: lat, lng: lng };
+        return [lat, lng, bound];
+      })
+      .then(([lat, lng, bound]) => {
+        const tripsRef = ref(database, DB_TRIPS_KEY);
+        const newTripRef = push(tripsRef);
+        const tripId = newTripRef.key;
+
+        const trip = {
+          country: location,
+          startDate: startDate,
+          endDate: endDate,
+          budget: budget,
+          creatorName: props.user.displayName,
+          creatorId: props.user.uid,
+          locationLat: lat,
+          locationLng: lng,
+          mapViewBound: bound,
+          tripId: tripId,
+        };
+        set(newTripRef, trip);
+        props.setTripGeolocation({ lat: lat, lng: lng });
+        props.setMapViewBound(bound);
+
+        return tripId;
+      })
+      .catch((e) => {
+        console.log(
+          "addTrip was not successful for the following reason: " + e
+        );
+      });
   };
 
   return (
