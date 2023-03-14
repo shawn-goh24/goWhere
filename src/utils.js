@@ -18,6 +18,7 @@ export const findTrips = (tripsObj, userId) => {
 
 /**
  * Function to create trips array from trips object
+ * Sort the array according to start date in descending order
  * @param {object} tripsObj
  * @returns {array}
  */
@@ -25,10 +26,43 @@ export const createTripArr = (tripsObj) => {
   let tripsArr = [];
 
   for (const trip in tripsObj) {
+    const startDateArr = tripsObj[trip]["startDate"].split("/");
+    const newStartDate = `${startDateArr[1]}-${startDateArr[0]}-${startDateArr[2]}`;
+    const newDate = new Date(newStartDate);
+    tripsObj[trip]["newStartDate"] = newDate;
     tripsArr.push(tripsObj[trip]);
   }
 
+  tripsArr.sort((a, b) => {
+    return b.newStartDate - a.newStartDate;
+  });
+
   return tripsArr;
+};
+
+/**
+ * Function to calculate the number of countries the user visited
+ * @param {object} tripsObj
+ * @returns {number} number of unique countries
+ */
+export const calculateCountries = (tripsObj) => {
+  const countries = {};
+
+  for (const trip in tripsObj) {
+    if (!countries[tripsObj[trip]["country"]]) {
+      countries[tripsObj[trip]["country"]] = true;
+    }
+  }
+  return Object.keys(countries).length;
+};
+
+/**
+ * Function to calculate the length of the trips object
+ * @param {object} tripsObj
+ * @returns
+ */
+export const calculateTrips = (tripsObj) => {
+  return Object.keys(tripsObj).length;
 };
 
 /**

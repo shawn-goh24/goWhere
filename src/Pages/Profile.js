@@ -13,10 +13,8 @@ import TripsBox from "../Components/TripsBox";
 
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Tab, Tabs } from "@mui/material";
-import { TabPanel, TabContext, TabList } from "@mui/lab";
 
-import { createTripArr } from "../utils";
+import { createTripArr, calculateCountries, calculateTrips } from "../utils";
 
 export default function Profile(props) {
   const { user, trips } = props;
@@ -25,19 +23,7 @@ export default function Profile(props) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [value, setValue] = useState("1");
-
   let userTrips = createTripArr(trips);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  // useEffect(() => {
-  //   if (trips !== null) {
-  //     userTrips = createTripArr(trips);
-  //   }
-  // });
 
   return (
     <>
@@ -94,10 +80,14 @@ export default function Profile(props) {
                 {isSmallScreen ? null : (
                   <>
                     <Grid item>
-                      <ProfileStats data={2}>Countries Visited</ProfileStats>
+                      <ProfileStats data={calculateCountries(trips)}>
+                        Countries Visited
+                      </ProfileStats>
                     </Grid>
                     <Grid item>
-                      <ProfileStats data={3}>Completed Trips</ProfileStats>
+                      <ProfileStats data={calculateTrips(trips)}>
+                        Total Trips
+                      </ProfileStats>
                     </Grid>
                   </>
                 )}
@@ -113,54 +103,27 @@ export default function Profile(props) {
               Trips
             </Typography>
           </Box>
-          <Box sx={{ width: "100%" }}>
-            <TabContext value={value}>
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <Tabs
-                  textColor="primary"
-                  indicatorColor="primary"
-                  onChange={handleChange}
-                  value={value}
-                >
-                  <Tab label="Upcoming" value="1" />
-                  <Tab label="Completed" value="2" />
-                </Tabs>
-              </Box>
-              <TabPanel value="1" sx={{ padding: "24px 0" }}>
-                <Grid container gap={8}>
-                  {userTrips === null
-                    ? null
-                    : userTrips.map((trip, index) => {
-                        return (
-                          <Grid
-                            item
-                            xs={12}
-                            sm={6}
-                            md={3}
-                            key={`${trip.country}-${index}`}
-                          >
-                            <TripsBox
-                              trip={trip}
-                              setTripGeolocation={props.setTripGeolocation}
-                              setMapViewBound={props.setMapViewBound}
-                            />
-                          </Grid>
-                        );
-                      })}
-                </Grid>
-              </TabPanel>
-              <TabPanel value="2" sx={{ padding: "24px 0" }}>
-                <Grid container gap={8}>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <TripsBox />
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <TripsBox />
-                  </Grid>
-                </Grid>
-              </TabPanel>
-            </TabContext>
-          </Box>
+          <Grid container gap={8} sx={{ mt: 4 }}>
+            {userTrips === null
+              ? null
+              : userTrips.map((trip, index) => {
+                  return (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                      md={3}
+                      key={`${trip.country}-${index}`}
+                    >
+                      <TripsBox
+                        trip={trip}
+                        setTripGeolocation={props.setTripGeolocation}
+                        setMapViewBound={props.setMapViewBound}
+                      />
+                    </Grid>
+                  );
+                })}
+          </Grid>
         </Box>
       </Container>
     </>

@@ -80,7 +80,7 @@ export default function Map(props) {
     } else {
       // onScriptLoad();
       // console.log("Map Loaded");
-      console.log(window.google);
+      //console.log(window.google);
       console.log("Map Loaded 1");
       return true;
     }
