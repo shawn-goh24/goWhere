@@ -92,7 +92,7 @@ function LeftCol(props) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar
+      {/* <AppBar
         position="fixed"
         sx={{
           ml: { sm: `${drawerWidth}px` },
@@ -112,7 +112,7 @@ function LeftCol(props) {
           </IconButton>
           <NavBar isPlanner={true} />
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
