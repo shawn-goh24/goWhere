@@ -53,7 +53,7 @@ export default function InterestedPlaces(props) {
       likeCount: 0,
       // date, likecount, likeby
     };
-    console.log(newPlace);
+    // console.log(newPlace);
     set(newPlaceRef, newPlace);
     alert("sent to database");
   };

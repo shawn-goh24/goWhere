@@ -104,6 +104,7 @@ export default function Planner(props) {
               mapViewBound={props.mapViewBound}
               setModalOpen={setModalOpen}
               handleDetails={handleDetails}
+              trip={trip}
             />
           )}
 

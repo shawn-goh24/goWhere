@@ -1,4 +1,6 @@
+import { onValue, ref } from "firebase/database";
 import React, { useState, useEffect } from "react";
+import { database } from "../firebase";
 
 export default function Map(props) {
   const [markers, setMarkers] = useState([]);
@@ -101,6 +103,23 @@ export default function Map(props) {
       console.log("window.google is found");
       onScriptLoad();
       timeOut = setTimeout(stopLoading, 2000);
+
+      const mapId = document.getElementById(props.id);
+      const map = new window.google.maps.Map(mapId, props.options);
+      let bounds = new window.google.maps.LatLngBounds();
+      const placesRef = ref(database, `trips/${props.trip}/places`);
+      // console.log(placesRef);
+      onValue(placesRef, (data) => {
+        Object.values(data.val()).forEach((item) => {
+          let marker = new window.google.maps.Marker({
+            position: { lat: item.lat, lng: item.lng },
+            map,
+          });
+
+          bounds.extend(marker.position);
+        });
+        map.fitBounds(bounds);
+      });
     } else {
       props.setModalOpen(true);
     }
