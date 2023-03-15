@@ -26,6 +26,7 @@ export const createTripArr = (tripsObj) => {
   let tripsArr = [];
 
   for (const trip in tripsObj) {
+    console.log(tripsObj[trip]["startDate"]);
     const startDateArr = tripsObj[trip]["startDate"].split("/");
     const newStartDate = `${startDateArr[1]}-${startDateArr[0]}-${startDateArr[2]}`;
     const newDate = new Date(newStartDate);

@@ -11,8 +11,8 @@ import { auth, database } from "./firebase";
 import { ref, onValue } from "firebase/database";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Protected from "./Components/Protected";
-import Planner from "./Pages/Planner";
 import { findTrips } from "./utils";
+import Planner from "./Pages/Planner";
 
 // Add react router and authentication here
 
@@ -151,6 +151,7 @@ function App() {
 
   return (
     <>
+      {/* <Planner /> */}
       <Routes>
         <Route
           path="/*"

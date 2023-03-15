@@ -22,7 +22,7 @@ export default function NavBar(props) {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
-  const { handleLogin, handleSignup, user, handleLogout } = props;
+  const { handleLogin, handleSignup, user, handleLogout, isPlanner } = props;
 
   // Check if current screen size is xs
   const theme = useTheme();
@@ -69,78 +69,158 @@ export default function NavBar(props) {
           position="static"
           style={{ backgroundColor: "#FFFFFF", boxShadow: "none" }}
         >
-          <Container maxWidth="lg">
-            <Toolbar>
-              <Typography
-                component="div"
-                sx={{ flexGrow: 1, fontSize: { xs: "1.5rem", sm: "1.8rem" } }}
-                style={{
-                  fontFamily: "Ribeye Marrow, cursive",
-                  color: "#53735E",
+          {isPlanner ? (
+            <>
+              <Box maxWidth="lg">
+                <Toolbar>
+                  <Typography
+                    component="div"
+                    sx={{
+                      flexGrow: 1,
+                      fontSize: { xs: "1.5rem", sm: "1.8rem" },
+                    }}
+                    style={{
+                      fontFamily: "Ribeye Marrow, cursive",
+                      color: "#53735E",
+                    }}
+                  >
+                    <Link
+                      to="/"
+                      style={{ textDecoration: "none", color: "#53735E" }}
+                    >
+                      goWhere
+                    </Link>
+                  </Typography>
+                  {user ? (
+                    <IconButton onClick={(e) => handleOpenUserMenu(e)}>
+                      <Avatar alt="User Photo" src={user.photoURL} />
+                    </IconButton>
+                  ) : (
+                    <>
+                      <Button
+                        name="login"
+                        variant="text"
+                        sx={{ color: "#000000", mr: 1 }}
+                        size={isSmallScreen ? "medium" : "large"}
+                        className="btn-text"
+                        onClick={handleLogin}
+                      >
+                        Login
+                      </Button>
+                      <Button
+                        name="signup"
+                        variant="contained"
+                        size={isSmallScreen ? "small" : "medium"}
+                        className="btn-green"
+                        onClick={handleSignup}
+                      >
+                        Signup
+                      </Button>
+                    </>
+                  )}
+                </Toolbar>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {settings.map((setting, index) => (
+                    <MenuItem
+                      key={index}
+                      onClick={handleCloseUserMenu}
+                      sx={{ padding: "0 15px", minWidth: "150px" }}
+                    >
+                      {setting}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </Box>
+            </>
+          ) : (
+            <Container maxWidth="lg">
+              <Toolbar>
+                <Typography
+                  component="div"
+                  sx={{ flexGrow: 1, fontSize: { xs: "1.5rem", sm: "1.8rem" } }}
+                  style={{
+                    fontFamily: "Ribeye Marrow, cursive",
+                    color: "#53735E",
+                  }}
+                >
+                  <Link
+                    to="/"
+                    style={{ textDecoration: "none", color: "#53735E" }}
+                  >
+                    goWhere
+                  </Link>
+                </Typography>
+                {user ? (
+                  <IconButton onClick={(e) => handleOpenUserMenu(e)}>
+                    <Avatar alt="User Photo" src={user.photoURL} />
+                  </IconButton>
+                ) : (
+                  <>
+                    <Button
+                      name="login"
+                      variant="text"
+                      sx={{ color: "#000000", mr: 1 }}
+                      size={isSmallScreen ? "medium" : "large"}
+                      className="btn-text"
+                      onClick={handleLogin}
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      name="signup"
+                      variant="contained"
+                      size={isSmallScreen ? "small" : "medium"}
+                      className="btn-green"
+                      onClick={handleSignup}
+                    >
+                      Signup
+                    </Button>
+                  </>
+                )}
+              </Toolbar>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
                 }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
               >
-                <Link
-                  to="/"
-                  style={{ textDecoration: "none", color: "#53735E" }}
-                >
-                  goWhere
-                </Link>
-              </Typography>
-              {user ? (
-                <IconButton onClick={(e) => handleOpenUserMenu(e)}>
-                  <Avatar alt="User Photo" src={user.photoURL} />
-                </IconButton>
-              ) : (
-                <>
-                  <Button
-                    name="login"
-                    variant="text"
-                    sx={{ color: "#000000", mr: 1 }}
-                    size={isSmallScreen ? "medium" : "large"}
-                    className="btn-text"
-                    onClick={handleLogin}
+                {settings.map((setting, index) => (
+                  <MenuItem
+                    key={index}
+                    onClick={handleCloseUserMenu}
+                    sx={{ padding: "0 15px", minWidth: "150px" }}
                   >
-                    Login
-                  </Button>
-                  <Button
-                    name="signup"
-                    variant="contained"
-                    size={isSmallScreen ? "small" : "medium"}
-                    className="btn-green"
-                    onClick={handleSignup}
-                  >
-                    Signup
-                  </Button>
-                </>
-              )}
-            </Toolbar>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting, index) => (
-                <MenuItem
-                  key={index}
-                  onClick={handleCloseUserMenu}
-                  sx={{ padding: "0 15px", minWidth: "150px" }}
-                >
-                  {setting}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Container>
+                    {setting}
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Container>
+          )}
         </AppBar>
       </Box>
     </>

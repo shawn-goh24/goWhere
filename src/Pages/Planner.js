@@ -5,14 +5,17 @@ import {
   Paper,
   Backdrop,
   CircularProgress,
+  Button,
   Modal,
   Box,
   Typography,
-  Button,
 } from "@mui/material";
 
 import Map from "../Components/Map";
+import TestMap from "../Components/TestMap";
 import SearchBox from "../Components/SearchBox";
+import SideBar from "../Components/SideBar";
+import LeftCol from "./Planner/LeftCol";
 
 import { useNavigate } from "react-router-dom";
 
@@ -30,6 +33,27 @@ const style = {
 
 export default function Planner(props) {
   const [open, setOpen] = useState(true);
+  const [location, setLocation] = useState("");
+  const [address, setAddress] = useState("");
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
+  const [interest, setInterest] = useState({});
+
+  const handleDetails = (name, add, lat, lng) => {
+    // setLocation(name);
+    // setAddress(add);
+    // setLat(lat);
+    // setLng(lng);
+    const tmp = {
+      name: name,
+      address: add,
+      lat: lat,
+      lng: lng,
+    };
+    setInterest(tmp);
+  };
+
+  // console.log(interest);
   const [modalOpen, setModalOpen] = useState(false);
 
   // If Google Maps script tag is not found,
@@ -56,8 +80,16 @@ export default function Planner(props) {
   return (
     <>
       <Grid container>
-        <Grid item xs={12} md={6} sx={{ padding: "20px" }}>
-          <SearchBox id="autocomplete" />
+        <Grid
+          item
+          xs={12}
+          md={6}
+          // sx={{ backgroundColor: "coral" }}
+        >
+          {/* <NavBar /> */}
+          <LeftCol interest={interest} />
+          {/* <SearchBox id="autocomplete" />
+          <Button>Add</Button> */}
         </Grid>
         <Grid item md={6}>
           {props.mapLoaded && (
