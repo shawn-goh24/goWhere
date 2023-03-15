@@ -5,6 +5,19 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
 
 export default function Place(props) {
+  const { item, handleLikes, user } = props;
+
+  let likeColor = "";
+  if (item.likes == undefined || user === null) {
+    likeColor = "default";
+  } else if (item.likes[user.uid] !== true) {
+    likeColor = "default";
+  } else {
+    likeColor = "error";
+  }
+
+  // console.log(user);
+
   return (
     <Box padding={1.5}>
       <Paper
@@ -27,10 +40,10 @@ export default function Place(props) {
             }}
           >
             <Box>
-              <Typography variant="h6">
-                Honke Nishio Yatsuhashi Kiyomizuzaka
+              <Typography variant="h6">{item.name}</Typography>
+              <Typography variant="subtitle2">
+                Added by {item.addedBy}
               </Typography>
-              <Typography variant="subtitle2">Added by Son</Typography>
             </Box>
             <Box
               sx={{
@@ -45,13 +58,15 @@ export default function Place(props) {
                 }}
               >
                 <Typography variant="h6" sx={{ color: "#733D29" }}>
-                  SGD 5000
+                  SGD {item.cost}
                 </Typography>
-                <IconButton>
-                  <FavoriteIcon sx={{ width: "22px", height: "22px" }} />
-                  {/* <Typography variant="body1">0</Typography> */}
+                <IconButton onClick={() => handleLikes(item.uid)}>
+                  <FavoriteIcon
+                    color={likeColor}
+                    sx={{ width: "22px", height: "22px" }}
+                  />
                 </IconButton>
-                0
+                {item.likeCount ? item.likeCount : "0"}
                 <IconButton>
                   <AddIcon sx={{ width: "22px", height: "22px" }} />
                 </IconButton>
@@ -59,10 +74,7 @@ export default function Place(props) {
             </Box>
           </Box>
           <Box mt={1}>
-            <Typography variant="body1">
-              A popular sightseeing path runs uphill through this forest of
-              towering bamboo stalks.
-            </Typography>
+            <Typography variant="body1">{item.note}</Typography>
           </Box>
         </Box>
       </Paper>

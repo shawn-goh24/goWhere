@@ -1,5 +1,5 @@
 // import * as React from "react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -23,6 +23,9 @@ import PackingList from "./PackingList";
 import Documents from "./Documents";
 import Itinerary from "./Itinerary";
 import { Paper } from "@mui/material";
+import { database } from "../../firebase";
+
+import { onValue, ref } from "firebase/database";
 
 const drawerWidth = 240;
 
@@ -30,6 +33,17 @@ function LeftCol(props) {
   const { window, interest } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selection, setSelection] = useState("Interested Places");
+  const [data, setData] = useState(null);
+
+  const { trip, user } = props;
+
+  useEffect(() => {
+    const tripRef = ref(database, `trips/${trip}`);
+    onValue(tripRef, (snapshot) => {
+      // console.log(snapshot.val());
+      setData(snapshot.val());
+    });
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -76,7 +90,14 @@ function LeftCol(props) {
 
   const content = () => {
     if (selection === "Interested Places") {
-      return <InterestedPlaces interest={interest} />;
+      return (
+        <InterestedPlaces
+          interest={interest}
+          data={data}
+          trip={trip}
+          user={user}
+        />
+      );
     } else if (selection === "Packing List") {
       return <PackingList />;
     } else if (selection === "Documents") {
@@ -155,9 +176,9 @@ function LeftCol(props) {
         component="main"
         sx={{
           flexGrow: 1,
-          mt: "64px",
+          // mt: "64px",
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          maxHeight: "calc(100vh - 64px)",
+          maxHeight: "100vh",
           overflowX: "hidden",
           overflowY: "auto",
         }}
@@ -183,10 +204,10 @@ function LeftCol(props) {
               }}
             >
               <Typography variant="h5" component="h1">
-                Japan
+                {data ? `${data.country}` : "Error"}
               </Typography>
               <Typography variant="subtitle" component="p">
-                10 August - 23 August
+                {data ? `${data.startDate} - ${data.endDate}` : "Error"}
               </Typography>
             </Paper>
           </Box>

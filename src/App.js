@@ -198,6 +198,7 @@ function App() {
                 mapViewBound={mapViewBound}
                 mapLoaded={mapLoaded}
                 addScript={addScript}
+                user={user}
               />
             </Protected>
           }

@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 export default function Map(props) {
   const [markers, setMarkers] = useState([]);
 
+  const { handleDetails } = props;
+
   if (markers.length !== 0) {
     console.log(markers);
     console.log("Lat: " + markers[0].position.lat());
@@ -21,7 +23,7 @@ export default function Map(props) {
       document.getElementById(props.inputId),
       {
         types: ["establishment"],
-        fields: ["place_id", "geometry", "name"],
+        fields: ["place_id", "geometry", "name", "formatted_address"],
       }
     );
     autocomplete.addListener("place_changed", (e) => {
@@ -39,20 +41,27 @@ export default function Map(props) {
       return;
     }
 
+    handleDetails(
+      place.name,
+      place.formatted_address,
+      place.geometry.location.lat(),
+      place.geometry.location.lng()
+    );
+
     // If the place has a geometry, then present it on a map.
-    if (place.geometry.viewport) {
-      setMarkers([
-        ...markers,
-        new window.google.maps.Marker({
-          position: place.geometry.location,
-          map: map,
-        }),
-      ]);
-      map.fitBounds(place.geometry.viewport);
-    } else {
-      map.setCenter(place.geometry.location);
-      map.setZoom(17);
-    }
+    // if (place.geometry.viewport) {
+    //   setMarkers([
+    //     ...markers,
+    //     new window.google.maps.Marker({
+    //       position: place.geometry.location,
+    //       map: map,
+    //     }),
+    //   ]);
+    //   map.fitBounds(place.geometry.viewport);
+    // } else {
+    //   map.setCenter(place.geometry.location);
+    //   map.setZoom(17);
+    // }
   };
 
   const stopLoading = () => {

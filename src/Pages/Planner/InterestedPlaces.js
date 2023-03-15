@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   FormControl,
@@ -13,7 +13,7 @@ import {
 import hero from "../../Assets/hero-1920x1280.jpg";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { database } from "../../firebase";
-import { push, ref, set } from "firebase/database";
+import { onValue, push, ref, runTransaction, set } from "firebase/database";
 import Place from "../../Components/Place";
 
 const DB_PLACES_KEY = "places";
@@ -22,15 +22,23 @@ export default function InterestedPlaces(props) {
   const [location, setLocation] = useState("");
   const [cost, setCost] = useState(0);
   const [note, setNote] = useState("");
+  const [item, setItem] = useState([]);
 
-  const { interest } = props;
+  const { interest, data, trip, user } = props;
 
-  const handleChange = (event) => {
-    setLocation(event.target.value);
-  };
+  useEffect(() => {
+    console.log("inside interested places useeffect");
+    const placeRef = ref(database, `trips/${trip}/places`);
+    onValue(placeRef, (data) => {
+      if (data.val()) {
+        const tmpItem = [];
+        setItem([...tmpItem, ...Object.values(data.val())]);
+      }
+    });
+  }, []);
 
   const handleAddPlace = () => {
-    const placeRef = ref(database, DB_PLACES_KEY);
+    const placeRef = ref(database, `trips/${trip}/${DB_PLACES_KEY}`);
     const newPlaceRef = push(placeRef);
 
     const newPlace = {
@@ -41,14 +49,40 @@ export default function InterestedPlaces(props) {
       lng: interest.lng,
       cost: cost,
       note: note,
-      // add addedby, date, likecount, likeby
+      addedBy: user.displayName,
+      likeCount: 0,
+      // date, likecount, likeby
     };
+    console.log(newPlace);
     set(newPlaceRef, newPlace);
     alert("sent to database");
   };
 
-  // console.log("Inside Interested Places");
-  // console.log(interest);
+  const handleLikes = (placeId) => {
+    const placeRef = ref(database, `trips/${trip}/places/${placeId}`);
+    runTransaction(placeRef, (place) => {
+      if (place) {
+        if (place.likes && place.likes[user.uid]) {
+          place.likeCount--;
+          place.likes[user.uid] = null;
+        } else {
+          place.likeCount++;
+          if (!place.likes) {
+            place.likes = {};
+          }
+          place.likes[user.uid] = true;
+        }
+      }
+      return place;
+    });
+  };
+
+  const items = item.map((item) => {
+    // console.log(user);
+    return (
+      <Place key={item.uid} item={item} handleLikes={handleLikes} user={user} />
+    );
+  });
 
   return (
     <Box>
@@ -66,7 +100,6 @@ export default function InterestedPlaces(props) {
               size="small"
               fullWidth
               label="Location"
-              // onChange={(e) => handleChange(e)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -75,21 +108,6 @@ export default function InterestedPlaces(props) {
                 ),
               }}
             />
-            {/* <FormControl fullWidth>
-              <InputLabel htmlFor="outlined-adornment-location">
-                Location
-              </InputLabel>
-              <OutlinedInput
-                size="small"
-                id="outlined-adornment-location"
-                startAdornment={
-                  <InputAdornment position="start">
-                    <LocationOnIcon />
-                  </InputAdornment>
-                }
-                label="location"
-              />
-            </FormControl> */}
           </Grid>
           <Grid item lg={3}>
             <TextField
@@ -104,17 +122,6 @@ export default function InterestedPlaces(props) {
                 ),
               }}
             />
-            {/* <FormControl fullWidth>
-              <InputLabel htmlFor="outlined-adornment-cost">Cost</InputLabel>
-              <OutlinedInput
-                size="small"
-                id="outlined-adornment-cost"
-                startAdornment={
-                  <InputAdornment position="start">$</InputAdornment>
-                }
-                label="cost"
-              />
-            </FormControl> */}
           </Grid>
           <Grid item lg={8}>
             <TextField
@@ -135,19 +142,19 @@ export default function InterestedPlaces(props) {
             >
               Add
             </Button>
-            <Button fullWidth variant="outlined">
+            {/* <Button fullWidth variant="outlined">
               Extra button
-            </Button>
+            </Button> */}
           </Grid>
         </Grid>
       </Box>
       <Box name="contents">
+        {items}
+        {/* <Place />
         <Place />
         <Place />
         <Place />
-        <Place />
-        <Place />
-        <Place />
+        <Place /> */}
       </Box>
     </Box>
   );
