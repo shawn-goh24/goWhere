@@ -12,21 +12,48 @@ import Map from "../Components/Map";
 import TestMap from "../Components/TestMap";
 import SearchBox from "../Components/SearchBox";
 import SideBar from "../Components/SideBar";
+import LeftCol from "./Planner/LeftCol";
 
 export default function Planner(props) {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [open, setOpen] = useState(true);
+  const [location, setLocation] = useState("");
+  const [address, setAddress] = useState("");
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
+  const [interest, setInterest] = useState({});
+
+  const handleDetails = (name, add, lat, lng) => {
+    // setLocation(name);
+    // setAddress(add);
+    // setLat(lat);
+    // setLng(lng);
+    const tmp = {
+      name: name,
+      address: add,
+      lat: lat,
+      lng: lng,
+    };
+    setInterest(tmp);
+  };
+
+  // console.log(interest);
 
   return (
     <>
       <Grid container>
-        <Grid item xs={12} md={5} sx={{ padding: "20px" }}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          // sx={{ backgroundColor: "coral" }}
+        >
           {/* <NavBar /> */}
-          {/* <SideBar /> */}
-          <SearchBox id="autocomplete" />
-          <Button>Add</Button>
+          <LeftCol interest={interest} />
+          {/* <SearchBox id="autocomplete" />
+          <Button>Add</Button> */}
         </Grid>
-        <Grid item md={7}>
+        <Grid item md={6}>
           <TestMap
             id="GoogleMap"
             options={{
@@ -38,6 +65,7 @@ export default function Planner(props) {
             setMapLoaded={setMapLoaded}
             openBackDrop={setOpen}
             inputId="autocomplete"
+            handleDetails={handleDetails}
           />
           <Backdrop
             sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
