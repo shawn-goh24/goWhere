@@ -153,3 +153,32 @@ const getMonth = (stringNum) => {
   }
   return month;
 };
+
+/**
+ * Function to convert Firebase Auth error code into error messages
+ * @param {string} errorCode
+ * @returns {string} error message that will be displayed to users
+ */
+export const setErrorMessage = (errorCode) => {
+  let errorMsg = "Sorry, ";
+  switch (errorCode) {
+    case "auth/wrong-password":
+      errorMsg += "wrong Password, please try again";
+      break;
+    case "auth/user-not-found":
+      errorMsg += "unable to find user, please sign up a new account";
+      break;
+    case "auth/email-already-in-use":
+      errorMsg += "email has been used, please use another email";
+      break;
+    case "auth/weak-password":
+      errorMsg += "password too weak, please enter at least 6 characters";
+      break;
+    case "auth/too-many-requests":
+      errorMsg += "too may tries, please try again later";
+      break;
+    default:
+      errorMsg = "";
+  }
+  return errorMsg;
+};
