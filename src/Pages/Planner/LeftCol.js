@@ -30,7 +30,7 @@ import { onValue, ref } from "firebase/database";
 const drawerWidth = 240;
 
 function LeftCol(props) {
-  const { window, interest } = props;
+  const { window, interest, resetInterest } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selection, setSelection] = useState("Interested Places");
   const [tripDetails, setTripDetails] = useState(null);
@@ -40,7 +40,6 @@ function LeftCol(props) {
   useEffect(() => {
     const tripRef = ref(database, `trips/${trip}`);
     onValue(tripRef, (snapshot) => {
-      // console.log(snapshot.val());
       setTripDetails(snapshot.val());
     });
   }, []);
@@ -56,7 +55,6 @@ function LeftCol(props) {
 
   const drawer = (
     <div>
-      <Toolbar />
       <Divider />
       <List>
         {["Interested Places", "Packing List", "Documents"].map(
@@ -96,6 +94,7 @@ function LeftCol(props) {
           tripDetails={tripDetails}
           trip={trip}
           user={user}
+          resetInterest={resetInterest}
         />
       );
     } else if (selection === "Packing List") {
@@ -159,6 +158,11 @@ function LeftCol(props) {
           {drawer}
         </Drawer>
         <Drawer
+          PaperProps={{
+            style: {
+              position: "relative",
+            },
+          }}
           variant="permanent"
           sx={{
             display: { xs: "none", sm: "block" },
@@ -177,8 +181,8 @@ function LeftCol(props) {
         sx={{
           flexGrow: 1,
           // mt: "64px",
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          maxHeight: "100vh",
+          // width: { sm: `calc(100% - ${drawerWidth}px)` },
+          maxHeight: "calc(100vh - 64px)", // original is 100vh
           overflowX: "hidden",
           overflowY: "auto",
         }}

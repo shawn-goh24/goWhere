@@ -28,10 +28,9 @@ export default function InterestedPlaces(props) {
   const [selected, setSelected] = useState(null);
   const [dates, setDates] = useState([]);
 
-  const { interest, tripDetails, trip, user } = props;
+  const { interest, tripDetails, trip, user, resetInterest } = props;
 
   useEffect(() => {
-    console.log("inside interested places useeffect");
     const placeRef = ref(database, `trips/${trip}/places`);
     onValue(placeRef, (data) => {
       if (data.val()) {
@@ -42,24 +41,28 @@ export default function InterestedPlaces(props) {
   }, []);
 
   const handleAddPlace = () => {
-    const placeRef = ref(database, `trips/${trip}/${DB_PLACES_KEY}`);
-    const newPlaceRef = push(placeRef);
+    // e.preventDefault(); // Will show map reload if use onSubmit
 
-    const newPlace = {
-      uid: newPlaceRef.key,
-      name: interest.name,
-      address: interest.address,
-      lat: interest.lat,
-      lng: interest.lng,
-      cost: cost,
-      note: note,
-      addedBy: user.displayName,
-      likeCount: 0,
-      // date, likecount, likeby
-    };
-    // console.log(newPlace);
-    set(newPlaceRef, newPlace);
-    alert("sent to database");
+    if (interest.name && cost) {
+      const placeRef = ref(database, `trips/${trip}/${DB_PLACES_KEY}`);
+      const newPlaceRef = push(placeRef);
+
+      const newPlace = {
+        uid: newPlaceRef.key,
+        name: interest.name,
+        address: interest.address,
+        lat: interest.lat,
+        lng: interest.lng,
+        cost: cost,
+        note: note,
+        addedBy: user.displayName,
+        likeCount: 0,
+      };
+      set(newPlaceRef, newPlace);
+      resetInterest();
+    } else {
+      console.log("Empty");
+    }
   };
 
   const handleLikes = (placeId) => {
@@ -123,6 +126,8 @@ export default function InterestedPlaces(props) {
     });
   };
 
+  console.log(interest);
+
   return (
     <Box>
       <Box name="title">
@@ -130,7 +135,12 @@ export default function InterestedPlaces(props) {
           Interested Places
         </Typography>
       </Box>
-      <Box name="inputs" sx={{ backgroundColor: "#f2f2f2" }}>
+      <Box
+        // component="form"
+        // onSubmit={(e) => handleAddPlace()}
+        name="inputs"
+        sx={{ backgroundColor: "#f2f2f2" }}
+      >
         <Grid container padding="10px" gap={3}>
           <Grid item lg={8}>
             <TextField
@@ -178,6 +188,7 @@ export default function InterestedPlaces(props) {
               variant="outlined"
               sx={{ mb: "5px" }}
               onClick={handleAddPlace}
+              type="submit"
             >
               Add
             </Button>

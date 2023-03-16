@@ -108,7 +108,6 @@ export default function Map(props) {
       const map = new window.google.maps.Map(mapId, props.options);
       let bounds = new window.google.maps.LatLngBounds();
       const placesRef = ref(database, `trips/${props.trip}/places`);
-      // console.log(placesRef);
       onValue(placesRef, (data) => {
         Object.values(data.val()).forEach((item) => {
           let marker = new window.google.maps.Marker({
@@ -127,7 +126,10 @@ export default function Map(props) {
 
   return (
     <>
-      <div style={{ width: "100%", height: "100vh" }} id={props.id} />
+      <div
+        style={{ width: "100%", height: "calc(100vh - 64px)" }} // original height 100vh
+        id={props.id}
+      />
     </>
   );
 }

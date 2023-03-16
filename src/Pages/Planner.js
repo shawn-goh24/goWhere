@@ -81,11 +81,20 @@ export default function Planner(props) {
     navigate(`/`);
   };
 
+  const resetInterest = () => {
+    setInterest({});
+  };
+
   return (
     <>
       <Grid container>
         <Grid item xs={12} md={6}>
-          <LeftCol interest={interest} trip={trip} user={user} />
+          <LeftCol
+            interest={interest}
+            trip={trip}
+            user={user}
+            resetInterest={resetInterest}
+          />
         </Grid>
         <Grid item md={6}>
           {props.mapLoaded && (
