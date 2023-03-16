@@ -49,6 +49,20 @@ function App() {
     });
   }, [user]);
 
+  // Temporary update user's info
+  const updateUserInfo = (name, email, photoURL) => {
+    const newUser = { ...user };
+    if (photoURL === null || photoURL === undefined || photoURL === "") {
+      newUser.displayName = name;
+      newUser.email = email;
+    } else {
+      newUser.displayName = name;
+      newUser.email = email;
+      newUser.photoURL = photoURL;
+    }
+    setUser(newUser);
+  };
+
   // change isLogin/isSignup state when click
   const handleDialog = (event) => {
     try {
@@ -179,14 +193,15 @@ function App() {
         <Route
           path="/user/:id"
           element={
-            <Protected isSignedIn={user}>
-              <Profile
-                user={user}
-                trips={userTrips}
-                setTripGeolocation={setTripGeolocation}
-                setMapViewBound={setMapViewBound}
-              />
-            </Protected>
+            // <Protected isSignedIn={user}>
+            <Profile
+              user={user}
+              trips={userTrips}
+              setTripGeolocation={setTripGeolocation}
+              setMapViewBound={setMapViewBound}
+              updateUserInfo={updateUserInfo}
+            />
+            // </Protected>
           }
         />
         <Route
@@ -210,7 +225,11 @@ function App() {
         handleDialog={handleDialog}
         handleLoginDialog={handleLoginDialog}
       />
-      <Signup isOpen={isSignup} handleDialog={handleSignupDialog} />
+      <Signup
+        isOpen={isSignup}
+        handleDialog={handleSignupDialog}
+        updateUserInfo={updateUserInfo}
+      />
     </>
   );
 }

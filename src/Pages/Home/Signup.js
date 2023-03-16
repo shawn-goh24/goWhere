@@ -4,15 +4,19 @@ import {
   DialogContent,
   Grid,
   Typography,
-  Input,
   Button,
   Box,
   IconButton,
   DialogTitle,
+  CircularProgress,
+  TextField,
 } from "@mui/material";
 import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+
+import { setErrorMessage } from "../../utils";
+
 import { auth, database, storage } from "../../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { ref, set } from "firebase/database";
@@ -26,11 +30,21 @@ export function Signup(props) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const { isOpen, handleDialog } = props;
 
+  const handleClose = () => {
+    handleDialog();
+    setErrorMsg();
+    setLoading(false);
+  };
+
   const handleSignup = (event) => {
     event.preventDefault();
+
+    setLoading(true);
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -48,28 +62,35 @@ export function Signup(props) {
         const storageRef = sRef(storage, `avatar/${email}`);
         uploadBytes(storageRef, avatar).then((snapshot) => {
           getDownloadURL(snapshot.ref).then((avatarUrl) => {
+            props.updateUserInfo(username, email, avatarUrl);
             updateProfile(auth.currentUser, {
               photoURL: avatarUrl,
               displayName: username,
             })
               .then(() => {
                 console.log("Username and Avatar added");
+                // reset state
+                setTmpUrl("");
+                setAvatar("");
+                setErrorMsg("");
+                setLoading(false);
+                handleDialog();
               })
               .catch((error) => {
                 console.log(error);
+                const errorMsg = setErrorMessage(error.code);
+                setErrorMsg(errorMsg);
+                setLoading(false);
               });
           });
         });
       })
       .catch((error) => {
         console.log(error);
+        const errorMsg = setErrorMessage(error.code);
+        setErrorMsg(errorMsg);
+        setLoading(false);
       });
-
-    // reset state
-    setTmpUrl("");
-    setAvatar("");
-
-    handleDialog();
   };
 
   const uploadAvatar = (event) => {
@@ -79,15 +100,25 @@ export function Signup(props) {
 
   return (
     <>
-      <Dialog open={isOpen}>
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <IconButton name="signup" onClick={handleDialog}>
+      <Dialog
+        open={isOpen}
+        sx={{
+          "& .MuiDialog-container": {
+            "& .MuiPaper-root": {
+              width: "100%",
+              maxWidth: 400, // Set width here
+            },
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mr: 1, mt: 1 }}>
+          <IconButton name="signup" onClick={handleClose}>
             <CloseIcon sx={{ color: "#CCCCCC" }} />
           </IconButton>
         </Box>
         <DialogContent
           sx={{
-            width: 300,
+            width: "100%",
             mx: "auto", // margin left & right
             p: "0px",
             pb: 2, // padding bottom
@@ -110,7 +141,13 @@ export function Signup(props) {
           >
             Join us!
           </DialogTitle>
-          <Grid container direction="column" alignItems="center" rowSpacing={3}>
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            rowSpacing={3}
+            sx={{ p: "24px 24px 10px 24px" }}
+          >
             <Grid item>
               <IconButton name="addAvatar" component="label">
                 <input
@@ -131,29 +168,32 @@ export function Signup(props) {
                 </Box>
               </IconButton>
             </Grid>
-            <Grid item>
+            <Grid item xs={12}>
               <form
                 style={{ display: "flex", flexDirection: "column" }}
                 onSubmit={handleSignup}
               >
-                <Input
+                <TextField
                   required
+                  label="Username"
                   name="text"
                   type="text"
                   placeholder="Username"
                   onChange={(event) => setUsername(event.target.value)}
                 />
                 <br />
-                <Input
+                <TextField
                   required
+                  label="Email"
                   name="email"
                   type="email"
                   placeholder="Email"
                   onChange={(event) => setEmail(event.target.value)}
                 />
                 <br />
-                <Input
+                <TextField
                   required
+                  label="Password"
                   name="password"
                   type="password"
                   placeholder="Password"
@@ -166,9 +206,20 @@ export function Signup(props) {
                   sx={{ color: "white" }}
                   type="submit"
                 >
-                  Signup
+                  {loading ? (
+                    <CircularProgress size={24} style={{ color: "#FFFFFF" }} />
+                  ) : (
+                    "Signup"
+                  )}
                 </Button>
               </form>
+              {errorMsg === "" ? null : (
+                <Typography
+                  sx={{ color: "maroon", textAlign: "center", mt: 2 }}
+                >
+                  {errorMsg}
+                </Typography>
+              )}
             </Grid>
           </Grid>
         </DialogContent>
