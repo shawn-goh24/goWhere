@@ -33,7 +33,7 @@ function LeftCol(props) {
   const { window, interest } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selection, setSelection] = useState("Interested Places");
-  const [data, setData] = useState(null);
+  const [tripDetails, setTripDetails] = useState(null);
 
   const { trip, user } = props;
 
@@ -41,7 +41,7 @@ function LeftCol(props) {
     const tripRef = ref(database, `trips/${trip}`);
     onValue(tripRef, (snapshot) => {
       // console.log(snapshot.val());
-      setData(snapshot.val());
+      setTripDetails(snapshot.val());
     });
   }, []);
 
@@ -93,7 +93,7 @@ function LeftCol(props) {
       return (
         <InterestedPlaces
           interest={interest}
-          data={data}
+          tripDetails={tripDetails}
           trip={trip}
           user={user}
         />
@@ -204,10 +204,12 @@ function LeftCol(props) {
               }}
             >
               <Typography variant="h5" component="h1">
-                {data ? `${data.country}` : "Error"}
+                {tripDetails ? `${tripDetails.country}` : "Error"}
               </Typography>
               <Typography variant="subtitle" component="p">
-                {data ? `${data.startDate} - ${data.endDate}` : "Error"}
+                {tripDetails
+                  ? `${tripDetails.startDate} - ${tripDetails.endDate}`
+                  : "Error"}
               </Typography>
             </Paper>
           </Box>

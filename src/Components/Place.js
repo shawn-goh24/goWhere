@@ -5,7 +5,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
 
 export default function Place(props) {
-  const { item, handleLikes, user } = props;
+  const { item, handleLikes, user, handleAddItinerary } = props;
 
   let likeColor = "";
   if (item.likes == undefined || user === null) {
@@ -67,7 +67,7 @@ export default function Place(props) {
                   />
                 </IconButton>
                 {item.likeCount ? item.likeCount : "0"}
-                <IconButton>
+                <IconButton onClick={() => handleAddItinerary(item)}>
                   <AddIcon sx={{ width: "22px", height: "22px" }} />
                 </IconButton>
               </Box>
