@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import ProfileStats from "../Components/ProfileStats";
 import TripsBox from "../Components/TripsBox";
+import { EditProfile } from "./EditProfile";
 
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -18,12 +19,21 @@ import { createTripArr, calculateCountries, calculateTrips } from "../utils";
 
 export default function Profile(props) {
   const { user, trips } = props;
+  const [editOpen, setEditOpen] = useState(false);
 
   // Check if current screen size is xs
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   let userTrips = createTripArr(trips);
+
+  const handleEditProfileOpen = () => {
+    setEditOpen(true);
+  };
+
+  const handleEditProfileClose = () => {
+    setEditOpen(false);
+  };
 
   return (
     <>
@@ -71,6 +81,7 @@ export default function Profile(props) {
                         variant="contained"
                         className="btn-green"
                         sx={{ borderRadius: "15px" }}
+                        onClick={handleEditProfileOpen}
                       >
                         Edit Profile
                       </Button>
@@ -104,28 +115,36 @@ export default function Profile(props) {
             </Typography>
           </Box>
           <Grid container gap={8} sx={{ mt: 4 }}>
-            {userTrips === null
-              ? null
-              : userTrips.map((trip, index) => {
-                  return (
-                    <Grid
-                      item
-                      xs={12}
-                      sm={6}
-                      md={3}
-                      key={`${trip.country}-${index}`}
-                    >
-                      <TripsBox
-                        trip={trip}
-                        setTripGeolocation={props.setTripGeolocation}
-                        setMapViewBound={props.setMapViewBound}
-                      />
-                    </Grid>
-                  );
-                })}
+            {userTrips === null || userTrips.length < 1 ? (
+              <Typography>No trips, go back to home to add trips</Typography>
+            ) : (
+              userTrips.map((trip, index) => {
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={3}
+                    key={`${trip.country}-${index}`}
+                  >
+                    <TripsBox
+                      trip={trip}
+                      setTripGeolocation={props.setTripGeolocation}
+                      setMapViewBound={props.setMapViewBound}
+                    />
+                  </Grid>
+                );
+              })
+            )}
           </Grid>
         </Box>
       </Container>
+      <EditProfile
+        isOpen={editOpen}
+        user={props.user}
+        handleEditProfileClose={handleEditProfileClose}
+        updateUserInfo={props.updateUserInfo}
+      />
     </>
   );
 }
