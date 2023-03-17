@@ -17,7 +17,7 @@ import SearchBox from "../Components/SearchBox";
 import SideBar from "../Components/SideBar";
 import LeftCol from "./Planner/LeftCol";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -38,6 +38,10 @@ export default function Planner(props) {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [interest, setInterest] = useState({});
+
+  const { trip } = useParams();
+
+  const { user } = props;
 
   const handleDetails = (name, add, lat, lng) => {
     // setLocation(name);
@@ -77,19 +81,20 @@ export default function Planner(props) {
     navigate(`/`);
   };
 
+  const resetInterest = () => {
+    setInterest({});
+  };
+
   return (
     <>
       <Grid container>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          // sx={{ backgroundColor: "coral" }}
-        >
-          {/* <NavBar /> */}
-          <LeftCol interest={interest} />
-          {/* <SearchBox id="autocomplete" />
-          <Button>Add</Button> */}
+        <Grid item xs={12} md={6}>
+          <LeftCol
+            interest={interest}
+            trip={trip}
+            user={user}
+            resetInterest={resetInterest}
+          />
         </Grid>
         <Grid item md={6}>
           {props.mapLoaded && (
@@ -107,6 +112,8 @@ export default function Planner(props) {
               inputId="autocomplete"
               mapViewBound={props.mapViewBound}
               setModalOpen={setModalOpen}
+              handleDetails={handleDetails}
+              trip={trip}
             />
           )}
 

@@ -1,7 +1,11 @@
+import { onValue, ref } from "firebase/database";
 import React, { useState, useEffect } from "react";
+import { database } from "../firebase";
 
 export default function Map(props) {
   const [markers, setMarkers] = useState([]);
+
+  const { handleDetails } = props;
 
   if (markers.length !== 0) {
     console.log(markers);
@@ -21,7 +25,7 @@ export default function Map(props) {
       document.getElementById(props.inputId),
       {
         types: ["establishment"],
-        fields: ["place_id", "geometry", "name"],
+        fields: ["place_id", "geometry", "name", "formatted_address"],
       }
     );
     autocomplete.addListener("place_changed", (e) => {
@@ -39,20 +43,27 @@ export default function Map(props) {
       return;
     }
 
+    handleDetails(
+      place.name,
+      place.formatted_address,
+      place.geometry.location.lat(),
+      place.geometry.location.lng()
+    );
+
     // If the place has a geometry, then present it on a map.
-    if (place.geometry.viewport) {
-      setMarkers([
-        ...markers,
-        new window.google.maps.Marker({
-          position: place.geometry.location,
-          map: map,
-        }),
-      ]);
-      map.fitBounds(place.geometry.viewport);
-    } else {
-      map.setCenter(place.geometry.location);
-      map.setZoom(17);
-    }
+    // if (place.geometry.viewport) {
+    //   setMarkers([
+    //     ...markers,
+    //     new window.google.maps.Marker({
+    //       position: place.geometry.location,
+    //       map: map,
+    //     }),
+    //   ]);
+    //   map.fitBounds(place.geometry.viewport);
+    // } else {
+    //   map.setCenter(place.geometry.location);
+    //   map.setZoom(17);
+    // }
   };
 
   const stopLoading = () => {
@@ -92,6 +103,22 @@ export default function Map(props) {
       console.log("window.google is found");
       onScriptLoad();
       timeOut = setTimeout(stopLoading, 2000);
+
+      const mapId = document.getElementById(props.id);
+      const map = new window.google.maps.Map(mapId, props.options);
+      let bounds = new window.google.maps.LatLngBounds();
+      const placesRef = ref(database, `trips/${props.trip}/places`);
+      onValue(placesRef, (data) => {
+        Object.values(data.val()).forEach((item) => {
+          let marker = new window.google.maps.Marker({
+            position: { lat: item.lat, lng: item.lng },
+            map,
+          });
+
+          bounds.extend(marker.position);
+        });
+        map.fitBounds(bounds);
+      });
     } else {
       props.setModalOpen(true);
     }
@@ -99,7 +126,10 @@ export default function Map(props) {
 
   return (
     <>
-      <div style={{ width: "100%", height: "100vh" }} id={props.id} />
+      <div
+        style={{ width: "100%", height: "calc(100vh - 64px)" }} // original height 100vh
+        id={props.id}
+      />
     </>
   );
 }
