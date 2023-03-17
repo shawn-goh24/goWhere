@@ -182,3 +182,22 @@ export const setErrorMessage = (errorCode) => {
   }
   return errorMsg;
 };
+
+/**
+ * Function to get all dates within the start and end date
+ * @param {Date} startDate
+ * @param {Date} endDate
+ * @returns {array} and array of dates in string
+ */
+export const getDatesInRange = (startDate, endDate) => {
+  if (!startDate) return [];
+  const date = new Date(startDate.getTime());
+  const dates = [];
+
+  while (date <= endDate) {
+    dates.push(new Date(date).toLocaleDateString());
+    date.setDate(date.getDate() + 1);
+  }
+
+  return dates;
+};
