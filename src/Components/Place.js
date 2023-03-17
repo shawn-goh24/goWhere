@@ -52,6 +52,9 @@ export default function Place(props) {
               <Typography variant="subtitle2">
                 Added by {item.addedBy}
               </Typography>
+              <Typography variant="subtitle2">
+                {item.date ? `Date: ${item.date}` : "Date: -"}
+              </Typography>
             </Box>
             <Box
               sx={{
