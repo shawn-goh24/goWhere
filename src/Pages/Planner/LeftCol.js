@@ -24,6 +24,7 @@ import Documents from "./Documents";
 import Itinerary from "./Itinerary";
 import { Paper } from "@mui/material";
 import { database } from "../../firebase";
+import { getDatesInRange } from "../../utils";
 
 import { onValue, ref } from "firebase/database";
 
@@ -82,6 +83,24 @@ function LeftCol(props) {
             </ListItemButton>
           </ListItem>
         ))}
+      </List>
+      <Divider />
+      <List>
+        {tripDetails
+          ? getDatesInRange(
+              new Date(tripDetails.startDate),
+              new Date(tripDetails.endDate)
+            ).map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton onClick={getSelection}>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              </ListItem>
+            ))
+          : ""}
       </List>
     </div>
   );
