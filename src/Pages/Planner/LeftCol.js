@@ -87,19 +87,18 @@ function LeftCol(props) {
       <Divider />
       <List>
         {tripDetails
-          ? getDatesInRange(
-              new Date(tripDetails.startDate),
-              new Date(tripDetails.endDate)
-            ).map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton onClick={getSelection}>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))
+          ? getDatesInRange(tripDetails.startDate, tripDetails.endDate).map(
+              (text, index) => (
+                <ListItem key={text} disablePadding>
+                  <ListItemButton onClick={getSelection}>
+                    <ListItemIcon>
+                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    </ListItemIcon>
+                    <ListItemText primary={text} />
+                  </ListItemButton>
+                </ListItem>
+              )
+            )
           : ""}
       </List>
     </div>

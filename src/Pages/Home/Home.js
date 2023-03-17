@@ -107,6 +107,12 @@ export default function Home(props) {
       });
   };
 
+  const onDateChange = (date) => {
+    const newMonth = date["$M"] + 1;
+    const newDate = `${date["$D"]}/${newMonth}/${date["$y"]}`;
+    return newDate;
+  };
+
   return (
     <>
       <Container name="hero">
@@ -172,16 +178,12 @@ export default function Home(props) {
                   <DesktopDatePicker
                     label="Start Date"
                     sx={{ width: "175px", mr: "5px" }}
-                    onChange={(date) =>
-                      setStartDate(date["$d"].toLocaleDateString())
-                    }
+                    onChange={(date) => setStartDate(onDateChange(date))}
                   />
                   <DesktopDatePicker
                     label="End Date"
                     sx={{ width: "175px" }}
-                    onChange={(date) =>
-                      setEndDate(date["$d"].toLocaleDateString())
-                    }
+                    onChange={(date) => setEndDate(onDateChange(date))}
                   />
                 </LocalizationProvider>
               </Box>

@@ -150,18 +150,16 @@ export default function AddToItinerary(props) {
               open={true}
             >
               <List>
-                {getDatesInRange(new Date(dates[0]), new Date(dates[1])).map(
-                  (text, index) => (
+                {dates.length >= 1 &&
+                  getDatesInRange(dates[0], dates[1]).map((text, index) => (
                     <ListItem
                       button
                       key={text}
                       onClick={(e) => setSelected(e.target.innerText)}
                     >
-                      {/* <ListItemIcon>{index}</ListItemIcon> */}
                       <ListItemText primary={text} />
                     </ListItem>
-                  )
-                )}
+                  ))}
               </List>
             </Drawer>
           </Box>
