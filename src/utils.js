@@ -26,7 +26,6 @@ export const createTripArr = (tripsObj) => {
   let tripsArr = [];
 
   for (const trip in tripsObj) {
-    console.log(tripsObj[trip]["startDate"]);
     const startDateArr = tripsObj[trip]["startDate"].split("/");
     const newStartDate = `${startDateArr[1]}-${startDateArr[0]}-${startDateArr[2]}`;
     const newDate = new Date(newStartDate);
@@ -115,31 +114,31 @@ export const convertTripDate = (start, end) => {
 const getMonth = (stringNum) => {
   let month;
   switch (stringNum) {
-    case "01":
+    case "1":
       month = "January";
       break;
-    case "02":
+    case "2":
       month = "February";
       break;
-    case "03":
+    case "3":
       month = "March";
       break;
-    case "04":
+    case "4":
       month = "April";
       break;
-    case "05":
+    case "5":
       month = "May";
       break;
-    case "06":
+    case "6":
       month = "June";
       break;
-    case "07":
+    case "7":
       month = "July";
       break;
-    case "08":
+    case "8":
       month = "August";
       break;
-    case "09":
+    case "9":
       month = "September";
       break;
     case "10":
@@ -191,11 +190,32 @@ export const setErrorMessage = (errorCode) => {
  */
 export const getDatesInRange = (startDate, endDate) => {
   if (!startDate) return [];
-  const date = new Date(startDate.getTime());
+
+  // Split the date string to swop day and month position
+  // This is required to use new Date()
+  const startDateArr = startDate.split("/");
+  const endDateArr = endDate.split("/");
+
+  const start = `${startDateArr[1]}-${startDateArr[0]}-${startDateArr[2]}`;
+  const end = `${endDateArr[1]}-${endDateArr[0]}-${endDateArr[2]}`;
+
+  // Get new date from the new string
+  const newStart = new Date(start);
+  const newEnd = new Date(end);
+
+  const date = new Date(newStart.getTime());
   const dates = [];
 
-  while (date <= endDate) {
-    dates.push(new Date(date).toLocaleDateString());
+  while (date <= newEnd) {
+    // To prevent OS from getting the date format differently,
+    // get the day, month, year separately and reconstruct the date string
+    let newDate = new Date(date);
+    let month = newDate.getMonth() + 1;
+    let day = newDate.getDate();
+    let year = newDate.getFullYear();
+    let fullDate = `${day}/${month}/${year}`;
+    dates.push(fullDate);
+    // dates.push(new Date(date).toLocaleDateString());
     date.setDate(date.getDate() + 1);
   }
 
