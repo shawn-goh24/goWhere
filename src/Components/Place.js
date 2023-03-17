@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 export default function Place(props) {
   return (
-    <Box padding={1.5}>
+    <Box>
       <Paper
         elevation={0}
         // variant="outlined"

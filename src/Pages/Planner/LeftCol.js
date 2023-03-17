@@ -82,7 +82,7 @@ function LeftCol(props) {
     } else if (selection === "Documents") {
       return <Documents />;
     } else if (selection === "Itinerary") {
-      return <Itinerary />;
+      return <Itinerary trips={props.trips} />;
     }
   };
 

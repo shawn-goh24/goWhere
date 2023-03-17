@@ -87,7 +87,7 @@ export default function Planner(props) {
           // sx={{ backgroundColor: "coral" }}
         >
           {/* <NavBar /> */}
-          <LeftCol interest={interest} />
+          <LeftCol interest={interest} trips={props.trips} />
           {/* <SearchBox id="autocomplete" />
           <Button>Add</Button> */}
         </Grid>

@@ -213,6 +213,7 @@ function App() {
                 mapViewBound={mapViewBound}
                 mapLoaded={mapLoaded}
                 addScript={addScript}
+                trips={userTrips}
               />
             </Protected>
           }
