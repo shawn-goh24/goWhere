@@ -13,6 +13,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import Protected from "./Components/Protected";
 import { findTrips } from "./utils";
 import Planner from "./Pages/Planner";
+import SharedGroup from "./Components/SharedGroup";
 
 // Add react router and authentication here
 
@@ -189,6 +190,10 @@ function App() {
               setMapViewBound={setMapViewBound}
             />
           }
+        />
+        <Route
+          path="/test"
+          element={<SharedGroup tripId="-NQZR_T8uRmP_E1PSw3T" />}
         />
         <Route
           path="/user/:id"
