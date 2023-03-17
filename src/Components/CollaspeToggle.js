@@ -51,7 +51,7 @@ export default function CollapseToggle(props) {
       >
         <List component="div" disablePadding>
           <ListItemButton sx={{ p: 0 }} onClick={handlePlaceClick}>
-            <Place />
+            {/* <Place /> */}
           </ListItemButton>
         </List>
       </Collapse>
