@@ -28,6 +28,7 @@ import List from "@mui/material/List";
 import Place from "../../Components/Place";
 import { database } from "../../firebase";
 import { onValue, ref } from "firebase/database";
+import { getDatesInRange } from "../../utils";
 
 const drawerWidth = 240;
 
@@ -52,18 +53,18 @@ export default function AddToItinerary(props) {
     });
   }, [selected]);
 
-  const getDatesInRange = (startDate, endDate) => {
-    if (!startDate) return [];
-    const date = new Date(startDate.getTime());
-    const dates = [];
+  // const getDatesInRange = (startDate, endDate) => {
+  //   if (!startDate) return [];
+  //   const date = new Date(startDate.getTime());
+  //   const dates = [];
 
-    while (date <= endDate) {
-      dates.push(new Date(date).toLocaleDateString());
-      date.setDate(date.getDate() + 1);
-    }
+  //   while (date <= endDate) {
+  //     dates.push(new Date(date).toLocaleDateString());
+  //     date.setDate(date.getDate() + 1);
+  //   }
 
-    return dates;
-  };
+  //   return dates;
+  // };
 
   const showItinerary = itinerary.map((place) => {
     return <Place key={place.uid} item={place} user={user} />;
