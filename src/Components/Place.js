@@ -30,12 +30,12 @@ export default function Place(props) {
         }}
       >
         <Box py={0.5} mr={1}>
-          <span class="fa-stack">
+          <span className="fa-stack">
             <span
-              class="fa fa-location-pin fa-stack-2x"
+              className="fa fa-location-pin fa-stack-2x"
               style={{ color: "#733D29" }}
             ></span>
-            <strong class="fa-stack-1x" style={{ color: "white" }}>
+            <strong className="fa-stack-1x" style={{ color: "white" }}>
               1
             </strong>
           </span>
