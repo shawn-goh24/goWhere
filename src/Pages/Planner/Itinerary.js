@@ -18,20 +18,11 @@ import { getDatesInRange, getItineraryItems } from "../../utils";
 
 export default function Itinerary(props) {
   const { tripDetails, user, trip, item } = props;
-  // const datesRef = useRef([]);
 
   const tripDates =
     tripDetails && getDatesInRange(tripDetails.startDate, tripDetails.endDate);
 
   const itineraryItems = item && getItineraryItems(item);
-
-  // const getMap = () => {
-  //   if (!datesRef.current) {
-  //     // Initialize the Map on first usage.
-  //     datesRef.current = new Map();
-  //   }
-  //   return datesRef.current;
-  // };
 
   return (
     <>
@@ -39,7 +30,8 @@ export default function Itinerary(props) {
         <Typography variant="h5" component="h2" sx={{ fontWeight: "bold" }}>
           Itinerary
         </Typography>
-        {tripDates &&
+        {itineraryItems.length > 0 ? (
+          tripDates &&
           tripDates.map((date, index) => (
             <CollapseToggle
               date={date}
@@ -48,22 +40,38 @@ export default function Itinerary(props) {
               key={`${date}-${index}`}
               ref={(node) => props.updateDateRef(date, node)}
             >
-              {itineraryItems &&
-                itineraryItems.map((item, index) => {
-                  if (item.date === date) {
-                    return (
-                      <Place
-                        item={item}
-                        user={user}
-                        trip={trip}
-                        handleAddItinerary=""
-                        key={`${item.name}-${index}`}
-                      />
-                    );
-                  }
-                })}
+              <Grid container>
+                {itineraryItems &&
+                  itineraryItems.map((item, index) => {
+                    if (item.date === date) {
+                      return (
+                        <Grid item xs={12} key={`${item.name}-${index}`}>
+                          <Place
+                            item={item}
+                            user={user}
+                            trip={trip}
+                            handleAddItinerary=""
+                            source="itinerary"
+                          />
+                        </Grid>
+                      );
+                    }
+                  })}
+              </Grid>
             </CollapseToggle>
-          ))}
+          ))
+        ) : (
+          <Typography sx={{ mt: 3 }}>
+            No activities in itinerary, click{" "}
+            <span
+              onClick={() => props.setSelection("Interested Places")}
+              style={{ cursor: "pointer", textDecoration: "underline" }}
+            >
+              here
+            </span>{" "}
+            to add a place.
+          </Typography>
+        )}
       </Box>
     </>
   );

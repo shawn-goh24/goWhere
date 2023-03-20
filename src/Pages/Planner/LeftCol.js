@@ -86,11 +86,15 @@ function LeftCol(props) {
   useEffect(() => {
     if (scrollTarget !== null && scrollTarget !== undefined) {
       const node = datesRef.current.get(scrollTarget);
-      node.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
+      // If a node is found, scroll to the node,
+      // else stay on Itinerary page
+      if (node) {
+        node.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
     }
   }, [scrollTarget]);
 
@@ -184,21 +188,6 @@ function LeftCol(props) {
             </TimelineItem>
           ))}
       </Timeline>
-
-      {/* {tripDetails
-          ? getDatesInRange(tripDetails.startDate, tripDetails.endDate).map(
-              (text, index) => (
-                <ListItem key={text} disablePadding>
-                  <ListItemButton onClick={() => scrollTo(text)}>
-                    <ListItemIcon>
-                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItemButton>
-                </ListItem>
-              )
-            )
-          : ""} */}
     </div>
   );
 
@@ -226,8 +215,7 @@ function LeftCol(props) {
           trip={trip}
           item={item}
           updateDateRef={updateDateRef}
-          getMap={getMap}
-          datesRef={datesRef}
+          setSelection={setSelection}
         />
       );
     }
@@ -237,7 +225,13 @@ function LeftCol(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box
+      sx={{
+        display: "flex",
+        overflowY: "auto",
+        maxHeight: "calc(100vh - 64px)",
+      }}
+    >
       <CssBaseline />
       {/* <AppBar
         position="fixed"
@@ -262,7 +256,10 @@ function LeftCol(props) {
       </AppBar> */}
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: { sm: drawerWidth },
+          flexShrink: { sm: 0 },
+        }}
         aria-label="mailbox folders"
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -309,9 +306,10 @@ function LeftCol(props) {
           flexGrow: 1,
           // mt: "64px",
           // width: { sm: `calc(100% - ${drawerWidth}px)` },
-          maxHeight: "calc(100vh - 64px)", // original is 100vh
+          height: "100%", // original is 100vh
+          // maxHeight: "calc(100vh - 64px)", // original is 100vh
           overflowX: "hidden",
-          overflowY: "auto",
+          //overflowY: "auto",
         }}
       >
         {/* <Toolbar /> */}

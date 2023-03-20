@@ -85,9 +85,9 @@ export default function InterestedPlaces(props) {
         key={item.uid}
         item={item}
         trip={trip}
-        //handleLikes={handleLikes}
         user={user}
         handleAddItinerary={handleAddItinerary}
+        source="InterestedPlace"
       />
     );
   });

@@ -7,7 +7,7 @@ import { onValue, push, ref, runTransaction, set } from "firebase/database";
 import { database } from "../firebase";
 
 export default function Place(props) {
-  const { item, user, trip, handleAddItinerary } = props;
+  const { item, user, trip, handleAddItinerary, source } = props;
   // const { item, handleLikes, user, handleAddItinerary } = props;
 
   let likeColor = "";
@@ -48,7 +48,7 @@ export default function Place(props) {
 
   return (
     // <Box onClick={handlePlaceClick} sx={{ cursor: "pointer" }}>
-    <Box>
+    <Box sx={{ mb: 2 }}>
       <Paper
         elevation={0}
         // variant="outlined"
@@ -107,9 +107,11 @@ export default function Place(props) {
                   />
                 </IconButton>
                 {item.likeCount ? item.likeCount : "0"}
-                <IconButton onClick={() => handleAddItinerary(item)}>
-                  <AddIcon sx={{ width: "22px", height: "22px" }} />
-                </IconButton>
+                {source === "InterestedPlace" && (
+                  <IconButton onClick={() => handleAddItinerary(item)}>
+                    <AddIcon sx={{ width: "22px", height: "22px" }} />
+                  </IconButton>
+                )}
               </Box>
             </Box>
           </Box>
