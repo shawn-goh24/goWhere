@@ -16,6 +16,7 @@ import { database } from "../../firebase";
 import { onValue, push, ref, runTransaction, set } from "firebase/database";
 import Place from "../../Components/Place";
 import AddToItinerary from "./AddToItinerary";
+import SearchBox from "../../Components/SearchBox";
 
 const DB_PLACES_KEY = "places";
 
@@ -27,8 +28,9 @@ export default function InterestedPlaces(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [dates, setDates] = useState([]);
+  const [interest, setInterest] = useState({});
 
-  const { interest, tripDetails, trip, user, resetInterest } = props;
+  const { tripDetails, trip, user } = props;
 
   useEffect(() => {
     const placeRef = ref(database, `trips/${trip}/places`);
@@ -97,6 +99,20 @@ export default function InterestedPlaces(props) {
     setIsOpen(!isOpen);
   };
 
+  const handleInterest = (name, add, lat, lng) => {
+    const tmp = {
+      name: name,
+      address: add,
+      lat: lat,
+      lng: lng,
+    };
+    setInterest(tmp);
+  };
+
+  const resetInterest = () => {
+    setInterest({});
+  };
+
   const items = item.map((item) => {
     // console.log(user);
     return (
@@ -126,8 +142,6 @@ export default function InterestedPlaces(props) {
     });
   };
 
-  console.log(interest);
-
   return (
     <Box>
       <Box name="title">
@@ -143,7 +157,8 @@ export default function InterestedPlaces(props) {
       >
         <Grid container padding="10px" gap={3}>
           <Grid item lg={8}>
-            <TextField
+            <SearchBox handleInterest={handleInterest} />
+            {/* <TextField
               required
               id="autocomplete"
               size="small"
@@ -156,7 +171,7 @@ export default function InterestedPlaces(props) {
                   </InputAdornment>
                 ),
               }}
-            />
+            /> */}
           </Grid>
           <Grid item lg={3}>
             <TextField

@@ -14,6 +14,17 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import AddIcon from "@mui/icons-material/Add";
 import { database } from "../firebase";
 import { onValue, ref } from "firebase/database";
+import Fade from "@mui/material/Fade";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
+import Typography from "@mui/material/Typography";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Modal,
+  TextField,
+} from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -21,20 +32,24 @@ export default function SharedGroup(props) {
   const [shared, setShared] = useState([]);
   const [imgUrl, setImgUrl] = useState([]);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState();
+
   const { tripId } = props;
 
-  useEffect(() => {
-    const avatarRef = ref(database, `trips/${tripId}`);
-    onValue(avatarRef, (data) => {
-      const tmp = [data.val().creatorId];
-      setShared([...tmp, ...Object.keys(data.val().sharedWith)]);
-    });
+  // useEffect(() => {
+  //   const avatarRef = ref(database, `trips/${tripId}`);
+  //   onValue(avatarRef, (data) => {
+  //     const tmp = [data.val().creatorId];
+  //     setShared([...tmp, ...Object.keys(data.val().sharedWith)]);
+  //   });
 
-    const userAvatarRef = ref(database, "users");
-    onValue(userAvatarRef, (url) => {
-      console.log(Object.values(url.val()));
-    });
-  }, []);
+  //   const userAvatarRef = ref(database, "users");
+  //   onValue(userAvatarRef, (url) => {
+  //     console.log(Object.values(url.val()));
+  //   });
+  // }, []);
 
   const drawer = (
     <Box>
@@ -69,9 +84,6 @@ export default function SharedGroup(props) {
     </Box>
   );
 
-  // console.log(creator);
-  // console.log(shared);
-
   return (
     <>
       <Drawer
@@ -87,6 +99,7 @@ export default function SharedGroup(props) {
             boxSizing: "border-box",
             width: drawerWidth,
             justifyContent: "space-between",
+            // backgroundColor: "yellow",
           },
           height: "calc(100vh - 64px)",
           flexDirection: "column",
@@ -94,6 +107,7 @@ export default function SharedGroup(props) {
         open
       >
         <Box>{drawer}</Box>
+
         <Box sx={{ display: "flex", justifyContent: "flex-end", pr: 2, py: 2 }}>
           <AvatarGroup max={4}>
             {/* <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
@@ -102,9 +116,17 @@ export default function SharedGroup(props) {
             <Avatar alt="Agnes Walker" src="/static/images/avatar/4.jpg" />
             <Avatar alt="Trevor Henderson" src="/static/images/avatar/5.jpg" /> */}
           </AvatarGroup>
-          <Avatar onClick={() => console.log("Invite user")}>
+          <Avatar onClick={() => console.log("invite user")}>
             <AddIcon />
           </Avatar>
+          <Dialog open={true}>
+            <DialogTitle>
+              <Typography variant="h6">Invite friends</Typography>
+            </DialogTitle>
+            <DialogContent>
+              <TextField label="Add email to trip" size="small" />
+            </DialogContent>
+          </Dialog>
         </Box>
       </Drawer>
     </>
