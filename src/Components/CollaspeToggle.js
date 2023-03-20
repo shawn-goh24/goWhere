@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   Box,
   FormControl,
@@ -19,26 +19,26 @@ import StarBorder from "@mui/icons-material/StarBorder";
 
 import Place from "./Place";
 
-export default function CollapseToggle(props) {
+const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
   const [open, setOpen] = React.useState(true);
 
   const handleClick = () => {
     setOpen(!open);
   };
 
-  const handlePlaceClick = () => {
-    console.log("Place clicked");
-  };
-
   return (
     <>
-      <ListItemButton onClick={handleClick} sx={{ p: "8px 8px 8px 0" }}>
+      <ListItemButton
+        onClick={handleClick}
+        sx={{ p: "8px 8px 8px 0" }}
+        ref={ref}
+      >
         {open ? (
           <ExpandLess style={{ marginRight: "5px" }} />
         ) : (
           <ExpandMore style={{ marginRight: "5px" }} />
         )}
-        <Typography sx={{ fontWeight: "700" }}>Monday, 7th August</Typography>
+        <Typography sx={{ fontWeight: "700" }}>{props.date}</Typography>
       </ListItemButton>
       <Collapse
         in={open}
@@ -50,12 +50,11 @@ export default function CollapseToggle(props) {
         }}
       >
         <List component="div" disablePadding>
-          <ListItemButton sx={{ p: 0 }} onClick={handlePlaceClick}>
-            {/* <Place /> */}
-            Hi
-          </ListItemButton>
+          <ListItemButton sx={{ p: 0 }}>{props.children}</ListItemButton>
         </List>
       </Collapse>
     </>
   );
-}
+});
+
+export default CollapseToggle;

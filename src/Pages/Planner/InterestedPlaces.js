@@ -23,22 +23,22 @@ export default function InterestedPlaces(props) {
   const [location, setLocation] = useState("");
   const [cost, setCost] = useState(0);
   const [note, setNote] = useState("");
-  const [item, setItem] = useState([]);
+  // const [item, setItem] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [dates, setDates] = useState([]);
 
-  const { interest, tripDetails, trip, user, resetInterest } = props;
+  const { interest, tripDetails, trip, user, resetInterest, item } = props;
 
-  useEffect(() => {
-    const placeRef = ref(database, `trips/${trip}/places`);
-    onValue(placeRef, (data) => {
-      if (data.val()) {
-        const tmpItem = [];
-        setItem([...tmpItem, ...Object.values(data.val())]);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   const placeRef = ref(database, `trips/${trip}/places`);
+  //   onValue(placeRef, (data) => {
+  //     if (data.val()) {
+  //       const tmpItem = [];
+  //       setItem([...tmpItem, ...Object.values(data.val())]);
+  //     }
+  //   });
+  // }, []);
 
   const handleAddPlace = () => {
     // e.preventDefault(); // Will show map reload if use onSubmit
@@ -65,25 +65,6 @@ export default function InterestedPlaces(props) {
     }
   };
 
-  const handleLikes = (placeId) => {
-    const placeRef = ref(database, `trips/${trip}/places/${placeId}`);
-    runTransaction(placeRef, (place) => {
-      if (place) {
-        if (place.likes && place.likes[user.uid]) {
-          place.likeCount--;
-          place.likes[user.uid] = null;
-        } else {
-          place.likeCount++;
-          if (!place.likes) {
-            place.likes = {};
-          }
-          place.likes[user.uid] = true;
-        }
-      }
-      return place;
-    });
-  };
-
   const handleAddItinerary = (item) => {
     setIsOpen(!isOpen);
     setSelected(item);
@@ -103,7 +84,8 @@ export default function InterestedPlaces(props) {
       <Place
         key={item.uid}
         item={item}
-        handleLikes={handleLikes}
+        trip={trip}
+        //handleLikes={handleLikes}
         user={user}
         handleAddItinerary={handleAddItinerary}
       />

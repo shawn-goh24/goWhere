@@ -221,3 +221,13 @@ export const getDatesInRange = (startDate, endDate) => {
 
   return dates;
 };
+
+export const getItineraryItems = (places) => {
+  let itineraryItems = [];
+  for (const place in places) {
+    if (places[place].date) {
+      itineraryItems.push(places[place]);
+    }
+  }
+  return itineraryItems;
+};

@@ -1,5 +1,5 @@
 // import * as React from "react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, forwardRef } from "react";
 import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -25,6 +25,15 @@ import Itinerary from "./Itinerary";
 import { Paper } from "@mui/material";
 import { database } from "../../firebase";
 import { getDatesInRange } from "../../utils";
+import {
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineDot,
+  TimelineConnector,
+  TimelineContent,
+  timelineItemClasses,
+} from "@mui/lab";
 
 import { onValue, ref } from "firebase/database";
 
@@ -35,6 +44,9 @@ function LeftCol(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selection, setSelection] = useState("Interested Places");
   const [tripDetails, setTripDetails] = useState(null);
+  const [item, setItem] = useState([]);
+  const [scrollTarget, setSrcollTarget] = useState(null);
+  const datesRef = useRef(null);
 
   const { trip, user } = props;
 
@@ -45,14 +57,76 @@ function LeftCol(props) {
     });
   }, []);
 
+  useEffect(() => {
+    const placeRef = ref(database, `trips/${trip}/places`);
+    onValue(placeRef, (data) => {
+      if (data.val()) {
+        const tmpItem = [];
+        setItem([...tmpItem, ...Object.values(data.val())]);
+      }
+    });
+    getMap();
+  }, []);
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const getSelection = (e) => {
-    console.log(e.target.innerText);
-    setSelection(e.target.innerText);
+    setSelection(e);
+    // If user moves to other sections,
+    // reset the scrollTarget so that useEffect will detect the change
+    // when user clicks back to the same date set in previous scrollTarget
+    if (e !== "Itinerary" && scrollTarget !== null) {
+      setSrcollTarget(null);
+    }
   };
+
+  // Only runs if scrollTarget changes
+  useEffect(() => {
+    if (scrollTarget !== null && scrollTarget !== undefined) {
+      const node = datesRef.current.get(scrollTarget);
+      node.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [scrollTarget]);
+
+  const scrollTo = (selection) => {
+    //If it is currently showing other sections,
+    // set the section to Itinerary before scrolling to the specific date
+    if (selection !== "Itinerary") {
+      getSelection("Itinerary");
+    }
+
+    setSrcollTarget(selection);
+  };
+
+  // Set datesRef to map
+  // To store ref of each date
+  const getMap = () => {
+    if (!datesRef.current) {
+      // Initialize the Map on first usage.
+      datesRef.current = new Map();
+    }
+    return datesRef.current;
+  };
+
+  const updateDateRef = (date, node) => {
+    if (node) {
+      datesRef.current.set(date, node);
+    } else {
+      datesRef.current.delete(date);
+    }
+  };
+
+  const datesArray = tripDetails
+    ? getDatesInRange(tripDetails.startDate, tripDetails.endDate)
+    : null;
+
+  const datesArrayLastItem = datesArray !== null ? datesArray.length - 1 : null;
 
   const drawer = (
     <div>
@@ -61,7 +135,7 @@ function LeftCol(props) {
         {["Interested Places", "Packing List", "Documents"].map(
           (text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton onClick={getSelection}>
+              <ListItemButton onClick={(e) => getSelection(e.target.innerText)}>
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
@@ -75,7 +149,7 @@ function LeftCol(props) {
       <List>
         {["Itinerary"].map((text, index) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton onClick={getSelection}>
+            <ListItemButton onClick={(e) => getSelection(e.target.innerText)}>
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
@@ -85,12 +159,37 @@ function LeftCol(props) {
         ))}
       </List>
       <Divider />
-      <List>
-        {tripDetails
+
+      <Timeline
+        sx={{
+          [`& .${timelineItemClasses.root}:before`]: {
+            flex: 0,
+            padding: 1,
+          },
+        }}
+      >
+        {datesArray &&
+          datesArray.map((text, index) => (
+            <TimelineItem key={text}>
+              <TimelineSeparator>
+                <TimelineDot />
+                {index !== datesArrayLastItem ? <TimelineConnector /> : null}
+              </TimelineSeparator>
+              <TimelineContent
+                onClick={() => scrollTo(text)}
+                sx={{ cursor: "pointer" }}
+              >
+                {text}
+              </TimelineContent>
+            </TimelineItem>
+          ))}
+      </Timeline>
+
+      {/* {tripDetails
           ? getDatesInRange(tripDetails.startDate, tripDetails.endDate).map(
               (text, index) => (
                 <ListItem key={text} disablePadding>
-                  <ListItemButton onClick={getSelection}>
+                  <ListItemButton onClick={() => scrollTo(text)}>
                     <ListItemIcon>
                       {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                     </ListItemIcon>
@@ -99,8 +198,7 @@ function LeftCol(props) {
                 </ListItem>
               )
             )
-          : ""}
-      </List>
+          : ""} */}
     </div>
   );
 
@@ -113,6 +211,7 @@ function LeftCol(props) {
           trip={trip}
           user={user}
           resetInterest={resetInterest}
+          item={item}
         />
       );
     } else if (selection === "Packing List") {
@@ -120,7 +219,17 @@ function LeftCol(props) {
     } else if (selection === "Documents") {
       return <Documents />;
     } else if (selection === "Itinerary") {
-      return <Itinerary trips={props.trips} />;
+      return (
+        <Itinerary
+          tripDetails={tripDetails}
+          user={user}
+          trip={trip}
+          item={item}
+          updateDateRef={updateDateRef}
+          getMap={getMap}
+          datesRef={datesRef}
+        />
+      );
     }
   };
 
