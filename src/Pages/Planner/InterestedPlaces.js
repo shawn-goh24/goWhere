@@ -24,7 +24,7 @@ export default function InterestedPlaces(props) {
   const [location, setLocation] = useState("");
   const [cost, setCost] = useState(0);
   const [note, setNote] = useState("");
-  const [item, setItem] = useState([]);
+  // const [item, setItem] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [dates, setDates] = useState([]);
@@ -32,15 +32,15 @@ export default function InterestedPlaces(props) {
 
   const { tripDetails, trip, user } = props;
 
-  useEffect(() => {
-    const placeRef = ref(database, `trips/${trip}/places`);
-    onValue(placeRef, (data) => {
-      if (data.val()) {
-        const tmpItem = [];
-        setItem([...tmpItem, ...Object.values(data.val())]);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   const placeRef = ref(database, `trips/${trip}/places`);
+  //   onValue(placeRef, (data) => {
+  //     if (data.val()) {
+  //       const tmpItem = [];
+  //       setItem([...tmpItem, ...Object.values(data.val())]);
+  //     }
+  //   });
+  // }, []);
 
   const handleAddPlace = () => {
     // e.preventDefault(); // Will show map reload if use onSubmit
@@ -65,25 +65,6 @@ export default function InterestedPlaces(props) {
     } else {
       console.log("Empty");
     }
-  };
-
-  const handleLikes = (placeId) => {
-    const placeRef = ref(database, `trips/${trip}/places/${placeId}`);
-    runTransaction(placeRef, (place) => {
-      if (place) {
-        if (place.likes && place.likes[user.uid]) {
-          place.likeCount--;
-          place.likes[user.uid] = null;
-        } else {
-          place.likeCount++;
-          if (!place.likes) {
-            place.likes = {};
-          }
-          place.likes[user.uid] = true;
-        }
-      }
-      return place;
-    });
   };
 
   const handleAddItinerary = (item) => {
@@ -119,9 +100,10 @@ export default function InterestedPlaces(props) {
       <Place
         key={item.uid}
         item={item}
-        handleLikes={handleLikes}
+        trip={trip}
         user={user}
         handleAddItinerary={handleAddItinerary}
+        source="InterestedPlace"
       />
     );
   });
