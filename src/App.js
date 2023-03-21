@@ -193,7 +193,7 @@ function App() {
         />
         <Route
           path="/test"
-          element={<SharedGroup tripId="-NQZR_T8uRmP_E1PSw3T" />}
+          element={<SharedGroup tripId="-NQk6KqXp8Gmd216sFKn" />}
         />
         <Route
           path="/user/:id"

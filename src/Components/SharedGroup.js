@@ -53,8 +53,12 @@ export default function SharedGroup(props) {
   useEffect(() => {
     const avatarRef = ref(database, `trips/${tripId}`);
     onValue(avatarRef, (data) => {
-      const tmp = [data.val().creatorId];
-      setShared([...tmp, ...Object.keys(data.val().members)]);
+      const tmp = [data.val().creatorName];
+      if (data.val().members) {
+        setShared([...tmp, ...Object.keys(data.val().members)]);
+      } else {
+        setShared([...tmp]);
+      }
     });
 
     // const userAvatarRef = ref(database, "users");
@@ -312,7 +316,13 @@ export default function SharedGroup(props) {
                 <DialogContent dividers>
                   <Box mb={2}>
                     <TextField size="small" disabled value={link} />
-                    <Button onClick={copy}>{copied}</Button>
+                    <Button
+                      className="btn-green"
+                      sx={{ color: "white", ml: 1 }}
+                      onClick={copy}
+                    >
+                      {copied}
+                    </Button>
                   </Box>
                   <Box component="form" onSubmit={handleSubmit} width="100%">
                     <TextField
@@ -327,11 +337,19 @@ export default function SharedGroup(props) {
                   </Box>
                   {invited.length !== 0 ? (
                     <>
-                      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", my: 1 }}>
                         {emails}
                       </Box>
                       {/* <TextField multiline rows={6} fullWidth /> */}
-                      <Button onClick={() => sendInvite()}>Send invite</Button>
+                      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Button
+                          className="btn-green"
+                          onClick={() => sendInvite()}
+                          sx={{ color: "white" }}
+                        >
+                          Send invite
+                        </Button>
+                      </Box>
                     </>
                   ) : (
                     ""
@@ -342,7 +360,7 @@ export default function SharedGroup(props) {
                   sx={{ display: "flex", justifyContent: "center" }}
                 >
                   <Link
-                    sx={{ cursor: "pointer" }}
+                    sx={{ cursor: "pointer", color: "#77a690" }}
                     underline="hover"
                     onClick={() => setState("manage members")}
                   >
