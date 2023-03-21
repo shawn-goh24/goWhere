@@ -3,9 +3,12 @@ import React from "react";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
+import { onValue, push, ref, runTransaction, set } from "firebase/database";
+import { database } from "../firebase";
 
 export default function Place(props) {
-  const { item, handleLikes, user, handleAddItinerary } = props;
+  const { item, user, trip, handleAddItinerary, source } = props;
+  // const { item, handleLikes, user, handleAddItinerary } = props;
 
   let likeColor = "";
   if (item.likes == undefined || user === null) {
@@ -16,10 +19,36 @@ export default function Place(props) {
     likeColor = "error";
   }
 
-  // console.log(user);
+  const handleLikes = (placeId) => {
+    const placeRef = ref(database, `trips/${trip}/places/${placeId}`);
+    runTransaction(placeRef, (place) => {
+      if (place) {
+        if (place.likes && place.likes[user.uid]) {
+          place.likeCount--;
+          place.likes[user.uid] = null;
+        } else {
+          place.likeCount++;
+          if (!place.likes) {
+            place.likes = {};
+          }
+          place.likes[user.uid] = true;
+        }
+      }
+      return place;
+    });
+  };
+
+  // const handlePlaceClick = () => {
+  //   console.log("Place clicked");
+  // };
+
+  // console.log("Place Item START");
+  // console.log(item);
+  // console.log("Place Item END");
 
   return (
-    <Box padding={1.5}>
+    // <Box onClick={handlePlaceClick} sx={{ cursor: "pointer" }}>
+    <Box sx={{ mb: 2 }}>
       <Paper
         elevation={0}
         // variant="outlined"
@@ -30,12 +59,12 @@ export default function Place(props) {
         }}
       >
         <Box py={0.5} mr={1}>
-          <span class="fa-stack">
+          <span className="fa-stack">
             <span
-              class="fa fa-location-pin fa-stack-2x"
+              className="fa fa-location-pin fa-stack-2x"
               style={{ color: "#733D29" }}
             ></span>
-            <strong class="fa-stack-1x" style={{ color: "white" }}>
+            <strong className="fa-stack-1x" style={{ color: "white" }}>
               1
             </strong>
           </span>
@@ -78,9 +107,11 @@ export default function Place(props) {
                   />
                 </IconButton>
                 {item.likeCount ? item.likeCount : "0"}
-                <IconButton onClick={() => handleAddItinerary(item)}>
-                  <AddIcon sx={{ width: "22px", height: "22px" }} />
-                </IconButton>
+                {source === "InterestedPlace" && (
+                  <IconButton onClick={() => handleAddItinerary(item)}>
+                    <AddIcon sx={{ width: "22px", height: "22px" }} />
+                  </IconButton>
+                )}
               </Box>
             </Box>
           </Box>
