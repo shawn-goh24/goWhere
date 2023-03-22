@@ -233,7 +233,7 @@ export const getItineraryItems = (places) => {
 };
 
 export const createItinerary = (tripDetails) => {
-  console.log(tripDetails);
+  //console.log(tripDetails);
   const tripDates = getDatesInRange(tripDetails.startDate, tripDetails.endDate);
   const itinerary = {};
   const finalItinerary = [];

@@ -89,6 +89,8 @@ function LeftCol(props) {
       const node = datesRef.current.get(scrollTarget);
       // If a node is found, scroll to the node,
       // else stay on Itinerary page
+      console.log(datesRef);
+      console.log(`Node: ${node}`);
       if (node) {
         node.scrollIntoView({
           behavior: "smooth",
