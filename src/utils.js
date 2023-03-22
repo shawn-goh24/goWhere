@@ -231,3 +231,41 @@ export const getItineraryItems = (places) => {
   }
   return itineraryItems;
 };
+
+export const createItinerary = (tripDetails) => {
+  console.log(tripDetails);
+  const tripDates = getDatesInRange(tripDetails.startDate, tripDetails.endDate);
+  const itinerary = {};
+  const finalItinerary = [];
+  tripDates.forEach((date) => {
+    if (!itinerary[date]) {
+      itinerary[date] = [];
+    }
+    // const day = {date: []}
+    // itinerary.push(day)
+  });
+
+  if (tripDetails.places) {
+    for (const place in tripDetails.places) {
+      if (itinerary[tripDetails.places[place].date])
+        itinerary[tripDetails.places[place].date].push(
+          tripDetails.places[place]
+        );
+    }
+  }
+
+  // console.log(itinerary);
+
+  for (const day in itinerary) {
+    // console.log(itinerary[day]);
+    const newDay = { [day]: itinerary[day] };
+
+    finalItinerary.push(newDay);
+  }
+
+  // console.log("ITINERARY START");
+  // console.log(finalItinerary);
+  // console.log("ITINERARY END");
+
+  return finalItinerary;
+};

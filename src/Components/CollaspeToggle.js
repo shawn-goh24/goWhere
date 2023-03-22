@@ -26,8 +26,15 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
     setOpen(!open);
   };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
   return (
-    <>
+    <div
+      onDrop={() => props.handleDrop(props.date)}
+      onDragOver={handleDragOver}
+    >
       <ListItemButton
         onClick={handleClick}
         sx={{ p: "8px 8px 8px 0" }}
@@ -53,7 +60,7 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
           <ListItemButton sx={{ p: 0 }}>{props.children}</ListItemButton>
         </List>
       </Collapse>
-    </>
+    </div>
   );
 });
 

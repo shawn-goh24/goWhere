@@ -48,7 +48,11 @@ export default function Place(props) {
 
   return (
     // <Box onClick={handlePlaceClick} sx={{ cursor: "pointer" }}>
-    <Box sx={{ mb: 2 }}>
+    <Box
+      sx={{ mb: 2 }}
+      draggable
+      onDragStart={() => props.handleDragStart(item)}
+    >
       <Paper
         elevation={0}
         // variant="outlined"

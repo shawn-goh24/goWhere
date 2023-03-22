@@ -1,4 +1,4 @@
-import React, { useRef, forwardRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   FormControl,
@@ -14,15 +14,45 @@ import {
 } from "@mui/material";
 import Place from "../../Components/Place";
 import CollapseToggle from "../../Components/CollaspeToggle";
-import { getDatesInRange, getItineraryItems } from "../../utils";
+import {
+  getDatesInRange,
+  getItineraryItems,
+  createItinerary,
+} from "../../utils";
 
 export default function Itinerary(props) {
   const { tripDetails, user, trip, item } = props;
+  const [itinerary, setItinerary] = useState(null);
+  const [currentItem, setCurrentItem] = useState(null);
+
+  useEffect(() => {
+    setItinerary(createItinerary(tripDetails));
+  }, [tripDetails]);
 
   const tripDates =
     tripDetails && getDatesInRange(tripDetails.startDate, tripDetails.endDate);
 
   const itineraryItems = item && getItineraryItems(item);
+
+  const handleDragStart = (item) => {
+    setCurrentItem(item);
+    console.log(item);
+  };
+
+  const handleDrop = (date) => {
+    // const newItinerary = [...itinerary]
+
+    // newItinerary.forEach(day => {
+    //   const dayDate = Object.keys(day);
+    //   if(dayDate === date){
+
+    //   }
+    // })
+
+    console.log(date);
+  };
+
+  console.log(itinerary);
 
   return (
     <>
@@ -31,35 +61,39 @@ export default function Itinerary(props) {
           Itinerary
         </Typography>
         {itineraryItems.length > 0 ? (
-          tripDates &&
-          tripDates.map((date, index) => (
-            <CollapseToggle
-              date={date}
-              user={user}
-              trip={trip}
-              key={`${date}-${index}`}
-              ref={(node) => props.updateDateRef(date, node)}
-            >
-              <Grid container>
-                {itineraryItems &&
-                  itineraryItems.map((item, index) => {
-                    if (item.date === date) {
-                      return (
-                        <Grid item xs={12} key={`${item.name}-${index}`}>
-                          <Place
-                            item={item}
-                            user={user}
-                            trip={trip}
-                            handleAddItinerary=""
-                            source="itinerary"
-                          />
-                        </Grid>
-                      );
-                    }
+          itinerary &&
+          itinerary.map((day, index) => {
+            const date = Object.keys(day);
+            return (
+              <CollapseToggle
+                date={date}
+                user={user}
+                trip={trip}
+                key={`${date}-${index}`}
+                ref={(node) => props.updateDateRef(date, node)}
+                handleDrop={handleDrop}
+              >
+                <Grid container>
+                  {day[date].map((item, index) => {
+                    // if (item.date === date) {
+                    return (
+                      <Grid item xs={12} key={`${item.name}-${index}`}>
+                        <Place
+                          item={item}
+                          user={user}
+                          trip={trip}
+                          handleAddItinerary=""
+                          source="itinerary"
+                          handleDragStart={handleDragStart}
+                        />
+                      </Grid>
+                    );
+                    //}
                   })}
-              </Grid>
-            </CollapseToggle>
-          ))
+                </Grid>
+              </CollapseToggle>
+            );
+          })
         ) : (
           <Typography sx={{ mt: 3 }}>
             No activities in itinerary, click{" "}
