@@ -30,7 +30,7 @@ export default function InterestedPlaces(props) {
   const [dates, setDates] = useState([]);
   const [interest, setInterest] = useState({});
 
-  const { tripDetails, trip, user } = props;
+  const { tripDetails, trip, user, item } = props;
 
   // useEffect(() => {
   //   const placeRef = ref(database, `trips/${trip}/places`);
