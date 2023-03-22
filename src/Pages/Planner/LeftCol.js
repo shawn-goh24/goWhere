@@ -36,6 +36,7 @@ import {
 } from "@mui/lab";
 
 import { onValue, ref } from "firebase/database";
+import SharedGroup from "../../Components/SharedGroup";
 
 const drawerWidth = 240;
 
@@ -229,7 +230,8 @@ function LeftCol(props) {
       sx={{
         display: "flex",
         overflowY: "auto",
-        maxHeight: "calc(100vh - 64px)",
+        height: "calc(100vh - 64px)",
+        // backgroundColor: "red",
       }}
     >
       <CssBaseline />
@@ -289,15 +291,19 @@ function LeftCol(props) {
           }}
           variant="permanent"
           sx={{
-            display: { xs: "none", sm: "block" },
+            display: { xs: "none", sm: "flex" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
+              justifyContent: "space-between",
             },
+            height: "calc(100vh - 64px)",
+            flexDirection: "column",
           }}
           open
         >
-          {drawer}
+          <Box>{drawer}</Box>
+          <SharedGroup tripId={trip} />
         </Drawer>
       </Box>
       <Box
