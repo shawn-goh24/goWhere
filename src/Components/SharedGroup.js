@@ -67,39 +67,6 @@ export default function SharedGroup(props) {
     // });
   }, []);
 
-  const drawer = (
-    <Box>
-      <Divider />
-      <List>
-        {["Interested Places", "Packing List", "Documents"].map(
-          (text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={getSelection}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          )
-        )}
-      </List>
-      <Divider />
-      <List>
-        {["Itinerary"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton onClick={getSelection}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
-
   const handleSubmit = (event) => {
     event.preventDefault();
     const tmp = [input];
@@ -258,158 +225,122 @@ export default function SharedGroup(props) {
     );
   });
 
-  // console.log(remove);
-
-  // To get current link
-  // console.log(window.location.href + "/shared");  // add share to those that want to view only
-
   return (
-    <>
-      <Drawer
-        PaperProps={{
-          style: {
-            position: "relative",
-          },
-        }}
-        variant="permanent"
-        sx={{
-          display: { xs: "none", sm: "flex" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: drawerWidth,
-            justifyContent: "space-between",
-            // backgroundColor: "yellow",
-          },
-          height: "calc(100vh - 64px)",
-          flexDirection: "column",
-        }}
-        open
-      >
-        <Box>{drawer}</Box>
-
-        <Box sx={{ display: "flex", justifyContent: "flex-end", pr: 2, py: 2 }}>
-          <Tooltip title={tooltip} arrow>
-            <AvatarGroup max={4}>{avatars}</AvatarGroup>
-          </Tooltip>
-          <Avatar onClick={() => setOpen(!open)}>
-            <AddIcon />
-          </Avatar>
-          <Dialog open={open} maxWidth="xs">
-            {state === "invite" ? (
-              <>
-                <DialogTitle
-                  sx={{ display: "flex", justifyContent: "space-between" }}
+    <Box sx={{ display: "flex", justifyContent: "flex-end", pr: 2, py: 2 }}>
+      <Tooltip title={tooltip} arrow>
+        <AvatarGroup max={4}>{avatars}</AvatarGroup>
+      </Tooltip>
+      <Avatar onClick={() => setOpen(!open)}>
+        <AddIcon />
+      </Avatar>
+      <Dialog open={open} maxWidth="xs">
+        {state === "invite" ? (
+          <>
+            <DialogTitle
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <Typography sx={{ fontSize: "28px" }}>Invite friends</Typography>
+              <IconButton
+                onClick={() => {
+                  setOpen(!open);
+                  setCopied("copy link");
+                  setState("invite");
+                }}
+              >
+                <CloseIcon sx={{ color: "#CCCCCC" }} />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent dividers>
+              <Box mb={2}>
+                <TextField size="small" disabled value={link} />
+                <Button
+                  className="btn-green"
+                  sx={{ color: "white", ml: 1 }}
+                  onClick={copy}
                 >
-                  <Typography sx={{ fontSize: "28px" }}>
-                    Invite friends
-                  </Typography>
-                  <IconButton
-                    onClick={() => {
-                      setOpen(!open);
-                      setCopied("copy link");
-                      setState("invite");
-                    }}
-                  >
-                    <CloseIcon sx={{ color: "#CCCCCC" }} />
-                  </IconButton>
-                </DialogTitle>
-                <DialogContent dividers>
-                  <Box mb={2}>
-                    <TextField size="small" disabled value={link} />
+                  {copied}
+                </Button>
+              </Box>
+              <Box component="form" onSubmit={handleSubmit} width="100%">
+                <TextField
+                  fullWidth
+                  required
+                  value={input}
+                  label="Invite by email"
+                  size="small"
+                  type="email"
+                  onChange={(e) => setInput(e.target.value)}
+                />
+              </Box>
+              {invited.length !== 0 ? (
+                <>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", my: 1 }}>
+                    {emails}
+                  </Box>
+                  {/* <TextField multiline rows={6} fullWidth /> */}
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Button
                       className="btn-green"
-                      sx={{ color: "white", ml: 1 }}
-                      onClick={copy}
+                      onClick={() => sendInvite()}
+                      sx={{ color: "white" }}
                     >
-                      {copied}
+                      Send invite
                     </Button>
                   </Box>
-                  <Box component="form" onSubmit={handleSubmit} width="100%">
-                    <TextField
-                      fullWidth
-                      required
-                      value={input}
-                      label="Invite by email"
-                      size="small"
-                      type="email"
-                      onChange={(e) => setInput(e.target.value)}
-                    />
-                  </Box>
-                  {invited.length !== 0 ? (
-                    <>
-                      <Box sx={{ display: "flex", flexWrap: "wrap", my: 1 }}>
-                        {emails}
-                      </Box>
-                      {/* <TextField multiline rows={6} fullWidth /> */}
-                      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Button
-                          className="btn-green"
-                          onClick={() => sendInvite()}
-                          sx={{ color: "white" }}
-                        >
-                          Send invite
-                        </Button>
-                      </Box>
-                    </>
-                  ) : (
-                    ""
-                  )}
-                  <br />
-                </DialogContent>
-                <DialogActions
-                  sx={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Link
-                    sx={{ cursor: "pointer", color: "#77a690" }}
-                    underline="hover"
-                    onClick={() => setState("manage members")}
-                  >
-                    Manage trip members
-                  </Link>
-                </DialogActions>
-              </>
-            ) : (
-              <>
-                <DialogTitle
-                  sx={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <Box sx={{ display: "flex" }}>
-                    <IconButton onClick={() => setState("invite")}>
-                      <ArrowBackIosIcon />
-                    </IconButton>
-                    <Typography sx={{ fontSize: "28px" }}>
-                      Manage trip members
-                    </Typography>
-                  </Box>
-                  <IconButton
-                    onClick={() => {
-                      setOpen(!open);
-                      setCopied("copy link");
-                      setState("invite");
-                    }}
-                  >
-                    <CloseIcon sx={{ color: "#CCCCCC" }} />
-                  </IconButton>
-                </DialogTitle>
-                <DialogContent dividers>
-                  <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-                    {members}
-                  </Box>
-                </DialogContent>
-                <DialogActions>
-                  <Button
-                    className="btn-green"
-                    sx={{ color: "white" }}
-                    onClick={() => removeMember()}
-                  >
-                    Remove member
-                  </Button>
-                </DialogActions>
-              </>
-            )}
-          </Dialog>
-        </Box>
-      </Drawer>
-    </>
+                </>
+              ) : (
+                ""
+              )}
+              <br />
+            </DialogContent>
+            <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
+              <Link
+                sx={{ cursor: "pointer", color: "#77a690" }}
+                underline="hover"
+                onClick={() => setState("manage members")}
+              >
+                Manage trip members
+              </Link>
+            </DialogActions>
+          </>
+        ) : (
+          <>
+            <DialogTitle
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <Box sx={{ display: "flex" }}>
+                <IconButton onClick={() => setState("invite")}>
+                  <ArrowBackIosIcon />
+                </IconButton>
+                <Typography sx={{ fontSize: "28px" }}>
+                  Manage trip members
+                </Typography>
+              </Box>
+              <IconButton
+                onClick={() => {
+                  setOpen(!open);
+                  setCopied("copy link");
+                  setState("invite");
+                }}
+              >
+                <CloseIcon sx={{ color: "#CCCCCC" }} />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent dividers>
+              <Box sx={{ display: "flex", flexWrap: "wrap" }}>{members}</Box>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                className="btn-green"
+                sx={{ color: "white" }}
+                onClick={() => removeMember()}
+              >
+                Remove member
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+    </Box>
   );
 }

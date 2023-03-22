@@ -65,6 +65,9 @@ export default function InterestedPlaces(props) {
     } else {
       console.log("Empty");
     }
+
+    setCost(0);
+    setNote("");
   };
 
   const handleAddItinerary = (item) => {
@@ -124,6 +127,7 @@ export default function InterestedPlaces(props) {
     });
   };
 
+  console.log("change");
   return (
     <Box>
       <Box name="title">
@@ -157,6 +161,7 @@ export default function InterestedPlaces(props) {
           </Grid>
           <Grid item lg={3}>
             <TextField
+              value={cost}
               required
               size="small"
               label="Cost"
@@ -171,6 +176,7 @@ export default function InterestedPlaces(props) {
           </Grid>
           <Grid item lg={8}>
             <TextField
+              value={note}
               size="large"
               fullWidth
               label="Notes"
