@@ -35,6 +35,7 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
       onDrop={() => props.handleDrop(props.date)}
       onDragOver={handleDragOver}
       ref={ref}
+      className="itinerary-day"
     >
       <ListItemButton
         onClick={handleClick}

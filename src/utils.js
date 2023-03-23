@@ -232,8 +232,12 @@ export const getItineraryItems = (places) => {
   return itineraryItems;
 };
 
+/**
+ * Function to create itinerary array based on the start and end date of the trip
+ * @param {object} tripDetails
+ * @returns {array} An array of dates, each date is an object that stores an array of places for the date
+ */
 export const createItinerary = (tripDetails) => {
-  //console.log(tripDetails);
   const tripDates = getDatesInRange(tripDetails.startDate, tripDetails.endDate);
   const itinerary = {};
   const finalItinerary = [];
@@ -241,8 +245,6 @@ export const createItinerary = (tripDetails) => {
     if (!itinerary[date]) {
       itinerary[date] = [];
     }
-    // const day = {date: []}
-    // itinerary.push(day)
   });
 
   if (tripDetails.places) {
@@ -253,8 +255,6 @@ export const createItinerary = (tripDetails) => {
         );
     }
   }
-
-  // console.log(itinerary);
 
   for (const day in itinerary) {
     // console.log(itinerary[day]);
@@ -268,4 +268,19 @@ export const createItinerary = (tripDetails) => {
   // console.log("ITINERARY END");
 
   return finalItinerary;
+};
+
+/**
+ * Function to check if a place exist in that day's itinerary
+ * @param {array} placeArr
+ * @param {string} uid
+ * @returns {boolean} If a place exist in that day's itinerary, return true.
+ */
+export const findDuplicate = (placeArr, uid) => {
+  for (let i = 0; i < placeArr.length; i++) {
+    if (placeArr[i].uid === uid) {
+      return [true, i];
+    }
+  }
+  return false;
 };

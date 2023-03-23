@@ -18,6 +18,7 @@ import {
   getDatesInRange,
   getItineraryItems,
   createItinerary,
+  findDuplicate,
 } from "../../utils";
 
 export default function Itinerary(props) {
@@ -35,21 +36,64 @@ export default function Itinerary(props) {
   const itineraryItems = item && getItineraryItems(item);
 
   const handleDragStart = (item) => {
+    // const newItinerary = [...[...itinerary]];
+    // const currentPlaceId = item.uid;
+    // const currentPlaceDate = item.date;
+
+    // newItinerary.forEach((day, index) => {
+    //   const dayDate = Object.keys(day).toString();
+    //   if (dayDate === currentPlaceDate) {
+    //     const [hasDuplicate, duplicateIndex] = findDuplicate(
+    //       newItinerary[index][dayDate],
+    //       currentPlaceId
+    //     );
+    //     if (hasDuplicate) {
+    //       newItinerary[index][dayDate].splice(duplicateIndex, 1);
+    //     }
+    //   }
+    // });
+
     setCurrentItem(item);
     console.log(item);
   };
 
   const handleDrop = (date) => {
-    // const newItinerary = [...itinerary]
-
-    // newItinerary.forEach(day => {
-    //   const dayDate = Object.keys(day);
-    //   if(dayDate === date){
-
-    //   }
-    // })
-
     console.log(date);
+    const newItinerary = [...itinerary];
+    const currentPlaceId = currentItem.uid;
+    const currentPlaceDate = currentItem.date;
+    console.log(`Current Place ID: ${currentPlaceId}`);
+    console.log(`Current Place date: ${currentPlaceDate}`);
+
+    // Add current selected item into the new day
+    newItinerary.forEach((day, index) => {
+      const dayDate = Object.keys(day).toString();
+      console.log(`dayDate: ${dayDate}`);
+      if (dayDate === date) {
+        const hasDuplicate = findDuplicate(
+          newItinerary[index][dayDate],
+          currentPlaceId
+        )[0];
+        // If place does not exist in that day's itinerary,
+        // Add it into the day
+        // Else ignore
+        if (!hasDuplicate) {
+          newItinerary[index][dayDate].push(currentItem);
+        }
+      }
+      // if (dayDate === currentPlaceDate) {
+      //   const [hasDuplicate, duplicateIndex] = findDuplicate(
+      //     newItinerary[index][dayDate],
+      //     currentPlaceId
+      //   );
+      //   if (hasDuplicate) {
+      //     newItinerary[index][dayDate].splice(duplicateIndex, 1);
+      //   }
+      // }
+    });
+    setItinerary(newItinerary);
+
+    // Remove
   };
 
   console.log(itinerary);
@@ -63,7 +107,7 @@ export default function Itinerary(props) {
         {itineraryItems.length > 0 ? (
           itinerary &&
           itinerary.map((day, index) => {
-            const date = Object.keys(day);
+            const date = Object.keys(day).toString();
             return (
               <CollapseToggle
                 date={date}
