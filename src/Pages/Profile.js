@@ -16,6 +16,7 @@ import { EditProfile } from "./EditProfile";
 
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import findABuddyImg from "../Assets/find-a-buddy.jpeg";
 
 import {
   createTripArr,
@@ -26,6 +27,7 @@ import {
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { get, ref, onValue } from "firebase/database";
 import { database } from "../firebase";
+import { Link } from "react-router-dom";
 
 export default function Profile(props) {
   const { user, trips } = props;
@@ -78,7 +80,13 @@ export default function Profile(props) {
     <Box sx={{ padding: "0 10px" }}>
       <Grid container gap={8} sx={{ mt: 4 }}>
         {userTrips === null || userTrips.length < 1 ? (
-          <Typography>No trips, go back to home to add trips</Typography>
+          <Typography>
+            No trips created, click{" "}
+            <Link to="/">
+              <strong>HERE</strong>
+            </Link>{" "}
+            to return home to add trips
+          </Typography>
         ) : (
           userTrips.map((trip, index) => {
             return (
@@ -102,7 +110,7 @@ export default function Profile(props) {
     <Box>
       <Grid container gap={8} sx={{ mt: 4 }}>
         {userInvitedTrips === null || userInvitedTrips.length < 1 ? (
-          <Typography>No trips, go back to home to add trips</Typography>
+          <img src={findABuddyImg} alt="findbuddy-img" width="100%" />
         ) : (
           userInvitedTrips.map((trip, index) => {
             return (
