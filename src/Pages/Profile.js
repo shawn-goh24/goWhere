@@ -62,6 +62,13 @@ export default function Profile(props) {
       });
   }, [user]);
 
+  // const deleteTrip = (tripId) => {
+  //   console.log("trip deleted");
+  //   console.log(tripId);
+  //   // const tripRef = ref(database, `trip/${props.trip.tripId}`)
+  //   // remove(tripRef).then(() => console.log('trip deleted'))
+  // };
+
   const handleEditProfileOpen = () => {
     setEditOpen(true);
   };
@@ -95,6 +102,8 @@ export default function Profile(props) {
                   trip={trip}
                   setTripGeolocation={props.setTripGeolocation}
                   setMapViewBound={props.setMapViewBound}
+                  user={user}
+                  // deleteTrip={deleteTrip}
                 />
               </Grid>
             );
@@ -119,6 +128,8 @@ export default function Profile(props) {
                   trip={trip}
                   setTripGeolocation={props.setTripGeolocation}
                   setMapViewBound={props.setMapViewBound}
+                  user={user}
+                  // deleteTrip={deleteTrip}
                 />
               </Grid>
             );
