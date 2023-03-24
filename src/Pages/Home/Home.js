@@ -93,6 +93,7 @@ export default function Home(props) {
           locationLng: lng,
           mapViewBound: bound,
           tripId: tripId,
+          creatorEmail: props.user.email,
         };
         set(newTripRef, trip);
         props.setTripGeolocation({ lat: lat, lng: lng });

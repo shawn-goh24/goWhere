@@ -47,25 +47,38 @@ export default function SharedGroup(props) {
   const [open, setOpen] = useState(false);
   const [state, setState] = useState("invite");
   const [remove, setRemove] = useState([]);
+  const [avatarGroup, setAvatarGroup] = useState([]);
 
   const { tripId } = props;
 
   useEffect(() => {
     const avatarRef = ref(database, `trips/${tripId}`);
     onValue(avatarRef, (data) => {
-      const tmp = [data.val().creatorName];
+      const tmp = [data.val().creatorEmail.replace(".", "*")];
       if (data.val().members) {
         setShared([...tmp, ...Object.keys(data.val().members)]);
       } else {
         setShared([...tmp]);
       }
     });
-
-    // const userAvatarRef = ref(database, "users");
-    // onValue(userAvatarRef, (url) => {
-    //   console.log(Object.values(url.val()));
-    // });
   }, []);
+
+  useEffect(() => {
+    const avatarImgRef = ref(database, "users");
+    get(avatarImgRef).then((data) => {
+      const users = Object.values(data.val());
+
+      const filterUser = users.filter((user) => {
+        const tmp = user.email;
+        const editedTmp = tmp.replace(".", "*");
+        if (shared.includes(editedTmp)) {
+          return user;
+        }
+      });
+
+      setAvatarGroup(filterUser);
+    });
+  }, [shared]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -249,8 +262,14 @@ export default function SharedGroup(props) {
     setOpen(!open);
   };
 
-  const avatars = shared.map((email) => {
-    return <Avatar key={email} alt={email} />;
+  const avatars = avatarGroup.map((user) => {
+    return (
+      <Avatar
+        key={user.email}
+        alt={user.email}
+        src={user.avatarUrl ? user.avatarUrl : ""}
+      />
+    );
   });
 
   const tooltip = shared.map((user) => {
