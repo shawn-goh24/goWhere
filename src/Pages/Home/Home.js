@@ -51,9 +51,14 @@ export default function Home(props) {
   // console.log("end date: " + endDate);
   // console.log("budget: " + budget);
 
-  const planNow = () => {
+  const planNow = (e) => {
+    e.preventDefault();
     if (!auth.currentUser) {
       return alert("Not logged in, please sign up");
+    }
+    if (!startDate || !endDate) {
+      alert("Missing entry! \nSelect start or end date");
+      return "";
     }
     addTrip(location).then((tripId) => {
       console.log("Create new trip");
@@ -93,6 +98,7 @@ export default function Home(props) {
           locationLng: lng,
           mapViewBound: bound,
           tripId: tripId,
+          creatorEmail: props.user.email,
         };
         set(newTripRef, trip);
         props.setTripGeolocation({ lat: lat, lng: lng });
@@ -128,99 +134,102 @@ export default function Home(props) {
             display: "flex",
             justifyContent: "space-around",
             p: "25px 10px",
-            m: "0px 5%",
+            m: "0px 10%",
             position: "relative",
             top: "-55px",
             backgroundColor: "rgba(255, 255, 255, 0.95)",
           }}
         >
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-around"
-            alignItems="center"
-          >
-            <Grid item>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                }}
-              >
-                <FmdGoodIcon sx={{ color: "#77a690" }} />
-                <Autocomplete
-                  options={options}
-                  renderInput={(params) => (
-                    <TextField
-                      sx={{ width: "215px" }}
-                      variant="standard"
-                      {...params}
-                      label="Select Country"
-                    />
-                  )}
-                  onChange={(event, newValue) => {
-                    try {
-                      setLocation(
-                        JSON.stringify(newValue["label"]).replace(/["]/g, "")
-                      );
-                    } catch (error) {
-                      console.log(error);
-                    }
+          <form onSubmit={planNow} style={{ width: "100%" }}>
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-around"
+              alignItems="center"
+            >
+              <Grid item>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
                   }}
-                />
-              </Box>
-            </Grid>
-            <Divider orientation="vertical" flexItem />
-            <Grid item>
-              <Box sx={{ color: "#77a690" }}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DesktopDatePicker
-                    label="Start Date"
-                    sx={{ width: "175px", mr: "5px" }}
-                    onChange={(date) => setStartDate(onDateChange(date))}
+                >
+                  <FmdGoodIcon sx={{ color: "#77a690" }} />
+                  <Autocomplete
+                    options={options}
+                    renderInput={(params) => (
+                      <TextField
+                        required
+                        sx={{ width: "215px" }}
+                        variant="standard"
+                        {...params}
+                        label="Select Country"
+                      />
+                    )}
+                    onChange={(event, newValue) => {
+                      try {
+                        setLocation(
+                          JSON.stringify(newValue["label"]).replace(/["]/g, "")
+                        );
+                      } catch (error) {
+                        console.log(error);
+                      }
+                    }}
                   />
-                  <DesktopDatePicker
-                    label="End Date"
-                    sx={{ width: "175px" }}
-                    onChange={(date) => setEndDate(onDateChange(date))}
-                  />
-                </LocalizationProvider>
-              </Box>
+                </Box>
+              </Grid>
+              <Divider orientation="vertical" flexItem />
+              <Grid item>
+                <Box sx={{ color: "#77a690" }}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DesktopDatePicker
+                      label="Start Date"
+                      sx={{ width: "175px", mr: "15px" }}
+                      onChange={(date) => setStartDate(onDateChange(date))}
+                    />
+                    <DesktopDatePicker
+                      label="End Date"
+                      sx={{ width: "175px" }}
+                      onChange={(date) => setEndDate(onDateChange(date))}
+                    />
+                  </LocalizationProvider>
+                </Box>
+              </Grid>
+              {/* <Divider orientation="vertical" flexItem /> */}
+              {/* <Grid item>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <AttachMoneyIcon sx={{ color: "#77a690" }} />
+                  <FormControl>
+                    <Input
+                      placeholder="Budget"
+                      id="standard-adornment-amount"
+                      type="number"
+                      onChange={(event) => setBudget(event.target.value)}
+                      sx={{ width: "175px" }}
+                    />
+                  </FormControl>
+                </Box>
+              </Grid> */}
+              <Divider orientation="vertical" flexItem />
+              <Grid item>
+                <Button
+                  className="btn-green"
+                  variant="contained"
+                  size="small"
+                  type="submit"
+                >
+                  Plan Now
+                </Button>
+              </Grid>
             </Grid>
-            <Divider orientation="vertical" flexItem />
-            <Grid item>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                }}
-              >
-                <AttachMoneyIcon sx={{ color: "#77a690" }} />
-                <FormControl>
-                  <Input
-                    placeholder="Budget"
-                    id="standard-adornment-amount"
-                    type="number"
-                    onChange={(event) => setBudget(event.target.value)}
-                    sx={{ width: "175px" }}
-                  />
-                </FormControl>
-              </Box>
-            </Grid>
-            <Divider orientation="vertical" flexItem />
-            <Grid item>
-              <Button
-                className="btn-green"
-                variant="contained"
-                size="small"
-                onClick={planNow}
-              >
-                Plan Now
-              </Button>
-            </Grid>
-          </Grid>
+          </form>
         </Paper>
       </Container>
       <Box name="plan-share-choose" sx={{ backgroundColor: "#F2F2F2" }}>

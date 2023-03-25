@@ -20,6 +20,33 @@ export const findTrips = (tripsObj, userId) => {
 };
 
 /**
+ * Function to get user's trip from a list of trips
+ * @param {object} tripsObj
+ * @param {string} email
+ * @returns {object} All trips created by current user
+ */
+export const findTripsMember = (tripsObj, email) => {
+  let requiredTrips = {};
+  const tmpEmail = email;
+  const editedEmail = tmpEmail.replace(".", "*");
+
+  for (const trip in tripsObj) {
+    if (tripsObj[trip].members) {
+      console.log(
+        tripsObj[trip].country,
+        editedEmail,
+        Object.keys(tripsObj[trip].members).includes(editedEmail)
+      );
+      if (Object.keys(tripsObj[trip].members).includes(editedEmail)) {
+        requiredTrips[trip] = tripsObj[trip];
+      }
+    }
+  }
+
+  return requiredTrips;
+};
+
+/**
  * Function to create trips array from trips object
  * Sort the array according to start date in descending order
  * @param {object} tripsObj

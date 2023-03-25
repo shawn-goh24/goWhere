@@ -13,7 +13,7 @@ import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import AddIcon from "@mui/icons-material/Add";
 import { database } from "../firebase";
-import { onValue, ref, runTransaction, set } from "firebase/database";
+import { get, onValue, ref, runTransaction, set } from "firebase/database";
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import Popper from "@mui/material/Popper";
@@ -47,25 +47,38 @@ export default function SharedGroup(props) {
   const [open, setOpen] = useState(false);
   const [state, setState] = useState("invite");
   const [remove, setRemove] = useState([]);
+  const [avatarGroup, setAvatarGroup] = useState([]);
 
   const { tripId } = props;
 
   useEffect(() => {
     const avatarRef = ref(database, `trips/${tripId}`);
     onValue(avatarRef, (data) => {
-      const tmp = [data.val().creatorName];
+      const tmp = [data.val().creatorEmail.replace(".", "*")];
       if (data.val().members) {
         setShared([...tmp, ...Object.keys(data.val().members)]);
       } else {
         setShared([...tmp]);
       }
     });
-
-    // const userAvatarRef = ref(database, "users");
-    // onValue(userAvatarRef, (url) => {
-    //   console.log(Object.values(url.val()));
-    // });
   }, []);
+
+  useEffect(() => {
+    const avatarImgRef = ref(database, "users");
+    get(avatarImgRef).then((data) => {
+      const users = Object.values(data.val());
+
+      const filterUser = users.filter((user) => {
+        const tmp = user.email;
+        const editedTmp = tmp.replace(".", "*");
+        if (shared.includes(editedTmp)) {
+          return user;
+        }
+      });
+
+      setAvatarGroup(filterUser);
+    });
+  }, [shared]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -188,6 +201,7 @@ export default function SharedGroup(props) {
 
   const sendInvite = () => {
     const shareRef = ref(database, `trips/${tripId}`);
+    // store members into trips db
     runTransaction(shareRef, (data) => {
       console.log(data);
       for (let i = 0; i < invited.length; i++) {
@@ -207,12 +221,55 @@ export default function SharedGroup(props) {
       return data;
     });
 
+    // store shared trips in user db
+    const userRef = ref(database, `users`);
+    get(userRef)
+      .then((data) => {
+        // console.log(Object.values(data.val()));
+        const users = Object.values(data.val());
+
+        console.log(users);
+        for (let i = 0; i < invited.length; i++) {
+          for (let j = 0; j < users.length; j++) {
+            const tmp = invited[i];
+            const email = tmp.replace("*", ".");
+            if (email === users[j].email) {
+              console.log(email);
+              console.log(users[j].userId);
+              const userShareRef = ref(database, `users/${users[j].userId}`);
+              runTransaction(userShareRef, (user) => {
+                if (user) {
+                  console.log(user);
+                  if (user.sharedTrips && user.sharedTrips[tripId]) {
+                    console.log("user exist in trips");
+                  } else {
+                    if (!user.sharedTrips) {
+                      user.sharedTrips = {};
+                    }
+                    user.sharedTrips[tripId] = true;
+                  }
+                }
+                return user;
+              });
+              break;
+            }
+          }
+        }
+      })
+      .catch((error) => console.log(error));
+
     setInvited([]);
     setOpen(!open);
   };
 
-  const avatars = shared.map((email) => {
-    return <Avatar key={email} alt={email} />;
+  const avatars = avatarGroup.map((user) => {
+    return (
+      <Avatar
+        key={user.email}
+        alt={user.email}
+        src={user.avatarUrl ? user.avatarUrl : ""}
+      />
+    );
   });
 
   const tooltip = shared.map((user) => {

@@ -45,6 +45,15 @@
   background-color: #53735e !important;
 }
 
+.btn-red {
+  background-color: #CC0000 !important;
+  color: white !important;
+}
+
+.btn-red:hover {
+  background-color: #510000 !important;
+}
+
 .btn-text:hover {
   background-color: rgba(119, 166, 144, 0.1) !important;
 }
