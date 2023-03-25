@@ -1,3 +1,6 @@
+import { onValue, push, ref, runTransaction, update } from "firebase/database";
+import { database } from "./firebase";
+
 /**
  * Function to get user's trip from a list of trips
  * @param {object} tripsObj
@@ -257,4 +260,138 @@ export const getItineraryItems = (places) => {
     }
   }
   return itineraryItems;
+};
+
+/**
+ * Function to create itinerary array based on the start and end date of the trip
+ * @param {object} tripDetails
+ * @returns {array} An array of dates, each date is an object that stores an array of places for the date
+ */
+export const createItinerary = (tripDetails) => {
+  const tripDates = getDatesInRange(tripDetails.startDate, tripDetails.endDate);
+  const itinerary = {};
+  const finalItinerary = [];
+  tripDates.forEach((date) => {
+    if (!itinerary[date]) {
+      itinerary[date] = [];
+    }
+  });
+
+  if (tripDetails.places) {
+    for (const place in tripDetails.places) {
+      if (itinerary[tripDetails.places[place].date])
+        itinerary[tripDetails.places[place].date].push(
+          tripDetails.places[place]
+        );
+    }
+  }
+
+  for (const day in itinerary) {
+    // console.log(itinerary[day]);
+    const newDay = { [day]: itinerary[day] };
+
+    finalItinerary.push(newDay);
+  }
+
+  // console.log("ITINERARY START");
+  // console.log(finalItinerary);
+  // console.log("ITINERARY END");
+
+  return finalItinerary;
+};
+
+/**
+ * Function to convert an object into an array
+ * @param {object} obj
+ * @returns {array} An array created from object keys
+ */
+export const createArray = (obj) => {
+  const arr = [];
+  for (const key in obj) {
+    const newKey = obj[key];
+
+    arr.push(newKey);
+  }
+  return arr;
+};
+
+/**
+ * Function to check if a place exist in that day's itinerary
+ * @param {array} placeArr
+ * @param {string} uid
+ * @returns {boolean} If a place exist in that day's itinerary, return true.
+ */
+export const findDuplicate = (placeArr, uid) => {
+  for (let i = 0; i < placeArr.length; i++) {
+    if (placeArr[i].uid === uid) {
+      return [true, i];
+    }
+  }
+  return false;
+};
+
+/**
+ * Function to filter out places that is tagged with the same date
+ * @param {array} itineraryItems
+ * @param {string} date
+ * @returns {array} An array of places that is tagged with the same date
+ */
+export const getPlaces = (itineraryItems, date) => {
+  const placeArr = [];
+  itineraryItems.forEach((item) => {
+    if (item.date === date) {
+      placeArr.push(item);
+    }
+  });
+  return placeArr;
+};
+
+/**
+ * Function to sort array in ascending order based on the position key
+ * @param {array} placeArr
+ * @returns {array} sorted array
+ */
+export const sortPlaces = (placeArr) => {
+  placeArr.sort((a, b) => {
+    if (a.position > b.position) {
+      return 1;
+    }
+    if (a.position < b.position) {
+      return -1;
+    }
+    return 0;
+  });
+  // console.log("PlaceArr START");
+  // console.log(placeArr);
+  // console.log("PlaceArr END");
+
+  return placeArr;
+};
+
+/**
+ * Function to generate the next position to sort places
+ * @param {array} placesArr
+ * @returns {number} Next possible place id
+ */
+export const generateNextId = (placesArr) => {
+  let nextId = 0;
+  placesArr.forEach((place) => {
+    if (place.position > nextId) {
+      nextId = place.position + 1;
+    } else if (place.position === nextId) {
+      nextId++;
+    }
+  });
+  return nextId;
+};
+
+export const createUpdateObj = (arr) => {
+  const obj = {};
+
+  arr.forEach((place, index) => {
+    place.position = index;
+    obj[place.uid] = place;
+  });
+
+  return obj;
 };

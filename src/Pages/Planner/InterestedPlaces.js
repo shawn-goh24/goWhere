@@ -13,10 +13,18 @@ import {
 import hero from "../../Assets/hero-1920x1280.jpg";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { database } from "../../firebase";
-import { onValue, push, ref, runTransaction, set } from "firebase/database";
+import {
+  onValue,
+  push,
+  ref,
+  runTransaction,
+  set,
+  get,
+} from "firebase/database";
 import Place from "../../Components/Place";
 import AddToItinerary from "./AddToItinerary";
 import SearchBox from "../../Components/SearchBox";
+import { getPlaces, createArray, generateNextId } from "../../utils";
 
 const DB_PLACES_KEY = "places";
 
@@ -59,6 +67,7 @@ export default function InterestedPlaces(props) {
         note: note,
         addedBy: user.displayName,
         likeCount: 0,
+        position: 0,
       };
       set(newPlaceRef, newPlace);
       resetInterest();
@@ -114,17 +123,36 @@ export default function InterestedPlaces(props) {
   const addToDate = (placeId, selectedDate) => {
     console.log("addToDate");
     const addToDateRef = ref(database, `trips/${trip}/places/${placeId}`);
+    const placesRef = ref(database, `trips/${trip}/places`);
     const date = { date: selectedDate };
-    runTransaction(addToDateRef, (place) => {
-      if (place) {
-        if (place.date) {
-          place.date = selectedDate;
-        } else if (!place.date) {
-          place.date = selectedDate;
+
+    get(placesRef)
+      .then((snapshot) => {
+        let positionId = 0;
+        if (snapshot.exists()) {
+          const data = createArray(snapshot.val());
+          const existingPlaces = getPlaces(data, selectedDate);
+          if (existingPlaces.length > 0) {
+            positionId = generateNextId(existingPlaces);
+          }
+        } else {
+          console.log("Get no Data");
         }
-      }
-      return place;
-    });
+        return positionId;
+      })
+      .then((positionNum) => {
+        runTransaction(addToDateRef, (place) => {
+          place.position = positionNum;
+          if (place) {
+            if (place.date) {
+              place.date = selectedDate;
+            } else if (!place.date) {
+              place.date = selectedDate;
+            }
+          }
+          return place;
+        });
+      });
   };
 
   console.log("change");
