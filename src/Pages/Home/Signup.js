@@ -19,7 +19,7 @@ import { setErrorMessage } from "../../utils";
 
 import { auth, database, storage } from "../../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { ref, set } from "firebase/database";
+import { get, ref, set, runTransaction } from "firebase/database";
 import { uploadBytes, getDownloadURL, ref as sRef } from "firebase/storage";
 
 const DB_USERS_KEY = "users";
@@ -57,6 +57,51 @@ export function Signup(props) {
           `${DB_USERS_KEY}/${userCredential.user.uid}`
         );
         set(userRef, newUser);
+
+        // check for new user shared trips
+        const tripsRef = ref(database, `trips`);
+        const sharedTrips = [];
+        get(tripsRef).then((data) => {
+          const trips = Object.values(data.val());
+          for (let i = 0; i < trips.length; i++) {
+            // console.log(trips[i].members);
+            const tmp = email;
+            const editedEmail = tmp.replace(".", "*");
+            if (trips[i].members) {
+              // console.log("1");
+              // console.log(Object.keys(trips[i].members));
+              // console.log(editedEmail);
+              // console.log(Object.keys(trips[i].members).includes(editedEmail));
+              if (Object.keys(trips[i].members).includes(editedEmail)) {
+                // console.log("2");
+                sharedTrips.push(trips[i].tripId);
+              }
+            } else {
+              console.log("no shared trips");
+            }
+          }
+
+          const userShareRef = ref(
+            database,
+            `users/${userCredential.user.uid}`
+          );
+          for (let j = 0; j < sharedTrips.length; j++) {
+            runTransaction(userShareRef, (user) => {
+              if (user) {
+                console.log(user);
+                if (user.sharedTrips && user.sharedTrips[sharedTrips[j]]) {
+                  console.log("user exist in trips");
+                } else {
+                  if (!user.sharedTrips) {
+                    user.sharedTrips = {};
+                  }
+                  user.sharedTrips[sharedTrips[j]] = true;
+                }
+              }
+              return user;
+            });
+          }
+        });
       })
       .then(() => {
         const storageRef = sRef(storage, `avatar/${email}`);
