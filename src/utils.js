@@ -1,3 +1,6 @@
+import { onValue, push, ref, runTransaction, update } from "firebase/database";
+import { database } from "./firebase";
+
 /**
  * Function to get user's trip from a list of trips
  * @param {object} tripsObj
@@ -271,6 +274,21 @@ export const createItinerary = (tripDetails) => {
 };
 
 /**
+ * Function to convert an object into an array
+ * @param {object} obj
+ * @returns {array} An array created from object keys
+ */
+export const createArray = (obj) => {
+  const arr = [];
+  for (const key in obj) {
+    const newKey = obj[key];
+
+    arr.push(newKey);
+  }
+  return arr;
+};
+
+/**
  * Function to check if a place exist in that day's itinerary
  * @param {array} placeArr
  * @param {string} uid
@@ -283,4 +301,70 @@ export const findDuplicate = (placeArr, uid) => {
     }
   }
   return false;
+};
+
+/**
+ * Function to filter out places that is tagged with the same date
+ * @param {array} itineraryItems
+ * @param {string} date
+ * @returns {array} An array of places that is tagged with the same date
+ */
+export const getPlaces = (itineraryItems, date) => {
+  const placeArr = [];
+  itineraryItems.forEach((item) => {
+    if (item.date === date) {
+      placeArr.push(item);
+    }
+  });
+  return placeArr;
+};
+
+/**
+ * Function to sort array in ascending order based on the position key
+ * @param {array} placeArr
+ * @returns {array} sorted array
+ */
+export const sortPlaces = (placeArr) => {
+  placeArr.sort((a, b) => {
+    if (a.position > b.position) {
+      return 1;
+    }
+    if (a.position < b.position) {
+      return -1;
+    }
+    return 0;
+  });
+  // console.log("PlaceArr START");
+  // console.log(placeArr);
+  // console.log("PlaceArr END");
+
+  return placeArr;
+};
+
+/**
+ * Function to generate the next position to sort places
+ * @param {array} placesArr
+ * @returns {number} Next possible place id
+ */
+export const generateNextId = (placesArr) => {
+  let nextId = 0;
+  placesArr.forEach((place) => {
+    if (place.position > nextId) {
+      nextId = place.position + 1;
+    } else if (place.position === nextId) {
+      nextId++;
+    }
+  });
+  return nextId;
+};
+
+export const createUpdateObj = (arr) => {
+  const obj = {};
+
+  arr.forEach((place, index) => {
+    place.position = index;
+    obj[place.uid] = place;
+  });
+
+  return obj;
 };

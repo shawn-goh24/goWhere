@@ -1,5 +1,5 @@
 import { Box, IconButton, Paper, Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
@@ -7,6 +7,8 @@ import { onValue, push, ref, runTransaction, set } from "firebase/database";
 import { database } from "../firebase";
 
 export default function Place(props) {
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const { item, user, trip, handleAddItinerary, source } = props;
   // const { item, handleLikes, user, handleAddItinerary } = props;
 
@@ -46,12 +48,42 @@ export default function Place(props) {
   // console.log(item);
   // console.log("Place Item END");
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+    props.handleDragStart(item, item.position);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragOver(false);
+    //setIsDragging(false);
+  };
+
+  const handleDrop = () => {
+    props.handleDrop(item.position, item.date, "place");
+    setIsDragOver(false);
+    setIsDragging(false);
+  };
+
   return (
     // <Box onClick={handlePlaceClick} sx={{ cursor: "pointer" }}>
     <Box
       sx={{ mb: 2 }}
-      draggable
-      onDragStart={() => props.handleDragStart(item)}
+      draggable={"true".toString()}
+      droppable={"true".toString()}
+      onDragStart={handleDragStart}
+      onDragEnter={() => props.handleDragEnter(item.position)}
+      // onDragEnd={() => props.handleDragEnd(item.position, item.date)}
+      onDrop={handleDrop}
+      // onDrop={() => props.handleDrop(item.position, item.date)}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragEnd}
+      // onDragOver={() => props.handleDrop(item.position, item.date)}
+      className={source === "itinerary" && "place"}
     >
       <Paper
         elevation={0}
@@ -68,9 +100,11 @@ export default function Place(props) {
               className="fa fa-location-pin fa-stack-2x"
               style={{ color: "#733D29" }}
             ></span>
-            <strong className="fa-stack-1x" style={{ color: "white" }}>
-              1
-            </strong>
+            {source === "InterestedPlace" ? null : (
+              <strong className="fa-stack-1x" style={{ color: "white" }}>
+                {item.position + 1}
+              </strong>
+            )}
           </span>
         </Box>
         <Box width="100%">
@@ -86,7 +120,12 @@ export default function Place(props) {
                 Added by {item.addedBy}
               </Typography>
               <Typography variant="subtitle2">
-                {item.date ? `Date: ${item.date}` : "Date: -"}
+                {source !== "itinerary"
+                  ? item.date
+                    ? `Date: ${item.date}`
+                    : "Date: -"
+                  : null}
+                {/* {item.date ? `Date: ${item.date}` : "Date: -"} */}
               </Typography>
             </Box>
             <Box
@@ -124,6 +163,14 @@ export default function Place(props) {
           </Box>
         </Box>
       </Paper>
+      {source === "itinerary" && (
+        <div
+          style={{
+            height: isDragOver ? "70px" : 0,
+            transition: "all 0.3s",
+          }}
+        ></div>
+      )}
     </Box>
   );
 }

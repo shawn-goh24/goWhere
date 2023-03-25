@@ -62,6 +62,17 @@
   border-radius: 45px;
 }
 
-.itinerary-day:hover {
-  background-color: #cccccc;
+.place {
+  transition: all 0.3s;
+}
+
+.place:hover {
+  cursor: pointer;
+  transform: scale(1.03);
+  transition: all 0.3s;
+}
+
+/* Remove hover background in MUI ListItemButton component */
+.css-1j72ahl-MuiButtonBase-root-MuiListItemButton-root:hover {
+  background-color: inherit !important;
 }
