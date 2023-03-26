@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import emailjs from "@emailjs/browser";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
@@ -34,6 +35,7 @@ import {
   Tooltip,
   DialogActions,
   Link,
+  Snackbar,
 } from "@mui/material";
 
 const drawerWidth = 240;
@@ -48,8 +50,9 @@ export default function SharedGroup(props) {
   const [state, setState] = useState("invite");
   const [remove, setRemove] = useState([]);
   const [avatarGroup, setAvatarGroup] = useState([]);
+  const [snackOpen, setSnackOpen] = useState(false);
 
-  const { tripId } = props;
+  const { tripId, location, user } = props;
 
   useEffect(() => {
     const avatarRef = ref(database, `trips/${tripId}`);
@@ -258,6 +261,30 @@ export default function SharedGroup(props) {
       })
       .catch((error) => console.log(error));
 
+    // send email to users
+    const emailParams = {
+      // location: location,
+      invited_email: invited,
+      from_user: user.displayName,
+    };
+
+    emailjs
+      .send(
+        process.env.REACT_APP_EMAILJS_SERVICEID,
+        process.env.REACT_APP_EMAILJS_TEMPLATEID,
+        emailParams,
+        process.env.REACT_APP_EMAILJS_PUBLICKEY
+      )
+      .then(
+        function (response) {
+          console.log("SUCCESS!", response.status, response.text);
+          setSnackOpen(true);
+        },
+        function (error) {
+          console.log("FAILED...", error);
+        }
+      );
+
     setInvited([]);
     setOpen(!open);
   };
@@ -281,6 +308,27 @@ export default function SharedGroup(props) {
       </div>
     );
   });
+
+  const handleSnackClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackOpen(false);
+  };
+
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleSnackClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
 
   return (
     <Box sx={{ display: "flex", justifyContent: "flex-end", pr: 2, py: 2 }}>
@@ -398,6 +446,13 @@ export default function SharedGroup(props) {
           </>
         )}
       </Dialog>
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={4000}
+        onClose={handleSnackClose}
+        message="Invitation Sent"
+        action={action}
+      />
     </Box>
   );
 }

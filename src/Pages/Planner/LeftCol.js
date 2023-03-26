@@ -306,7 +306,11 @@ function LeftCol(props) {
           open
         >
           <Box>{drawer}</Box>
-          <SharedGroup tripId={trip} />
+          <SharedGroup
+            tripId={trip}
+            // location={tripDetails.country}
+            user={user}
+          />
         </Drawer>
       </Box>
       <Box
