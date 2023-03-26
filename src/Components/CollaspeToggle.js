@@ -53,7 +53,7 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
     >
       <ListItemButton
         onClick={handleClick}
-        sx={{ p: "8px 8px 8px 0" }}
+        sx={{ p: "8px 8px 8px 0", minHeight: "60px" }}
         ref={ref}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -81,16 +81,13 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
         </div> */}
         <div
           style={{
-            height: isDragOver ? "100px" : 0,
+            height: isDragOver ? "130px" : 0,
             transition: "all 0.5s",
           }}
         ></div>
         <List component="div" disablePadding>
-          <ListItemButton sx={{ p: 0 }}>{props.children}</ListItemButton>
+          {props.children}
         </List>
-        {/* {isDragOver && (
-          <div style={{ height: "50px", transition: "all 0.8s" }}></div>
-        )} */}
       </Collapse>
     </div>
   );

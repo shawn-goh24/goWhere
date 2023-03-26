@@ -22,7 +22,7 @@ import InterestedPlaces from "./InterestedPlaces";
 import PackingList from "./PackingList";
 import Documents from "./Documents";
 import Itinerary from "./Itinerary";
-import { Paper } from "@mui/material";
+import { Paper, Snackbar, Alert } from "@mui/material";
 import { database } from "../../firebase";
 import { getDatesInRange } from "../../utils";
 import {
@@ -47,6 +47,10 @@ function LeftCol(props) {
   const [tripDetails, setTripDetails] = useState(null);
   const [item, setItem] = useState([]);
   const [scrollTarget, setSrcollTarget] = useState(null);
+  const [snackStatus, setSnackStatus] = useState({
+    open: false,
+    msg: "",
+  });
   const datesRef = useRef(null);
 
   const { trip, user } = props;
@@ -136,6 +140,14 @@ function LeftCol(props) {
 
   const datesArrayLastItem = datesArray !== null ? datesArray.length - 1 : null;
 
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackStatus({ open: false, msg: "" });
+  };
+
   const drawer = (
     <div>
       <Divider />
@@ -205,6 +217,8 @@ function LeftCol(props) {
           user={user}
           resetInterest={resetInterest}
           item={item}
+          snackStatus={snackStatus}
+          setSnackStatus={setSnackStatus}
         />
       );
     } else if (selection === "Packing List") {
@@ -220,6 +234,8 @@ function LeftCol(props) {
           item={item}
           updateDateRef={updateDateRef}
           setSelection={setSelection}
+          snackStatus={snackStatus}
+          setSnackStatus={setSnackStatus}
         />
       );
     }
@@ -229,16 +245,17 @@ function LeftCol(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        overflowY: "auto",
-        height: "calc(100vh - 64px)",
-        // backgroundColor: "red",
-      }}
-    >
-      <CssBaseline />
-      {/* <AppBar
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          overflowY: "auto",
+          height: "calc(100vh - 64px)",
+          // backgroundColor: "red",
+        }}
+      >
+        <CssBaseline />
+        {/* <AppBar
         position="fixed"
         sx={{
           ml: { sm: `${drawerWidth}px` },
@@ -259,106 +276,116 @@ function LeftCol(props) {
           <NavBar isPlanner={true} />
         </Toolbar>
       </AppBar> */}
-      <Box
-        component="nav"
-        sx={{
-          width: { sm: drawerWidth },
-          flexShrink: { sm: 0 },
-        }}
-        aria-label="mailbox folders"
-      >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
+        <Box
+          component="nav"
           sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
+            width: { sm: drawerWidth },
+            flexShrink: { sm: 0 },
           }}
+          aria-label="mailbox folders"
         >
-          {drawer}
-        </Drawer>
-        <Drawer
-          PaperProps={{
-            style: {
-              position: "relative",
-            },
-          }}
-          variant="permanent"
-          sx={{
-            display: { xs: "none", sm: "flex" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-              justifyContent: "space-between",
-            },
-            height: "calc(100vh - 64px)",
-            flexDirection: "column",
-          }}
-          open
-        >
-          <Box>{drawer}</Box>
-          <SharedGroup
-            tripId={trip}
-            // location={tripDetails.country}
-            user={user}
-          />
-        </Drawer>
-      </Box>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          // mt: "64px",
-          // width: { sm: `calc(100% - ${drawerWidth}px)` },
-          height: "100%", // original is 100vh
-          // maxHeight: "calc(100vh - 64px)", // original is 100vh
-          overflowX: "hidden",
-          //overflowY: "auto",
-        }}
-      >
-        {/* <Toolbar /> */}
-        <Box>
-          <Box>
-            <img
-              src="https://media.istockphoto.com/id/876560704/photo/fuji-japan-in-spring.jpg?s=612x612&w=0&k=20&c=j1VZlzfNcsjQ4q4yHXJEohSrBZJf6nUhh2_smM4eioQ="
-              alt="japan"
-              style={{ width: "100%", height: "275px", objectFit: "cover" }}
-            />
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Paper
-              elevation={6}
-              sx={{
-                px: "40px",
-                py: "15px",
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Drawer
+            container={container}
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            sx={{
+              display: { xs: "block", sm: "none" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+          >
+            {drawer}
+          </Drawer>
+          <Drawer
+            PaperProps={{
+              style: {
                 position: "relative",
-                bottom: "50px",
-                textAlign: "center",
-              }}
-            >
-              <Typography variant="h5" component="h1">
-                {tripDetails ? `${tripDetails.country}` : "Error"}
-              </Typography>
-              <Typography variant="subtitle" component="p">
-                {tripDetails
-                  ? `${tripDetails.startDate} - ${tripDetails.endDate}`
-                  : "Error"}
-              </Typography>
-            </Paper>
-          </Box>
+              },
+            }}
+            variant="permanent"
+            sx={{
+              display: { xs: "none", sm: "flex" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+                justifyContent: "space-between",
+              },
+              height: "calc(100vh - 64px)",
+              flexDirection: "column",
+            }}
+            open
+          >
+            <Box>{drawer}</Box>
+            <SharedGroup
+              tripId={trip}
+              // location={tripDetails.country}
+              user={user}
+            />
+          </Drawer>
         </Box>
-        {content()}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            // mt: "64px",
+            // width: { sm: `calc(100% - ${drawerWidth}px)` },
+            height: "100%", // original is 100vh
+            // maxHeight: "calc(100vh - 64px)", // original is 100vh
+            overflowX: "hidden",
+            //overflowY: "auto",
+          }}
+        >
+          {/* <Toolbar /> */}
+          <Box>
+            <Box>
+              <img
+                src="https://media.istockphoto.com/id/876560704/photo/fuji-japan-in-spring.jpg?s=612x612&w=0&k=20&c=j1VZlzfNcsjQ4q4yHXJEohSrBZJf6nUhh2_smM4eioQ="
+                alt="japan"
+                style={{ width: "100%", height: "275px", objectFit: "cover" }}
+              />
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Paper
+                elevation={6}
+                sx={{
+                  px: "40px",
+                  py: "15px",
+                  position: "relative",
+                  bottom: "50px",
+                  textAlign: "center",
+                }}
+              >
+                <Typography variant="h5" component="h1">
+                  {tripDetails ? `${tripDetails.country}` : "Error"}
+                </Typography>
+                <Typography variant="subtitle" component="p">
+                  {tripDetails
+                    ? `${tripDetails.startDate} - ${tripDetails.endDate}`
+                    : "Error"}
+                </Typography>
+              </Paper>
+            </Box>
+          </Box>
+          {content()}
+        </Box>
       </Box>
-    </Box>
+      <Snackbar
+        open={snackStatus.open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} sx={{ width: "100%" }}>
+          {snackStatus.msg}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
 

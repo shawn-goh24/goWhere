@@ -109,14 +109,18 @@ export default function InterestedPlaces(props) {
   const items = item.map((item) => {
     // console.log(user);
     return (
-      <Place
-        key={item.uid}
-        item={item}
-        trip={trip}
-        user={user}
-        handleAddItinerary={handleAddItinerary}
-        source="InterestedPlace"
-      />
+      <Grid item xs={12} key={item.uid}>
+        <Place
+          key={item.uid}
+          item={item}
+          trip={trip}
+          user={user}
+          handleAddItinerary={handleAddItinerary}
+          source="InterestedPlace"
+          setSnackStatus={props.setSnackStatus}
+          snackStatus={props.snackStatus}
+        />
+      </Grid>
     );
   });
 
@@ -226,7 +230,11 @@ export default function InterestedPlaces(props) {
           </Grid>
         </Grid>
       </Box>
-      <Box name="contents">{items}</Box>
+      <Box name="contents">
+        <Grid container gap={3}>
+          {items}
+        </Grid>
+      </Box>
       <AddToItinerary
         isOpen={isOpen}
         handleClose={handleClose}
