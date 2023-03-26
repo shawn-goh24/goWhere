@@ -166,7 +166,7 @@ export default function Place(props) {
       {source === "itinerary" && (
         <div
           style={{
-            height: isDragOver ? "70px" : 0,
+            height: isDragOver ? "100px" : 0,
             transition: "all 0.3s",
           }}
         ></div>

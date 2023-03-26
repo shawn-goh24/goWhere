@@ -81,7 +81,7 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
         </div> */}
         <div
           style={{
-            height: isDragOver ? "70px" : 0,
+            height: isDragOver ? "100px" : 0,
             transition: "all 0.5s",
           }}
         ></div>
