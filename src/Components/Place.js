@@ -91,34 +91,48 @@ export default function Place(props) {
         place.date = "";
       }
       return place;
-    }).then(() => {
-      props.setSnackStatus({
-        ...props.snackStatus,
-        open: true,
-        msg: "Place removed",
+    })
+      .then(() => {
+        props.updatePlaceNum(item.date);
+      })
+      .then(() => {
+        props.setSnackStatus({
+          ...props.snackStatus,
+          open: true,
+          msg: "Place removed",
+        });
+        console.log("Successful remove from itinerary");
       });
-      console.log("Successful remove from itinerary");
-    });
   };
 
   const deletePlace = (placeId) => {
     const placeRef = ref(database, `trips/${trip}/places/${placeId}`);
-    remove(placeRef).then(() => {
-      props.setSnackStatus({
-        ...props.snackStatus,
-        open: true,
-        msg: "Place deleted",
+    remove(placeRef)
+      .then(() => {
+        props.updatePlaceNum(item.date);
+      })
+      .then(() => {
+        props.setSnackStatus({
+          ...props.snackStatus,
+          open: true,
+          msg: "Place deleted",
+        });
+        console.log("Successful deleted from trips");
       });
-      console.log("Successful deleted from trips");
-    });
   };
 
   return (
     <>
       <Box
         sx={source === "itinerary" ? { padding: "0 10px" } : { padding: "0" }}
-        draggable={"true".toString()}
-        droppable={"true".toString()}
+        draggable={
+          source === "itinerary" ? "true".toString() : "false".toString()
+        }
+        droppable={
+          source === "itinerary" ? "true".toString() : "false".toString()
+        }
+        //draggable={"true".toString()}
+        // droppable={"true".toString()}
         onDragStart={handleDragStart}
         onDragEnter={() => props.handleDragEnter(item.position)}
         // onDragEnd={() => props.handleDragEnd(item.position, item.date)}

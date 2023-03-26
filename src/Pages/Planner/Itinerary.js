@@ -19,18 +19,23 @@ import {
   getPlaces,
   sortPlaces,
   createUpdateObj,
+  createArray,
 } from "../../utils";
-import { onValue, push, ref, runTransaction, update } from "firebase/database";
+import {
+  onValue,
+  push,
+  ref,
+  runTransaction,
+  update,
+  get,
+} from "firebase/database";
 import { database } from "../../firebase";
 
 export default function Itinerary(props) {
   const { tripDetails, user, trip, item } = props;
   // const [itinerary, setItinerary] = useState(null);
   const [currentItem, setCurrentItem] = useState(null);
-  // const [snackStatus, setSnackStatus] = useState({
-  //   open: false,
-  //   msg: "",
-  // });
+
   //const [itineraryItems, setItineraryItems] = useState(getItineraryItems(item));
 
   // useEffect(() => {
@@ -89,9 +94,6 @@ export default function Itinerary(props) {
 
     const updatedPlace = { ...currentItem };
     updatedPlace.date = date;
-    // if (source === "toggle") {
-    //   updatedPlace.position = position;
-    // }
 
     // console.log(updatedPlace);
     // console.log(date);
@@ -130,13 +132,26 @@ export default function Itinerary(props) {
     }
   };
 
-  // const handleClose = (event, reason) => {
-  //   if (reason === "clickaway") {
-  //     return;
-  //   }
-
-  //   setSnackStatus({ open: false, msg: "" });
-  // };
+  const updatePlaceNum = (date) => {
+    const placeRef = ref(database, `trips/${trip}/places`);
+    return get(placeRef)
+      .then((snapshot) => {
+        const placesInDay = sortPlaces(
+          getPlaces(createArray(snapshot.val()), date)
+        );
+        return placesInDay;
+      })
+      .then((placesArr) => {
+        const placesObj = createUpdateObj(placesArr);
+        return placesObj;
+      })
+      .then((placesObj) => {
+        update(placeRef, placesObj);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
 
   //console.log(itinerary);
 
@@ -178,6 +193,7 @@ export default function Itinerary(props) {
                             handleDrop={handleDrop}
                             setSnackStatus={props.setSnackStatus}
                             snackStatus={props.snackStatus}
+                            updatePlaceNum={updatePlaceNum}
                           />
                         </Grid>
                       )
