@@ -19,7 +19,7 @@ import { setErrorMessage } from "../../utils";
 
 import { auth, database, storage } from "../../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { get, ref, set, runTransaction } from "firebase/database";
+import { get, ref, set, runTransaction, onValue } from "firebase/database";
 import { uploadBytes, getDownloadURL, ref as sRef } from "firebase/storage";
 
 const DB_USERS_KEY = "users";
@@ -64,16 +64,10 @@ export function Signup(props) {
         get(tripsRef).then((data) => {
           const trips = Object.values(data.val());
           for (let i = 0; i < trips.length; i++) {
-            // console.log(trips[i].members);
             const tmp = email;
             const editedEmail = tmp.replace(".", "*");
             if (trips[i].members) {
-              // console.log("1");
-              // console.log(Object.keys(trips[i].members));
-              // console.log(editedEmail);
-              // console.log(Object.keys(trips[i].members).includes(editedEmail));
               if (Object.keys(trips[i].members).includes(editedEmail)) {
-                // console.log("2");
                 sharedTrips.push(trips[i].tripId);
               }
             } else {
@@ -102,11 +96,16 @@ export function Signup(props) {
             });
           }
         });
+        return userCredential.user.uid;
       })
-      .then(() => {
+      .then((userUid) => {
         const storageRef = sRef(storage, `avatar/${email}`);
         uploadBytes(storageRef, avatar).then((snapshot) => {
           getDownloadURL(snapshot.ref).then((avatarUrl) => {
+            // store avatarUrl to users db
+            const currUserRef = ref(database, `users/${userUid}/avatarUrl`);
+            set(currUserRef, avatarUrl);
+
             props.updateUserInfo(username, email, avatarUrl);
             updateProfile(auth.currentUser, {
               photoURL: avatarUrl,
