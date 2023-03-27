@@ -161,7 +161,7 @@ export default function InterestedPlaces(props) {
 
   console.log("change");
   return (
-    <Box>
+    <Box sx={{ pb: 4 }}>
       <Box name="title">
         <Typography variant="h5" component="h2" sx={{ fontWeight: "bold" }}>
           Interested Places

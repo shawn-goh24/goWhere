@@ -84,8 +84,12 @@
   transition: all 0.3s;
 }
 
-.place:hover {
-  cursor: pointer;
+/* .place:hover {
+  transform: scale(1.03);
+  transition: all 0.3s;
+} */
+
+.place-drag {
   transform: scale(1.03);
   transition: all 0.3s;
 }

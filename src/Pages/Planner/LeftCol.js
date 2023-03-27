@@ -38,7 +38,7 @@ import {
 import { onValue, ref } from "firebase/database";
 import SharedGroup from "../../Components/SharedGroup";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 function LeftCol(props) {
   const { window, interest, resetInterest } = props;
@@ -156,7 +156,7 @@ function LeftCol(props) {
           (text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={(e) => getSelection(e.target.innerText)}>
-                <ListItemIcon>
+                <ListItemIcon sx={{ minWidth: "40px" }}>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} />
@@ -170,7 +170,7 @@ function LeftCol(props) {
         {["Itinerary"].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton onClick={(e) => getSelection(e.target.innerText)}>
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: "40px" }}>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
@@ -178,7 +178,6 @@ function LeftCol(props) {
           </ListItem>
         ))}
       </List>
-      <Divider />
 
       <Timeline
         sx={{
@@ -186,6 +185,7 @@ function LeftCol(props) {
             flex: 0,
             padding: 1,
           },
+          m: 0,
         }}
       >
         {datesArray &&

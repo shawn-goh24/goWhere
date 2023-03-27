@@ -14,6 +14,7 @@ import {
   DialogContent,
   Button,
   Alert,
+  TextField,
   Snackbar,
 } from "@mui/material";
 
@@ -21,6 +22,12 @@ export default function Place(props) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isdraggble, setIsDraggable] = useState("false");
+  const [isdroppable, setIsDroppable] = useState("false");
+  const [isHovering, setIsHovering] = useState(false);
+  const [note, setNote] = useState(props.item.note);
+  const [cost, setCost] = useState(props.item.cost);
+  const [showAlert, setShowAlert] = useState(false);
   // const [snackStatus, setSnackStatus] = useState({
   //   open: false,
   //   msg: "",
@@ -63,6 +70,76 @@ export default function Place(props) {
   // console.log(item);
   // console.log("Place Item END");
 
+  const handleAlertClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowAlert(false);
+  };
+
+  const handleCostChange = (input) => {
+    let newInput = input.slice(4);
+    const lastChar = newInput.length - 1;
+    if (newInput[lastChar] !== "." && newInput !== "") {
+      newInput = parseFloat(newInput);
+      if (typeof newInput !== "number" || isNaN(newInput)) {
+        setShowAlert(true);
+        setCost(0);
+      } else {
+        setCost(newInput);
+      }
+    } else {
+      setCost(newInput);
+    }
+  };
+
+  const handleNoteFocusOut = (placeId) => {
+    const placeRef = ref(database, `trips/${trip}/places/${placeId}`);
+    runTransaction(placeRef, (place) => {
+      if (place) {
+        place.note = note;
+      }
+      return place;
+    });
+  };
+
+  const handleCostFocusOut = (placeId) => {
+    if (cost.length === 0) {
+      setCost(0);
+    }
+    const newCost = parseFloat(cost);
+    if (typeof newCost !== "number" || isNaN(newCost)) {
+      setShowAlert(true);
+    } else {
+      const placeRef = ref(database, `trips/${trip}/places/${placeId}`);
+      runTransaction(placeRef, (place) => {
+        if (place) {
+          place.cost = newCost;
+        }
+        return place;
+      }).catch((e) => {
+        console.log(e);
+      });
+    }
+  };
+
+  const handleMouseOver = () => {
+    setIsHovering(true);
+  };
+  const handleMouseOut = () => {
+    setIsHovering(false);
+  };
+
+  const handleDragMouseDown = () => {
+    setIsDraggable("true");
+    setIsDroppable("true");
+  };
+
+  const handleDragMouseUp = () => {
+    setIsDraggable("false");
+    setIsDroppable("false");
+  };
+
   const handleDragStart = () => {
     setIsDragging(true);
     props.handleDragStart(item, item.position);
@@ -82,6 +159,8 @@ export default function Place(props) {
     props.handleDrop(item.position, item.date, "place");
     setIsDragOver(false);
     setIsDragging(false);
+    setIsDraggable("false");
+    setIsDroppable("false");
   };
 
   const removePlace = (placeId) => {
@@ -124,170 +203,256 @@ export default function Place(props) {
   return (
     <>
       <Box
-        sx={source === "itinerary" ? { padding: "0 10px" } : { padding: "0" }}
+        sx={
+          source === "itinerary"
+            ? { padding: "0 10px", marginBottom: "10px" }
+            : { padding: "0" }
+        }
         draggable={
-          source === "itinerary" ? "true".toString() : "false".toString()
+          source === "itinerary" ? isdraggble.toString() : "false".toString()
         }
         droppable={
-          source === "itinerary" ? "true".toString() : "false".toString()
+          source === "itinerary" ? isdroppable.toString() : "false".toString()
         }
-        //draggable={"true".toString()}
-        // droppable={"true".toString()}
         onDragStart={handleDragStart}
         onDragEnter={() => props.handleDragEnter(item.position)}
-        // onDragEnd={() => props.handleDragEnd(item.position, item.date)}
         onDrop={handleDrop}
-        // onDrop={() => props.handleDrop(item.position, item.date)}
         onDragOver={handleDragOver}
         onDragLeave={handleDragEnd}
-        // onDragOver={() => props.handleDrop(item.position, item.date)}
         className={source === "itinerary" && "place"}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
       >
         <Paper
           elevation={0}
-          // variant="outlined"
           sx={{
             backgroundColor: "#D3EEDC40",
             display: "flex",
-            p: "15px 10px",
+            p: "15px 15px 5px 10px",
           }}
         >
-          <Box py={0.5} mr={1}>
-            <span className="fa-stack">
-              <span
-                className="fa fa-location-pin fa-stack-2x"
-                style={{
-                  color: "#733D29",
-                  fontSize: source === "itinerary" ? "2em" : "1.5em",
-                }}
-              ></span>
-              {source === "InterestedPlace" ? null : (
-                <strong
-                  className="fa-stack-1x"
-                  style={{
-                    color: "white",
-                    lineHeight: "1.5rem",
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  {item.position + 1}
-                </strong>
-              )}
-            </span>
-          </Box>
           <Grid container>
-            <Grid item xs={8}>
-              <Typography sx={{ fontSize: "1.2rem", fontWeight: 700 }}>
-                {item.name}
-              </Typography>
-              <Typography
-                variant="subtitle2"
-                sx={{ color: "#575958", fontWeight: 400 }}
-              >
-                Added by {item.addedBy}
-              </Typography>
-              <Typography variant="subtitle2">
-                {source !== "itinerary" ? (
-                  item.date ? (
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ color: "#575958", fontWeight: 400 }}
-                    >
-                      Date: {item.date}
-                    </Typography>
-                  ) : (
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ color: "#575958", fontWeight: 400 }}
-                    >
-                      Not added to itinerary
-                    </Typography>
-                  )
-                ) : null}
-                {/* {item.date ? `Date: ${item.date}` : "Date: -"} */}
-              </Typography>
+            <Grid item xs={1} sx={{ mt: "3px" }}>
+              <span className="fa-stack">
+                <span
+                  className="fa fa-location-pin fa-stack-2x"
+                  style={{
+                    color: "#733D29",
+                    fontSize: source === "itinerary" ? "2em" : "1.5em",
+                  }}
+                ></span>
+                {source === "InterestedPlace" ? null : (
+                  <strong
+                    className="fa-stack-1x"
+                    style={{
+                      color: "white",
+                      lineHeight: "1.5rem",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {item.position + 1}
+                  </strong>
+                )}
+              </span>
             </Grid>
-            <Grid item xs={4}>
-              <Grid container justifyContent="flex-end" width="100%" gap={0}>
-                <Grid
-                  item
-                  style={{ margin: "5px 0" }}
-                  xs={source === "InterestedPlace" ? 5 : 7}
-                >
+            <Grid item xs={11}>
+              <Grid container>
+                <Grid item xs={12} sm={8}>
                   <Typography
                     sx={{
-                      color: "#733D29",
-                      m: 0,
-                      p: 0,
-                      fontWeight: "700",
-                      textAlign: "right",
+                      fontSize: "1.2rem",
+                      fontWeight: 700,
+                      lineHeight: "1.5rem",
                     }}
                   >
-                    SGD {item.cost}
+                    {item.name}
                   </Typography>
-                </Grid>
-                <Grid
-                  item
-                  style={{ margin: "-2px 0 0 0px", textAlign: "right" }}
-                  xs={source === "InterestedPlace" ? 4 : 5}
-                >
-                  <IconButton onClick={() => handleLikes(item.uid)}>
-                    <FavoriteIcon
-                      color={likeColor}
-                      sx={{ width: "22px", height: "22px" }}
-                    />
-                  </IconButton>
                   <Typography
-                    style={{
-                      textAlign: "right",
-                      fontSize: "1rem",
-                      m: 0,
-                      p: 0,
-                      display: "inline-block",
-                    }}
+                    variant="subtitle2"
+                    sx={{ color: "#575958", fontWeight: 400 }}
                   >
-                    {item.likeCount ? item.likeCount : "0"}
+                    Added by {item.addedBy}
+                  </Typography>
+                  <Typography variant="subtitle2">
+                    {source !== "itinerary" ? (
+                      item.date ? (
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ color: "#575958", fontWeight: 400 }}
+                        >
+                          Date: {item.date}
+                        </Typography>
+                      ) : (
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ color: "#575958", fontWeight: 400 }}
+                        >
+                          <i> Not added to itinerary</i>
+                        </Typography>
+                      )
+                    ) : null}
                   </Typography>
                 </Grid>
-                {source === "InterestedPlace" && (
+                <Grid item xs={12} sm={4}>
                   <Grid
-                    item
-                    style={{ margin: "-2px 0 0 0px", textAlign: "right" }}
-                    xs={3}
+                    container
+                    justifyContent={{ sm: "flex-end", xs: "flex-start" }}
+                    width="100%"
+                    gap={0}
                   >
-                    <IconButton onClick={() => handleAddItinerary(item)}>
-                      <AddIcon sx={{ width: "22px", height: "22px" }} />
-                    </IconButton>
+                    <Grid
+                      item
+                      style={{ margin: "5px 0" }}
+                      sm={source === "InterestedPlace" ? 6 : 7}
+                      xs={source === "InterestedPlace" ? 3 : 3}
+                    >
+                      <TextField
+                        fullWidth
+                        variant="standard"
+                        value={"SGD " + cost}
+                        defaultValue={0}
+                        onChange={(e) => handleCostChange(e.target.value)}
+                        onBlur={() => handleCostFocusOut(item.uid)}
+                        InputProps={{
+                          disableUnderline: true,
+                          inputProps: {
+                            style: {
+                              color: "#733D29",
+                              margin: 0,
+                              padding: 0,
+                              fontWeight: "700",
+                              display: "inline-block",
+                            },
+                          },
+                        }}
+                        InputLabelProps={{ style: { color: "#733D29" } }}
+                        sx={{ textAlign: { sm: "right", xs: "left" } }}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      style={{
+                        margin: "-2px 0 0 0px",
+                        padding: "0 5px 0 0",
+                      }}
+                      sx={{ textAlign: { sm: "right", xs: "left" } }}
+                      sm={source === "InterestedPlace" ? 4 : 5}
+                      xs={source === "InterestedPlace" ? 3 : 5}
+                    >
+                      <IconButton onClick={() => handleLikes(item.uid)}>
+                        <FavoriteIcon
+                          color={likeColor}
+                          sx={{ width: "22px", height: "22px" }}
+                        />
+                      </IconButton>
+                      <Typography
+                        style={{
+                          textAlign: { sm: "right", xs: "left" },
+                          fontSize: "1rem",
+                          m: 0,
+                          p: 0,
+                          display: "inline-block",
+                        }}
+                      >
+                        {item.likeCount ? item.likeCount : "0"}
+                      </Typography>
+                    </Grid>
+                    {source === "InterestedPlace" && (
+                      <Grid
+                        item
+                        style={{ margin: "-3px 0 0 0px", textAlign: "right" }}
+                        sm={2}
+                        xs={6}
+                      >
+                        <IconButton onClick={() => handleAddItinerary(item)}>
+                          <AddIcon sx={{ width: "22px", height: "22px" }} />
+                        </IconButton>
+                      </Grid>
+                    )}
+                    {/* <Grid item xs={5} sm={5}>
+                      <Grid container justifyContent="flex-end"> */}
+                    <Grid
+                      item
+                      sm={3}
+                      xs={3}
+                      sx={{
+                        textAlign: { sm: "right", xs: "right" },
+                        mr: {
+                          sm: source === "itinerary" ? "0" : "-6px",
+                          xs: "0",
+                        },
+                        mt: { sm: "2px", xs: "0", md: "0" },
+                      }}
+                    >
+                      <IconButton
+                        onClick={() => setIsOpen(true)}
+                        sx={{
+                          opacity: isHovering ? "1" : "0",
+                          transition: "opacity 0.7s",
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Grid>
+
+                    {source === "itinerary" && (
+                      <Grid
+                        item
+                        sm={2}
+                        xs={1}
+                        sx={{
+                          textAlign: "right",
+                          mr: { md: "6px", sm: "-5px", xs: "0" },
+                          mt: { xs: "-2px" },
+                        }}
+                      >
+                        <IconButton>
+                          <DragIndicatorIcon
+                            // fontSize="small"
+                            onMouseDown={handleDragMouseDown}
+                            onMouseUp={handleDragMouseUp}
+                            // sx={{ fontSize: 23 }}
+                          />
+                        </IconButton>
+                      </Grid>
+                    )}
                   </Grid>
-                )}
-                {source === "itinerary" && (
-                  <Grid
-                    item
-                    xs={12}
-                    sx={{ textAlign: "right", mb: 1 }}
-                    style={{ margin: "auto" }}
-                  >
-                    <IconButton>
-                      <DragIndicatorIcon fontSize="small" />
-                    </IconButton>
-                  </Grid>
-                )}
-                <Grid
-                  item
-                  xs={12}
-                  sx={{ textAlign: "right" }}
-                  style={{ margin: "auto" }}
-                >
-                  <IconButton onClick={() => setIsOpen(true)}>
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
                 </Grid>
+              </Grid>
+              {/* </Grid>
+              </Grid> */}
+
+              <Grid
+                container
+                sx={{
+                  mt: {
+                    sm: source === "itinerary" ? "-18px" : "-5px",
+                    xs: source === "itinerary" ? "-8px" : "-5px",
+                  },
+                }}
+              >
+                <TextField
+                  id="outlined-textarea"
+                  label={
+                    <span style={{ fontSize: "0.9rem" }}>
+                      {note.length > 0 ? "Notes:" : "Add notes"}
+                    </span>
+                  }
+                  size="small"
+                  multiline
+                  fullWidth
+                  variant="standard"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  onBlur={() => handleNoteFocusOut(item.uid)}
+                  InputProps={{
+                    disableUnderline: true,
+                  }}
+                  InputLabelProps={{ style: { color: "#733D29" } }}
+                />
               </Grid>
             </Grid>
           </Grid>
-          <Box mt={1}>
-            <Typography variant="body1">{item.note}</Typography>
-          </Box>
         </Paper>
         {source === "itinerary" && (
           <div
@@ -339,6 +504,21 @@ export default function Place(props) {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={showAlert}
+        autoHideDuration={1500}
+        onClose={handleAlertClose}
+      >
+        <Alert
+          onClose={handleAlertClose}
+          sx={{ width: "100%" }}
+          variant="filled"
+          severity="error"
+        >
+          "Please enter only number"
+        </Alert>
+      </Snackbar>
     </>
   );
 }
