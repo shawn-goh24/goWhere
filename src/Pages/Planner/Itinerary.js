@@ -158,7 +158,11 @@ export default function Itinerary(props) {
   return (
     <>
       <Box sx={{ p: "0 10px", height: "100%" }}>
-        <Typography variant="h5" component="h2" sx={{ fontWeight: "bold" }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          sx={{ fontWeight: "bold", pl: 2 }}
+        >
           Itinerary
         </Typography>
         {itineraryItems.length > 0 ? (

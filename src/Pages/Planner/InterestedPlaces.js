@@ -163,7 +163,11 @@ export default function InterestedPlaces(props) {
   return (
     <Box sx={{ pb: 4 }}>
       <Box name="title">
-        <Typography variant="h5" component="h2" sx={{ fontWeight: "bold" }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          sx={{ fontWeight: "bold", pl: 2, pb: 2 }}
+        >
           Interested Places
         </Typography>
       </Box>
@@ -174,7 +178,7 @@ export default function InterestedPlaces(props) {
         sx={{ backgroundColor: "#f2f2f2" }}
       >
         <Grid container padding="10px" gap={3}>
-          <Grid item lg={8}>
+          <Grid item lg={8} xs={12}>
             <SearchBox handleInterest={handleInterest} />
             {/* <TextField
               required
@@ -191,10 +195,11 @@ export default function InterestedPlaces(props) {
               }}
             /> */}
           </Grid>
-          <Grid item lg={3}>
+          <Grid item lg={3} xs={12}>
             <TextField
               value={cost}
               required
+              fullWidth
               size="small"
               label="Cost"
               type="number"
@@ -206,7 +211,7 @@ export default function InterestedPlaces(props) {
               }}
             />
           </Grid>
-          <Grid item lg={8}>
+          <Grid item lg={8} xs={12}>
             <TextField
               value={note}
               size="large"
@@ -217,7 +222,7 @@ export default function InterestedPlaces(props) {
               onChange={(e) => setNote(e.target.value)}
             />
           </Grid>
-          <Grid item lg={3}>
+          <Grid item lg={3} xs={12}>
             <Button
               fullWidth
               variant="outlined"

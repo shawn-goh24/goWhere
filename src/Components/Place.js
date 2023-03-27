@@ -2,7 +2,7 @@ import { Box, IconButton, Paper, Typography } from "@mui/material";
 import React, { useState } from "react";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
-import { onValue, push, ref, runTransaction, remove } from "firebase/database";
+import { ref, runTransaction, remove } from "firebase/database";
 import { database } from "../firebase";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
@@ -20,7 +20,6 @@ import {
 
 export default function Place(props) {
   const [isDragOver, setIsDragOver] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isdraggble, setIsDraggable] = useState("false");
   const [isdroppable, setIsDroppable] = useState("false");
@@ -28,10 +27,7 @@ export default function Place(props) {
   const [note, setNote] = useState(props.item.note);
   const [cost, setCost] = useState(props.item.cost);
   const [showAlert, setShowAlert] = useState(false);
-  // const [snackStatus, setSnackStatus] = useState({
-  //   open: false,
-  //   msg: "",
-  // });
+
   const { item, user, trip, handleAddItinerary, source } = props;
 
   let likeColor = "";
@@ -61,14 +57,6 @@ export default function Place(props) {
       return place;
     });
   };
-
-  // const handlePlaceClick = () => {
-  //   console.log("Place clicked");
-  // };
-
-  // console.log("Place Item START");
-  // console.log(item);
-  // console.log("Place Item END");
 
   const handleAlertClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -141,7 +129,6 @@ export default function Place(props) {
   };
 
   const handleDragStart = () => {
-    setIsDragging(true);
     props.handleDragStart(item, item.position);
   };
 
@@ -152,13 +139,11 @@ export default function Place(props) {
 
   const handleDragEnd = () => {
     setIsDragOver(false);
-    //setIsDragging(false);
   };
 
   const handleDrop = () => {
     props.handleDrop(item.position, item.date, "place");
     setIsDragOver(false);
-    setIsDragging(false);
     setIsDraggable("false");
     setIsDroppable("false");
   };
@@ -257,7 +242,7 @@ export default function Place(props) {
             </Grid>
             <Grid item xs={11}>
               <Grid container>
-                <Grid item xs={12} sm={8}>
+                <Grid item xs={12} sm={8} md={8}>
                   <Typography
                     sx={{
                       fontSize: "1.2rem",
@@ -293,7 +278,7 @@ export default function Place(props) {
                     ) : null}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={4} md={4}>
                   <Grid
                     container
                     justifyContent={{ sm: "flex-end", xs: "flex-start" }}
@@ -302,14 +287,15 @@ export default function Place(props) {
                   >
                     <Grid
                       item
-                      style={{ margin: "5px 0" }}
                       sm={source === "InterestedPlace" ? 6 : 7}
                       xs={source === "InterestedPlace" ? 3 : 3}
+                      sx={{ mt: "2px" }}
                     >
                       <TextField
                         fullWidth
                         variant="standard"
                         value={"SGD " + cost}
+                        multiline
                         defaultValue={0}
                         onChange={(e) => handleCostChange(e.target.value)}
                         onBlur={() => handleCostFocusOut(item.uid)}
@@ -326,20 +312,35 @@ export default function Place(props) {
                           },
                         }}
                         InputLabelProps={{ style: { color: "#733D29" } }}
-                        sx={{ textAlign: { sm: "right", xs: "left" } }}
+                        sx={{
+                          textAlign: { sm: "right", xs: "left" },
+                          mt: {
+                            sm: source === "itinerary" ? "-4px" : "-5px",
+                            xs: source === "itinerary" ? "-4px" : "-4px",
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid
                       item
                       style={{
-                        margin: "-2px 0 0 0px",
+                        margin: "-4px 0 0 0px",
                         padding: "0 5px 0 0",
                       }}
                       sx={{ textAlign: { sm: "right", xs: "left" } }}
-                      sm={source === "InterestedPlace" ? 4 : 5}
+                      sm={source === "InterestedPlace" ? 5 : 5}
                       xs={source === "InterestedPlace" ? 3 : 5}
                     >
-                      <IconButton onClick={() => handleLikes(item.uid)}>
+                      <IconButton
+                        onClick={() => handleLikes(item.uid)}
+                        sx={{
+                          mr: { lg: "2px", xs: "0" },
+                          mt: {
+                            sm: source === "itinerary" ? "-1px" : "-4px",
+                            xs: source === "itinerary" ? "-2px" : "-2px",
+                          },
+                        }}
+                      >
                         <FavoriteIcon
                           color={likeColor}
                           sx={{ width: "22px", height: "22px" }}
@@ -360,28 +361,31 @@ export default function Place(props) {
                     {source === "InterestedPlace" && (
                       <Grid
                         item
-                        style={{ margin: "-3px 0 0 0px", textAlign: "right" }}
+                        style={{ margin: "-5px 0 0 0px", textAlign: "right" }}
                         sm={2}
-                        xs={6}
+                        xs={source === "itinerary" ? 6 : 1}
+                        order={{ xs: source === "InterestedPlace" && 4 }}
                       >
                         <IconButton onClick={() => handleAddItinerary(item)}>
                           <AddIcon sx={{ width: "22px", height: "22px" }} />
                         </IconButton>
                       </Grid>
                     )}
-                    {/* <Grid item xs={5} sm={5}>
-                      <Grid container justifyContent="flex-end"> */}
                     <Grid
                       item
                       sm={3}
-                      xs={3}
+                      xs={source === "itinerary" ? 3 : 5}
                       sx={{
                         textAlign: { sm: "right", xs: "right" },
                         mr: {
-                          sm: source === "itinerary" ? "0" : "-6px",
+                          sm: source === "itinerary" ? "0" : "-10px",
                           xs: "0",
                         },
-                        mt: { sm: "2px", xs: "0", md: "0" },
+                        mt: {
+                          sm: "2px",
+                          xs: source === "itinerary" ? "-2px" : "-4px",
+                          md: source === "itinerary" ? "-1px" : "-5px",
+                        },
                       }}
                     >
                       <IconButton
@@ -403,15 +407,16 @@ export default function Place(props) {
                         sx={{
                           textAlign: "right",
                           mr: { md: "6px", sm: "-5px", xs: "0" },
-                          mt: { xs: "-2px" },
+                          mt: {
+                            xs: source === "itinerary" ? "-3px" : "-2px",
+                            sm: source === "itinerary" ? "-3px" : "-2px",
+                          },
                         }}
                       >
                         <IconButton>
                           <DragIndicatorIcon
-                            // fontSize="small"
                             onMouseDown={handleDragMouseDown}
                             onMouseUp={handleDragMouseUp}
-                            // sx={{ fontSize: 23 }}
                           />
                         </IconButton>
                       </Grid>
@@ -419,8 +424,6 @@ export default function Place(props) {
                   </Grid>
                 </Grid>
               </Grid>
-              {/* </Grid>
-              </Grid> */}
 
               <Grid
                 container

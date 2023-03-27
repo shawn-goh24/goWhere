@@ -88,7 +88,7 @@ export default function Planner(props) {
   return (
     <>
       <Grid container>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={8} md={7} lg={6}>
           <LeftCol
             interest={interest}
             trip={trip}
@@ -96,7 +96,7 @@ export default function Planner(props) {
             resetInterest={resetInterest}
           />
         </Grid>
-        <Grid item sm={6}>
+        <Grid item sm={4} md={5} lg={6}>
           {props.mapLoaded && (
             <Map
               id="GoogleMap"
