@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardActionArea,
@@ -20,16 +20,25 @@ import { convertTripDate } from "../utils";
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import userEvent from "@testing-library/user-event";
-import { ref, remove } from "firebase/database";
+import { get, ref, remove } from "firebase/database";
 import { database } from "../firebase";
 
 export default function TripsBox(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
+  const [coverImg, setCoverImg] = useState("");
 
   let dateString = convertTripDate(props.trip.startDate, props.trip.endDate);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const tripRef = ref(database, `trips/${props.trip.tripId}`);
+    get(tripRef).then((data) => {
+      console.log(data.val().coverImgUrl);
+      setCoverImg(data.val().coverImgUrl);
+    });
+  }, []);
 
   const handleClick = () => {
     const tripGeolocation = {
@@ -67,8 +76,8 @@ export default function TripsBox(props) {
           <CardMedia
             component="img"
             height="140"
-            image="https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80"
-            alt="tokyo"
+            image={coverImg}
+            alt="cover image"
           />
         </CardActionArea>
         <CardContent>

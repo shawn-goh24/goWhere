@@ -23,6 +23,7 @@ import "./Home.css";
 import countryList from "react-select-country-list";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { createApi } from "unsplash-js";
 
 import { auth, database } from "../../firebase";
 import { set, ref, push, update } from "firebase/database";
@@ -30,6 +31,10 @@ import { set, ref, push, update } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 
 const DB_TRIPS_KEY = "trips";
+
+const unsplash = createApi({
+  accessKey: process.env.REACT_APP_UNSPLASH_KEY,
+});
 
 export default function Home(props) {
   const [location, setLocation] = useState(null);
@@ -87,23 +92,33 @@ export default function Home(props) {
         const newTripRef = push(tripsRef);
         const tripId = newTripRef.key;
 
-        const trip = {
-          country: location,
-          startDate: startDate,
-          endDate: endDate,
-          budget: budget,
-          creatorName: props.user.displayName,
-          creatorId: props.user.uid,
-          locationLat: lat,
-          locationLng: lng,
-          mapViewBound: bound,
-          tripId: tripId,
-          creatorEmail: props.user.email,
-        };
-        set(newTripRef, trip);
-        props.setTripGeolocation({ lat: lat, lng: lng });
-        props.setMapViewBound(bound);
-
+        unsplash.search
+          .getPhotos({
+            query: location,
+            page: 1,
+            perPage: 10,
+            orientation: "landscape",
+          })
+          .then((coverImgUrl) => {
+            console.log(coverImgUrl.response.results[0].urls.regular);
+            const trip = {
+              country: location,
+              startDate: startDate,
+              endDate: endDate,
+              budget: budget,
+              creatorName: props.user.displayName,
+              creatorId: props.user.uid,
+              locationLat: lat,
+              locationLng: lng,
+              mapViewBound: bound,
+              tripId: tripId,
+              creatorEmail: props.user.email,
+              coverImgUrl: coverImgUrl.response.results[0].urls.regular,
+            };
+            set(newTripRef, trip);
+            props.setTripGeolocation({ lat: lat, lng: lng });
+            props.setMapViewBound(bound);
+          });
         return tripId;
       })
       .catch((e) => {
