@@ -26,7 +26,7 @@ import { useTheme } from "@mui/material/styles";
 import { createApi } from "unsplash-js";
 
 import { auth, database } from "../../firebase";
-import { set, ref, push, update } from "firebase/database";
+import { set, ref, push, update, runTransaction } from "firebase/database";
 
 import { useNavigate } from "react-router-dom";
 
@@ -92,6 +92,22 @@ export default function Home(props) {
         const tripsRef = ref(database, DB_TRIPS_KEY);
         const newTripRef = push(tripsRef);
         const tripId = newTripRef.key;
+        props.setTripGeolocation({ lat: lat, lng: lng });
+        props.setMapViewBound(bound);
+        const trip = {
+          country: location,
+          startDate: startDate,
+          endDate: endDate,
+          budget: budget,
+          creatorName: props.user.displayName,
+          creatorId: props.user.uid,
+          locationLat: lat,
+          locationLng: lng,
+          mapViewBound: bound,
+          tripId: tripId,
+          creatorEmail: props.user.email,
+        };
+        set(newTripRef, trip);
 
         unsplash.search
           .getPhotos({
@@ -102,23 +118,15 @@ export default function Home(props) {
           })
           .then((coverImgUrl) => {
             console.log(coverImgUrl.response.results[0].urls.regular);
-            const trip = {
-              country: location,
-              startDate: startDate,
-              endDate: endDate,
-              budget: budget,
-              creatorName: props.user.displayName,
-              creatorId: props.user.uid,
-              locationLat: lat,
-              locationLng: lng,
-              mapViewBound: bound,
-              tripId: tripId,
-              creatorEmail: props.user.email,
-              coverImgUrl: coverImgUrl.response.results[0].urls.regular,
-            };
-            set(newTripRef, trip);
-            props.setTripGeolocation({ lat: lat, lng: lng });
-            props.setMapViewBound(bound);
+            runTransaction(newTripRef, (trip) => {
+              if (trip) {
+                if (!trip.coverImgUrl) {
+                  trip.coverImgUrl =
+                    coverImgUrl.response.results[0].urls.regular;
+                }
+              }
+              return trip;
+            });
           });
         return tripId;
       })
