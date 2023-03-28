@@ -47,6 +47,8 @@ function LeftCol(props) {
   const [tripDetails, setTripDetails] = useState(null);
   const [item, setItem] = useState([]);
   const [scrollTarget, setSrcollTarget] = useState(null);
+  const [selectedIndex, getSelectedIndex] = useState("Interested Places");
+  const [coverImg, setCoverImg] = useState("");
   const datesRef = useRef(null);
 
   const { trip, user } = props;
@@ -55,6 +57,7 @@ function LeftCol(props) {
     const tripRef = ref(database, `trips/${trip}`);
     onValue(tripRef, (snapshot) => {
       setTripDetails(snapshot.val());
+      setCoverImg(snapshot.val().coverImgUrl);
     });
   }, []);
 
@@ -143,7 +146,25 @@ function LeftCol(props) {
         {["Interested Places", "Packing List", "Documents"].map(
           (text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton onClick={(e) => getSelection(e.target.innerText)}>
+              <ListItemButton
+                selected={selectedIndex === text}
+                onClick={(e) => {
+                  getSelection(e.target.innerText);
+                  getSelectedIndex(e.target.innerText);
+                }}
+                sx={{
+                  "&.Mui-selected": {
+                    backgroundColor: "#a5c4b6",
+                  },
+                  "&.Mui-focusVisible": {
+                    backgroundColor: "#77A690",
+                  },
+                  ":hover": {
+                    backgroundColor: "#d3e2db",
+                  },
+                }}
+              >
+                {console.log(text)}
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
@@ -157,7 +178,24 @@ function LeftCol(props) {
       <List>
         {["Itinerary"].map((text, index) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton onClick={(e) => getSelection(e.target.innerText)}>
+            <ListItemButton
+              selected={selectedIndex === text}
+              onClick={(e) => {
+                getSelection(e.target.innerText);
+                getSelectedIndex(e.target.innerText);
+              }}
+              sx={{
+                "&.Mui-selected": {
+                  backgroundColor: "#a5c4b6",
+                },
+                "&.Mui-focusVisible": {
+                  backgroundColor: "#77A690",
+                },
+                ":hover": {
+                  backgroundColor: "#d3e2db",
+                },
+              }}
+            >
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
@@ -329,8 +367,8 @@ function LeftCol(props) {
         <Box>
           <Box>
             <img
-              src="https://media.istockphoto.com/id/876560704/photo/fuji-japan-in-spring.jpg?s=612x612&w=0&k=20&c=j1VZlzfNcsjQ4q4yHXJEohSrBZJf6nUhh2_smM4eioQ="
-              alt="japan"
+              src={coverImg}
+              alt="cover image"
               style={{ width: "100%", height: "275px", objectFit: "cover" }}
             />
           </Box>

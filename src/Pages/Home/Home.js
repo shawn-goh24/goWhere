@@ -16,13 +16,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EventNoteIcon from "@mui/icons-material/EventNote";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import hero from "../../Assets/hero-1920x890.png";
 import paris from "../../Assets/paris.jpg";
 import "./Home.css";
 import countryList from "react-select-country-list";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { createApi } from "unsplash-js";
 
 import { auth, database } from "../../firebase";
 import { set, ref, push, update } from "firebase/database";
@@ -31,11 +32,16 @@ import { useNavigate } from "react-router-dom";
 
 const DB_TRIPS_KEY = "trips";
 
+const unsplash = createApi({
+  accessKey: process.env.REACT_APP_UNSPLASH_KEY,
+});
+
 export default function Home(props) {
   const [location, setLocation] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [budget, setBudget] = useState(0);
+  const [sampleImg, setSampleImg] = useState([]);
   const options = useMemo(() => countryList().getData(), []);
 
   const navigate = useNavigate();
@@ -87,23 +93,33 @@ export default function Home(props) {
         const newTripRef = push(tripsRef);
         const tripId = newTripRef.key;
 
-        const trip = {
-          country: location,
-          startDate: startDate,
-          endDate: endDate,
-          budget: budget,
-          creatorName: props.user.displayName,
-          creatorId: props.user.uid,
-          locationLat: lat,
-          locationLng: lng,
-          mapViewBound: bound,
-          tripId: tripId,
-          creatorEmail: props.user.email,
-        };
-        set(newTripRef, trip);
-        props.setTripGeolocation({ lat: lat, lng: lng });
-        props.setMapViewBound(bound);
-
+        unsplash.search
+          .getPhotos({
+            query: location,
+            page: 1,
+            perPage: 10,
+            orientation: "landscape",
+          })
+          .then((coverImgUrl) => {
+            console.log(coverImgUrl.response.results[0].urls.regular);
+            const trip = {
+              country: location,
+              startDate: startDate,
+              endDate: endDate,
+              budget: budget,
+              creatorName: props.user.displayName,
+              creatorId: props.user.uid,
+              locationLat: lat,
+              locationLng: lng,
+              mapViewBound: bound,
+              tripId: tripId,
+              creatorEmail: props.user.email,
+              coverImgUrl: coverImgUrl.response.results[0].urls.regular,
+            };
+            set(newTripRef, trip);
+            props.setTripGeolocation({ lat: lat, lng: lng });
+            props.setMapViewBound(bound);
+          });
         return tripId;
       })
       .catch((e) => {
@@ -119,6 +135,21 @@ export default function Home(props) {
     return newDate;
   };
 
+  useEffect(() => {
+    unsplash.search
+      .getPhotos({
+        query: "top places in the world",
+        page: 1,
+        perPage: 10,
+        orientation: "landscape",
+      })
+      .then((result) => {
+        setSampleImg(result.response.results);
+      });
+  }, []);
+
+  console.log(sampleImg);
+
   return (
     <>
       <Container name="hero">
@@ -128,151 +159,275 @@ export default function Home(props) {
           width="100%"
           style={{ borderRadius: "30px" }}
         />
-        <Paper
-          elevation={8}
-          sx={{
-            display: "flex",
-            justifyContent: "space-around",
-            p: "25px 10px",
-            m: "0px 10%",
-            position: "relative",
-            top: "-55px",
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
-          }}
-        >
-          <form onSubmit={planNow} style={{ width: "100%" }}>
+        {isSmallScreen ? (
+          <Paper
+            elevation={8}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              p: "25px 10px",
+              m: "0px 10%",
+              position: "relative",
+              top: "-55px",
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+            }}
+          >
+            <form onSubmit={planNow} style={{ width: "100%" }}>
+              <Grid
+                container
+                direction="column"
+                justifyContent="center"
+                textAlign="center"
+                alignItems="center"
+                spacing={1}
+              >
+                <Grid item>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    {/* <FmdGoodIcon sx={{ color: "#77a690" }} /> */}
+                    <Autocomplete
+                      options={options}
+                      renderInput={(params) => (
+                        <TextField
+                          required
+                          sx={{ width: "215px" }}
+                          variant="standard"
+                          {...params}
+                          label="Select Country"
+                        />
+                      )}
+                      onChange={(event, newValue) => {
+                        try {
+                          setLocation(
+                            JSON.stringify(newValue["label"]).replace(
+                              /["]/g,
+                              ""
+                            )
+                          );
+                        } catch (error) {
+                          console.log(error);
+                        }
+                      }}
+                    />
+                  </Box>
+                </Grid>
+                <Divider orientation="vertical" flexItem />
+                <Grid item>
+                  <Box
+                    sx={{
+                      color: "#77a690",
+                    }}
+                  >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DesktopDatePicker
+                        label="Start Date"
+                        sx={{ width: "175px", mb: 1 }}
+                        onChange={(date) => setStartDate(onDateChange(date))}
+                      />
+                      <DesktopDatePicker
+                        label="End Date"
+                        sx={{ width: "175px" }}
+                        onChange={(date) => setEndDate(onDateChange(date))}
+                      />
+                    </LocalizationProvider>
+                  </Box>
+                </Grid>
+                <Divider orientation="vertical" flexItem />
+                <Grid item>
+                  <Button
+                    className="btn-green"
+                    variant="contained"
+                    size="small"
+                    type="submit"
+                  >
+                    Plan Now
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          </Paper>
+        ) : (
+          <Paper
+            elevation={8}
+            sx={{
+              display: "flex",
+              justifyContent: "space-around",
+              p: "25px 10px",
+              m: "0px 10%",
+              position: "relative",
+              top: "-55px",
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+            }}
+          >
+            <form onSubmit={planNow} style={{ width: "100%" }}>
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-around"
+                alignItems="center"
+              >
+                <Grid item>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <FmdGoodIcon sx={{ color: "#77a690" }} />
+                    <Autocomplete
+                      options={options}
+                      renderInput={(params) => (
+                        <TextField
+                          required
+                          sx={{ width: "215px" }}
+                          variant="standard"
+                          {...params}
+                          label="Select Country"
+                        />
+                      )}
+                      onChange={(event, newValue) => {
+                        try {
+                          setLocation(
+                            JSON.stringify(newValue["label"]).replace(
+                              /["]/g,
+                              ""
+                            )
+                          );
+                        } catch (error) {
+                          console.log(error);
+                        }
+                      }}
+                    />
+                  </Box>
+                </Grid>
+                <Divider orientation="vertical" flexItem />
+                <Grid item>
+                  <Box sx={{ color: "#77a690" }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DesktopDatePicker
+                        label="Start Date"
+                        sx={{ width: "175px", mr: "15px" }}
+                        onChange={(date) => setStartDate(onDateChange(date))}
+                      />
+                      <DesktopDatePicker
+                        label="End Date"
+                        sx={{ width: "175px" }}
+                        onChange={(date) => setEndDate(onDateChange(date))}
+                      />
+                    </LocalizationProvider>
+                  </Box>
+                </Grid>
+                <Divider orientation="vertical" flexItem />
+                <Grid item>
+                  <Button
+                    className="btn-green"
+                    variant="contained"
+                    size="small"
+                    type="submit"
+                  >
+                    Plan Now
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          </Paper>
+        )}
+      </Container>
+      <Box name="plan-share-choose" sx={{ backgroundColor: "#F2F2F2" }}>
+        {isSmallScreen ? (
+          <Container maxWidth="lg">
             <Grid
               container
+              minHeight={300}
+              direction="column"
+              justifyContent="center"
+              alignItems="center"
+              textAlign="center"
+              spacing={3}
+              py={2}
+            >
+              <Grid item>
+                <Box sx={{ width: "205px" }}>
+                  <EventNoteIcon
+                    sx={{ width: "70px", height: "70px", color: "#77a690" }}
+                  />
+                  <Typography variant="h5" sx={{ fontWeight: "700" }}>
+                    PLAN YOUR MOVE
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box sx={{ width: "205px" }}>
+                  <EventNoteIcon
+                    sx={{ width: "70px", height: "70px", color: "#77a690" }}
+                  />
+                  <Typography variant="h5" sx={{ fontWeight: "700" }}>
+                    SHARE THE ADVENTURE
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box sx={{ width: "205px" }}>
+                  <EventNoteIcon
+                    sx={{ width: "70px", height: "70px", color: "#77a690" }}
+                  />
+                  <Typography variant="h5" sx={{ fontWeight: "700" }}>
+                    CHOOSE YOUR DESTINY
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Container>
+        ) : (
+          <Container maxWidth="lg">
+            <Grid
+              container
+              minHeight={300}
               direction="row"
-              justifyContent="space-around"
+              justifyContent="space-evenly"
               alignItems="center"
             >
               <Grid item>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <FmdGoodIcon sx={{ color: "#77a690" }} />
-                  <Autocomplete
-                    options={options}
-                    renderInput={(params) => (
-                      <TextField
-                        required
-                        sx={{ width: "215px" }}
-                        variant="standard"
-                        {...params}
-                        label="Select Country"
-                      />
-                    )}
-                    onChange={(event, newValue) => {
-                      try {
-                        setLocation(
-                          JSON.stringify(newValue["label"]).replace(/["]/g, "")
-                        );
-                      } catch (error) {
-                        console.log(error);
-                      }
-                    }}
+                <Box sx={{ width: "205px" }}>
+                  <EventNoteIcon
+                    sx={{ width: "70px", height: "70px", color: "#77a690" }}
                   />
+                  <Typography variant="h5" sx={{ fontWeight: "700" }}>
+                    PLAN YOUR MOVE
+                  </Typography>
                 </Box>
               </Grid>
-              <Divider orientation="vertical" flexItem />
               <Grid item>
-                <Box sx={{ color: "#77a690" }}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DesktopDatePicker
-                      label="Start Date"
-                      sx={{ width: "175px", mr: "15px" }}
-                      onChange={(date) => setStartDate(onDateChange(date))}
-                    />
-                    <DesktopDatePicker
-                      label="End Date"
-                      sx={{ width: "175px" }}
-                      onChange={(date) => setEndDate(onDateChange(date))}
-                    />
-                  </LocalizationProvider>
+                <Box sx={{ width: "205px" }}>
+                  <EventNoteIcon
+                    sx={{ width: "70px", height: "70px", color: "#77a690" }}
+                  />
+                  <Typography variant="h5" sx={{ fontWeight: "700" }}>
+                    SHARE THE ADVENTURE
+                  </Typography>
                 </Box>
               </Grid>
-              {/* <Divider orientation="vertical" flexItem /> */}
-              {/* <Grid item>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <AttachMoneyIcon sx={{ color: "#77a690" }} />
-                  <FormControl>
-                    <Input
-                      placeholder="Budget"
-                      id="standard-adornment-amount"
-                      type="number"
-                      onChange={(event) => setBudget(event.target.value)}
-                      sx={{ width: "175px" }}
-                    />
-                  </FormControl>
-                </Box>
-              </Grid> */}
-              <Divider orientation="vertical" flexItem />
               <Grid item>
-                <Button
-                  className="btn-green"
-                  variant="contained"
-                  size="small"
-                  type="submit"
-                >
-                  Plan Now
-                </Button>
+                <Box sx={{ width: "205px" }}>
+                  <EventNoteIcon
+                    sx={{ width: "70px", height: "70px", color: "#77a690" }}
+                  />
+                  <Typography variant="h5" sx={{ fontWeight: "700" }}>
+                    CHOOSE YOUR DESTINY
+                  </Typography>
+                </Box>
               </Grid>
             </Grid>
-          </form>
-        </Paper>
-      </Container>
-      <Box name="plan-share-choose" sx={{ backgroundColor: "#F2F2F2" }}>
-        <Container maxWidth="lg">
-          <Grid
-            container
-            minHeight={300}
-            direction="row"
-            justifyContent="space-evenly"
-            alignItems="center"
-          >
-            <Grid item>
-              <Box sx={{ width: "205px" }}>
-                <EventNoteIcon
-                  sx={{ width: "70px", height: "70px", color: "#77a690" }}
-                />
-                <Typography variant="h5" sx={{ fontWeight: "700" }}>
-                  PLAN YOUR MOVE
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item>
-              <Box sx={{ width: "205px" }}>
-                <EventNoteIcon
-                  sx={{ width: "70px", height: "70px", color: "#77a690" }}
-                />
-                <Typography variant="h5" sx={{ fontWeight: "700" }}>
-                  SHARE THE ADVENTURE
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item>
-              <Box sx={{ width: "205px" }}>
-                <EventNoteIcon
-                  sx={{ width: "70px", height: "70px", color: "#77a690" }}
-                />
-                <Typography variant="h5" sx={{ fontWeight: "700" }}>
-                  CHOOSE YOUR DESTINY
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
+          </Container>
+        )}
       </Box>
       <Box name="destination">
         <Container maxWidth="lg">
@@ -288,18 +443,38 @@ export default function Home(props) {
                 width: "100%",
               }}
             >
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                  width: "100%",
-                }}
-              >
-                <div className="line" />
-                <Typography variant="h4">Destination</Typography>
-              </Box>
+              {isSmallScreen ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%",
+                    my: 4,
+                  }}
+                >
+                  <Typography
+                    variant="h4"
+                    sx={{ fontSize: "25px", fontWeight: "bold" }}
+                  >
+                    Destination
+                  </Typography>
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    width: "100%",
+                  }}
+                >
+                  <div className="line" />
+                  <Typography variant="h4">Destination</Typography>
+                </Box>
+              )}
             </Box>
             <Box
               sx={{
@@ -309,7 +484,12 @@ export default function Home(props) {
               }}
             >
               {isSmallScreen ? (
-                <Grid container justifyContent="space-between">
+                <Grid
+                  container
+                  direction="column"
+                  alignItems="center"
+                  spacing={3}
+                >
                   <Grid item>
                     <img src={paris} alt="paris" className="destination" />
                   </Grid>
@@ -341,13 +521,25 @@ export default function Home(props) {
               )}
             </Box>
             <Box>
-              <Typography variant="h5">And many more ...</Typography>
+              {isSmallScreen ? (
+                <Typography variant="h5" sx={{ fontSize: "18px", mb: 2 }}>
+                  And many more ...
+                </Typography>
+              ) : (
+                <Typography variant="h5">And many more ...</Typography>
+              )}
             </Box>
           </Grid>
         </Container>
       </Box>
       <Box name="footer" className="layout" sx={{ backgroundColor: "#F2F2F2" }}>
-        <Typography variant="subtitle2">FOR PROJECT PURPOSE ONLY</Typography>
+        {isSmallScreen ? (
+          <Typography variant="subtitle2" sx={{ fontSize: "10px" }}>
+            FOR PROJECT PURPOSE ONLY
+          </Typography>
+        ) : (
+          <Typography variant="subtitle2">FOR PROJECT PURPOSE ONLY</Typography>
+        )}
       </Box>
     </>
   );
