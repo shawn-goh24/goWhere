@@ -107,7 +107,9 @@ export default function InterestedPlaces(props) {
   };
 
   const items = item.map((item) => {
-    // console.log(user);
+    console.log("Interested Places START");
+    console.log(item);
+    console.log("Interested Places END");
     return (
       <Grid item xs={12} key={item.uid}>
         <Place
@@ -119,6 +121,7 @@ export default function InterestedPlaces(props) {
           source="InterestedPlace"
           setSnackStatus={props.setSnackStatus}
           snackStatus={props.snackStatus}
+          updatePlaceNum={props.updatePlaceNum}
         />
       </Grid>
     );
@@ -159,7 +162,6 @@ export default function InterestedPlaces(props) {
       });
   };
 
-  console.log("change");
   return (
     <Box sx={{ pb: 4 }}>
       <Box name="title">

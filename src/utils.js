@@ -385,6 +385,12 @@ export const generateNextId = (placesArr) => {
   return nextId;
 };
 
+/**
+ * Function to create and object from places array
+ * used to update Firebase Realtime Database
+ * @param {array} arr
+ * @returns {object} Places object
+ */
 export const createUpdateObj = (arr) => {
   const obj = {};
 
@@ -393,5 +399,12 @@ export const createUpdateObj = (arr) => {
     obj[place.uid] = place;
   });
 
+  return obj;
+};
+
+export const resetDates = (obj) => {
+  for (const place in obj) {
+    obj[place].date = "";
+  }
   return obj;
 };

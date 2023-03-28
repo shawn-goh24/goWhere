@@ -2,7 +2,7 @@ import { Box, IconButton, Paper, Typography } from "@mui/material";
 import React, { useState } from "react";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
-import { ref, runTransaction, remove } from "firebase/database";
+import { ref, runTransaction, remove, get } from "firebase/database";
 import { database } from "../firebase";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
@@ -165,7 +165,11 @@ export default function Place(props) {
           open: true,
           msg: "Place removed",
         });
+        setIsOpen(false);
         console.log("Successful remove from itinerary");
+      })
+      .catch((e) => {
+        console.log(e);
       });
   };
 
@@ -181,7 +185,11 @@ export default function Place(props) {
           open: true,
           msg: "Place deleted",
         });
+        setIsOpen(false);
         console.log("Successful deleted from trips");
+      })
+      .catch((e) => {
+        console.log(e);
       });
   };
 
@@ -296,7 +304,7 @@ export default function Place(props) {
                         variant="standard"
                         value={"SGD " + cost}
                         multiline
-                        defaultValue={0}
+                        // defaultValue={0}
                         onChange={(e) => handleCostChange(e.target.value)}
                         onBlur={() => handleCostFocusOut(item.uid)}
                         InputProps={{

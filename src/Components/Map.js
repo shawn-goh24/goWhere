@@ -113,6 +113,7 @@ export default function Map(props) {
           let marker = new window.google.maps.Marker({
             position: { lat: item.lat, lng: item.lng },
             map,
+            title: `${item.name}\n${item.address}`,
           });
 
           bounds.extend(marker.position);
@@ -122,7 +123,8 @@ export default function Map(props) {
     } else {
       props.setModalOpen(true);
     }
-  }, []);
+  });
+  // remove useEffect to only run once so that markers will be updated
 
   return (
     <>

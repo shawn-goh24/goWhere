@@ -22,9 +22,25 @@ import InterestedPlaces from "./InterestedPlaces";
 import PackingList from "./PackingList";
 import Documents from "./Documents";
 import Itinerary from "./Itinerary";
-import { Paper, Snackbar, Alert } from "@mui/material";
+import {
+  Paper,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  Button,
+} from "@mui/material";
 import { database } from "../../firebase";
-import { getDatesInRange } from "../../utils";
+import {
+  getDatesInRange,
+  resetDates,
+  getPlaces,
+  sortPlaces,
+  createUpdateObj,
+  createArray,
+} from "../../utils";
 import {
   Timeline,
   TimelineItem,
@@ -34,8 +50,10 @@ import {
   TimelineContent,
   timelineItemClasses,
 } from "@mui/lab";
+import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-import { onValue, ref } from "firebase/database";
+import { onValue, ref, runTransaction, get, update } from "firebase/database";
 import SharedGroup from "../../Components/SharedGroup";
 
 const drawerWidth = 190;
@@ -51,6 +69,9 @@ function LeftCol(props) {
     open: false,
     msg: "",
   });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const datesRef = useRef(null);
 
   const { trip, user } = props;
@@ -219,6 +240,7 @@ function LeftCol(props) {
           item={item}
           snackStatus={snackStatus}
           setSnackStatus={setSnackStatus}
+          updatePlaceNum={updatePlaceNum}
         />
       );
     } else if (selection === "Packing List") {
@@ -236,6 +258,7 @@ function LeftCol(props) {
           setSelection={setSelection}
           snackStatus={snackStatus}
           setSnackStatus={setSnackStatus}
+          updatePlaceNum={updatePlaceNum}
         />
       );
     }
@@ -243,6 +266,63 @@ function LeftCol(props) {
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
+
+  const handleDatesClick = () => {
+    console.log("Dates Clicked");
+    setDialogOpen(true);
+  };
+
+  const onDateChange = (date) => {
+    const newMonth = date["$M"] + 1;
+    const newDate = `${date["$D"]}/${newMonth}/${date["$y"]}`;
+    console.log(newDate);
+    return newDate;
+  };
+
+  const handleChangeDate = () => {
+    const tripRef = ref(database, `trips/${trip}`);
+    runTransaction(tripRef, (trip) => {
+      if (trip) {
+        trip.startDate = startDate;
+        trip.endDate = endDate;
+      }
+      return trip;
+    });
+    const placesRef = ref(database, `trips/${trip}/places`);
+    runTransaction(placesRef, (places) => {
+      if (places) {
+        places = resetDates(places);
+      }
+      return places;
+    });
+  };
+
+  const updatePlaceNum = (date) => {
+    const placeRef = ref(database, `trips/${trip}/places`);
+    return get(placeRef)
+      .then((snapshot) => {
+        const placesInDay = sortPlaces(
+          getPlaces(createArray(snapshot.val()), date)
+        );
+        // if (placesInDay.length === 0) {
+        //   throw new Error("No Array");
+        // }
+        return placesInDay;
+      })
+      .then((placesArr) => {
+        const placesObj = createUpdateObj(placesArr);
+        console.log("Inside updatePlaceNum - createUpdateObj");
+        console.log(placesObj);
+        return placesObj;
+      })
+      .then((placesObj) => {
+        console.log("Inside updatePlaceNum - update");
+        update(placeRef, placesObj);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
 
   return (
     <>
@@ -365,7 +445,11 @@ function LeftCol(props) {
                 <Typography variant="h5" component="h1">
                   {tripDetails ? `${tripDetails.country}` : "Error"}
                 </Typography>
-                <Typography variant="subtitle" component="p">
+                <Typography
+                  variant="subtitle"
+                  component="p"
+                  onClick={handleDatesClick}
+                >
                   {tripDetails
                     ? `${tripDetails.startDate} - ${tripDetails.endDate}`
                     : "Error"}
@@ -385,6 +469,40 @@ function LeftCol(props) {
           {snackStatus.msg}
         </Alert>
       </Snackbar>
+      <Dialog
+        open={dialogOpen}
+        sx={{
+          "& .MuiDialog-container": {
+            "& .MuiPaper-root": {
+              padding: "5px",
+            },
+          },
+        }}
+      >
+        <DialogTitle>Change Date</DialogTitle>
+        <DialogContent>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DesktopDatePicker
+              label="Start Date"
+              sx={{ width: "175px", mr: "15px" }}
+              onChange={(date) => setStartDate(onDateChange(date))}
+            />
+            <DesktopDatePicker
+              label="End Date"
+              sx={{ width: "175px" }}
+              onChange={(date) => setEndDate(onDateChange(date))}
+            />
+          </LocalizationProvider>
+        </DialogContent>
+        <DialogActions>
+          <Button className="btn-green" autoFocus onClick={handleChangeDate}>
+            Change Date
+          </Button>
+          <Button onClick={() => setDialogOpen(false)} sx={{ color: "black" }}>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

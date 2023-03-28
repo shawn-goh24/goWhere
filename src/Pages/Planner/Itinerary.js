@@ -132,27 +132,6 @@ export default function Itinerary(props) {
     }
   };
 
-  const updatePlaceNum = (date) => {
-    const placeRef = ref(database, `trips/${trip}/places`);
-    return get(placeRef)
-      .then((snapshot) => {
-        const placesInDay = sortPlaces(
-          getPlaces(createArray(snapshot.val()), date)
-        );
-        return placesInDay;
-      })
-      .then((placesArr) => {
-        const placesObj = createUpdateObj(placesArr);
-        return placesObj;
-      })
-      .then((placesObj) => {
-        update(placeRef, placesObj);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
-
   //console.log(itinerary);
 
   return (
@@ -197,7 +176,7 @@ export default function Itinerary(props) {
                             handleDrop={handleDrop}
                             setSnackStatus={props.setSnackStatus}
                             snackStatus={props.snackStatus}
-                            updatePlaceNum={updatePlaceNum}
+                            updatePlaceNum={props.updatePlaceNum}
                           />
                         </Grid>
                       )
