@@ -32,23 +32,26 @@ export default function InterestedPlaces(props) {
   const [location, setLocation] = useState("");
   const [cost, setCost] = useState(0);
   const [note, setNote] = useState("");
-  // const [item, setItem] = useState([]);
+  const [item, setItem] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [dates, setDates] = useState([]);
   const [interest, setInterest] = useState({});
 
-  const { tripDetails, trip, user, item } = props;
+  // const { tripDetails, trip, user, item } = props;
+  const { tripDetails, trip, user } = props;
 
-  // useEffect(() => {
-  //   const placeRef = ref(database, `trips/${trip}/places`);
-  //   onValue(placeRef, (data) => {
-  //     if (data.val()) {
-  //       const tmpItem = [];
-  //       setItem([...tmpItem, ...Object.values(data.val())]);
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    const placeRef = ref(database, `trips/${trip}/places`);
+    onValue(placeRef, (data) => {
+      if (data.val()) {
+        const tmpItem = [];
+        setItem([...tmpItem, ...Object.values(data.val())]);
+      } else if (data.val() === null || data.val() === undefined) {
+        setItem([]);
+      }
+    });
+  }, []);
 
   const handleAddPlace = () => {
     // e.preventDefault(); // Will show map reload if use onSubmit
@@ -106,26 +109,23 @@ export default function InterestedPlaces(props) {
     setInterest({});
   };
 
-  const items = item.map((item) => {
-    console.log("Interested Places START");
-    console.log(item);
-    console.log("Interested Places END");
-    return (
-      <Grid item xs={12} key={item.uid}>
-        <Place
-          key={item.uid}
-          item={item}
-          trip={trip}
-          user={user}
-          handleAddItinerary={handleAddItinerary}
-          source="InterestedPlace"
-          setSnackStatus={props.setSnackStatus}
-          snackStatus={props.snackStatus}
-          updatePlaceNum={props.updatePlaceNum}
-        />
-      </Grid>
-    );
-  });
+  // const items = item.map((item) => {
+  //   return (
+  //     <Grid item xs={12} key={item.uid}>
+  //       <Place
+  //         key={item.uid}
+  //         item={item}
+  //         trip={trip}
+  //         user={user}
+  //         handleAddItinerary={handleAddItinerary}
+  //         source="InterestedPlace"
+  //         setSnackStatus={props.setSnackStatus}
+  //         snackStatus={props.snackStatus}
+  //         updatePlaceNum={props.updatePlaceNum}
+  //       />
+  //     </Grid>
+  //   );
+  // });
 
   const addToDate = (placeId, selectedDate) => {
     console.log("addToDate");
@@ -161,6 +161,10 @@ export default function InterestedPlaces(props) {
         });
       });
   };
+
+  // console.log("Interested Places START");
+  // console.log(item);
+  // console.log("Interested Places END");
 
   return (
     <Box sx={{ pb: 4 }}>
@@ -239,7 +243,23 @@ export default function InterestedPlaces(props) {
       </Box>
       <Box name="contents">
         <Grid container gap={3}>
-          {items}
+          {/* {items} */}
+          {item &&
+            item.map((item) => (
+              <Grid item xs={12} key={item.uid}>
+                <Place
+                  key={item.uid}
+                  item={item}
+                  trip={trip}
+                  user={user}
+                  handleAddItinerary={handleAddItinerary}
+                  source="InterestedPlace"
+                  setSnackStatus={props.setSnackStatus}
+                  snackStatus={props.snackStatus}
+                  updatePlaceNum={props.updatePlaceNum}
+                />
+              </Grid>
+            ))}
         </Grid>
       </Box>
       <AddToItinerary

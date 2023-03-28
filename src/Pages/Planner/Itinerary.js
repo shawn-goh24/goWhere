@@ -33,28 +33,27 @@ import { database } from "../../firebase";
 
 export default function Itinerary(props) {
   const { tripDetails, user, trip, item } = props;
-  // const [itinerary, setItinerary] = useState(null);
   const [currentItem, setCurrentItem] = useState(null);
 
-  //const [itineraryItems, setItineraryItems] = useState(getItineraryItems(item));
+  const [itineraryItems, setItineraryItems] = useState(
+    item && getItineraryItems(item)
+  );
 
-  // useEffect(() => {
-  //   setItinerary(createItinerary(tripDetails));
-  // }, [tripDetails]);
-
-  // useEffect(() => {
-  //   const temp = item && getItineraryItems(item);
-  //   setItineraryItems(temp);
-  // }, [item]);
+  useEffect(() => {
+    const placeRef = ref(database, `trips/${trip}/places`);
+    onValue(placeRef, (data) => {
+      if (data.val()) {
+        const newItem = getItineraryItems(data.val());
+        const tmpItem = [];
+        setItineraryItems([...tmpItem, ...newItem]);
+      } else if (data.val() === null || data.val() === undefined) {
+        setItineraryItems([]);
+      }
+    });
+  }, []);
 
   const tripDates =
     tripDetails && getDatesInRange(tripDetails.startDate, tripDetails.endDate);
-
-  const itineraryItems = item && getItineraryItems(item);
-
-  // console.log("Itinerary Items START");
-  // console.log(itineraryItems);
-  // console.log("Itinerary Items END");
 
   let itemDragged = useRef();
   let itemDraggedDate = useRef();

@@ -297,6 +297,17 @@ function LeftCol(props) {
     });
   };
 
+  // const updateTrip = () => {
+  //   const tripRef = ref(database, `trips/${trip}`);
+  //   get(tripRef).then((snapshot) => {
+  //     const newTrip = snapshot.val();
+  //     console.log("Update Trip START");
+  //     console.log(newTrip);
+  //     console.log("Update Trip END");
+  //     setTripDetails(newTrip);
+  //   });
+  // };
+
   const updatePlaceNum = (date) => {
     const placeRef = ref(database, `trips/${trip}/places`);
     return get(placeRef)
@@ -305,6 +316,7 @@ function LeftCol(props) {
           getPlaces(createArray(snapshot.val()), date)
         );
         // if (placesInDay.length === 0) {
+        //   updateTrip();
         //   throw new Error("No Array");
         // }
         return placesInDay;

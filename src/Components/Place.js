@@ -174,6 +174,7 @@ export default function Place(props) {
   };
 
   const deletePlace = (placeId) => {
+    console.log("Deleted button clicked");
     const placeRef = ref(database, `trips/${trip}/places/${placeId}`);
     remove(placeRef)
       .then(() => {
