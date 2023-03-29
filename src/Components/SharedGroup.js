@@ -372,7 +372,7 @@ export default function SharedGroup(props) {
             <DialogTitle
               sx={{ display: "flex", justifyContent: "space-between" }}
             >
-              <Typography sx={{ fontSize: "28px" }}>Invite friends</Typography>
+              <Typography sx={{ fontSize: "25px" }}>Invite friends</Typography>
               <IconButton
                 onClick={() => {
                   setOpen(!open);
@@ -384,7 +384,7 @@ export default function SharedGroup(props) {
               </IconButton>
             </DialogTitle>
             <DialogContent dividers>
-              <Box mb={2}>
+              {/* <Box mb={2}>
                 <TextField size="small" disabled value={link} />
                 <Button
                   className="btn-green"
@@ -393,7 +393,7 @@ export default function SharedGroup(props) {
                 >
                   {copied}
                 </Button>
-              </Box>
+              </Box> */}
               <Box component="form" onSubmit={handleSubmit} width="100%">
                 <TextField
                   fullWidth

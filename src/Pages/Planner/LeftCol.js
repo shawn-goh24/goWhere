@@ -175,36 +175,34 @@ function LeftCol(props) {
     <div>
       <Divider />
       <List>
-        {["Interested Places", "Packing List", "Documents"].map(
-          (text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton
-                selected={selectedIndex === text}
-                onClick={(e) => {
-                  getSelection(e.target.innerText);
-                  getSelectedIndex(e.target.innerText);
-                }}
-                sx={{
-                  "&.Mui-selected": {
-                    backgroundColor: "#a5c4b6",
-                  },
-                  "&.Mui-focusVisible": {
-                    backgroundColor: "#77A690",
-                  },
-                  ":hover": {
-                    backgroundColor: "#d3e2db",
-                  },
-                }}
-              >
-                {console.log(text)}
-                <ListItemIcon sx={{ minWidth: "30px" }}>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          )
-        )}
+        {["Interested Places"].map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton
+              selected={selectedIndex === text}
+              onClick={(e) => {
+                getSelection(e.target.innerText);
+                getSelectedIndex(e.target.innerText);
+              }}
+              sx={{
+                "&.Mui-selected": {
+                  backgroundColor: "#a5c4b6",
+                },
+                "&.Mui-focusVisible": {
+                  backgroundColor: "#77A690",
+                },
+                ":hover": {
+                  backgroundColor: "#d3e2db",
+                },
+              }}
+            >
+              {console.log(text)}
+              <ListItemIcon sx={{ minWidth: "30px" }}>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
       <Divider />
       <List>
