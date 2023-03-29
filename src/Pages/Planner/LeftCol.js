@@ -55,7 +55,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { onValue, ref, runTransaction, get, update } from "firebase/database";
 import SharedGroup from "../../Components/SharedGroup";
 
-const drawerWidth = 190;
+const drawerWidth = 210;
 
 function LeftCol(props) {
   const { window, interest, resetInterest } = props;
@@ -394,8 +394,10 @@ function LeftCol(props) {
           <Drawer
             container={container}
             variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
+            open={props.isSideBarOpen}
+            // open={mobileOpen}
+            onClose={props.handleSideOpen}
+            // onClose={handleDrawerToggle}
             ModalProps={{
               keepMounted: true, // Better open performance on mobile.
             }}
@@ -480,7 +482,7 @@ function LeftCol(props) {
                     <div style={{ display: "flex" }}>
                       {/* {`${tripDetails.startDate} - ${tripDetails.endDate}`} */}
 
-                      <IconButton aria-label="Example">
+                      <IconButton aria-label="calendar-button">
                         <CalendarMonthIcon sx={{ fontSize: 15 }} />
                       </IconButton>
                       <Typography

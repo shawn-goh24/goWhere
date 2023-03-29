@@ -16,6 +16,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import MenuIcon from "@mui/icons-material/Menu";
 import { auth } from "../firebase";
 
 export default function NavBar(props) {
@@ -62,6 +63,8 @@ export default function NavBar(props) {
     setAnchorElUser(null);
   };
 
+  console.log(props.currentLocation);
+
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
@@ -69,158 +72,87 @@ export default function NavBar(props) {
           position="static"
           style={{ backgroundColor: "#FFFFFF", boxShadow: "none" }}
         >
-          {isPlanner ? (
-            <>
-              <Box maxWidth="lg">
-                <Toolbar>
-                  <Typography
-                    component="div"
-                    sx={{
-                      flexGrow: 1,
-                      fontSize: { xs: "1.5rem", sm: "1.8rem" },
-                    }}
-                    style={{
-                      fontFamily: "Ribeye Marrow, cursive",
-                      color: "#53735E",
-                    }}
-                  >
-                    <Link
-                      to="/"
-                      style={{ textDecoration: "none", color: "#53735E" }}
-                    >
-                      goWhere
-                    </Link>
-                  </Typography>
-                  {user ? (
-                    <IconButton onClick={(e) => handleOpenUserMenu(e)}>
-                      <Avatar alt="User Photo" src={user.photoURL} />
-                    </IconButton>
-                  ) : (
-                    <>
-                      <Button
-                        name="login"
-                        variant="text"
-                        sx={{ color: "#000000", mr: 1 }}
-                        size={isSmallScreen ? "medium" : "large"}
-                        className="btn-text"
-                        onClick={handleLogin}
-                      >
-                        Login
-                      </Button>
-                      <Button
-                        name="signup"
-                        variant="contained"
-                        size={isSmallScreen ? "small" : "medium"}
-                        className="btn-green"
-                        onClick={handleSignup}
-                      >
-                        Signup
-                      </Button>
-                    </>
-                  )}
-                </Toolbar>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
+          <Container maxWidth="lg">
+            <Toolbar>
+              {props.isSmallScreen &&
+              props.currentLocation.includes("planner") ? (
+                <IconButton
+                  onClick={() => props.handleSideOpen()}
+                  sx={{ mr: 2 }}
                 >
-                  {settings.map((setting, index) => (
-                    <MenuItem
-                      key={index}
-                      onClick={handleCloseUserMenu}
-                      sx={{ padding: "0 15px", minWidth: "150px" }}
-                    >
-                      {setting}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
-            </>
-          ) : (
-            <Container maxWidth="lg">
-              <Toolbar>
-                <Typography
-                  component="div"
-                  sx={{ flexGrow: 1, fontSize: { xs: "1.5rem", sm: "1.8rem" } }}
-                  style={{
-                    fontFamily: "Ribeye Marrow, cursive",
-                    color: "#53735E",
-                  }}
-                >
-                  <Link
-                    to="/"
-                    style={{ textDecoration: "none", color: "#53735E" }}
-                  >
-                    goWhere
-                  </Link>
-                </Typography>
-                {user ? (
-                  <IconButton onClick={(e) => handleOpenUserMenu(e)}>
-                    <Avatar alt="User Photo" src={user.photoURL} />
-                  </IconButton>
-                ) : (
-                  <>
-                    <Button
-                      name="login"
-                      variant="text"
-                      sx={{ color: "#000000", mr: 1 }}
-                      size={isSmallScreen ? "medium" : "large"}
-                      className="btn-text"
-                      onClick={handleLogin}
-                    >
-                      Login
-                    </Button>
-                    <Button
-                      name="signup"
-                      variant="contained"
-                      size={isSmallScreen ? "small" : "medium"}
-                      className="btn-green"
-                      onClick={handleSignup}
-                    >
-                      Signup
-                    </Button>
-                  </>
-                )}
-              </Toolbar>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+                  <MenuIcon sx={{ color: "#53735E" }} />
+                </IconButton>
+              ) : null}
+              <Typography
+                component="div"
+                sx={{ flexGrow: 1, fontSize: { xs: "1.5rem", sm: "1.8rem" } }}
+                style={{
+                  fontFamily: "Ribeye Marrow, cursive",
+                  color: "#53735E",
                 }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
               >
-                {settings.map((setting, index) => (
-                  <MenuItem
-                    key={index}
-                    onClick={handleCloseUserMenu}
-                    sx={{ padding: "0 15px", minWidth: "150px" }}
+                <Link
+                  to="/"
+                  style={{ textDecoration: "none", color: "#53735E" }}
+                >
+                  goWhere
+                </Link>
+              </Typography>
+              {user ? (
+                <IconButton onClick={(e) => handleOpenUserMenu(e)}>
+                  <Avatar alt="User Photo" src={user.photoURL} />
+                </IconButton>
+              ) : (
+                <>
+                  <Button
+                    name="login"
+                    variant="text"
+                    sx={{ color: "#000000", mr: 1 }}
+                    size={isSmallScreen ? "medium" : "large"}
+                    className="btn-text"
+                    onClick={handleLogin}
                   >
-                    {setting}
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Container>
-          )}
+                    Login
+                  </Button>
+                  <Button
+                    name="signup"
+                    variant="contained"
+                    size={isSmallScreen ? "small" : "medium"}
+                    className="btn-green"
+                    onClick={handleSignup}
+                  >
+                    Signup
+                  </Button>
+                </>
+              )}
+            </Toolbar>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting, index) => (
+                <MenuItem
+                  key={index}
+                  onClick={handleCloseUserMenu}
+                  sx={{ padding: "0 15px", minWidth: "150px" }}
+                >
+                  {setting}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Container>
         </AppBar>
       </Box>
     </>

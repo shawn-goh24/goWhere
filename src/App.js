@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import NavBar from "./Components/NavBar";
 import NotFound from "./Pages/NotFound";
@@ -14,6 +14,8 @@ import Protected from "./Components/Protected";
 import { findTrips } from "./utils";
 import Planner from "./Pages/Planner";
 import SharedGroup from "./Components/SharedGroup";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 // Add react router and authentication here
 
@@ -26,9 +28,9 @@ function App() {
   const [user, setUser] = useState("");
   const [userTrips, setUserTrips] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-
   const [tripGeolocation, setTripGeolocation] = useState({});
   const [mapViewBound, setMapViewBound] = useState("");
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   // useEffect that run only once when component mount
   useEffect(() => {
@@ -164,6 +166,15 @@ function App() {
     }
   }, []);
 
+  // Check if current screen size is xs
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const handleSideOpen = () => {
+    console.log("side clicked");
+    setIsSideBarOpen(!isSideBarOpen);
+  };
+
   return (
     <>
       {/* <Planner /> */}
@@ -176,6 +187,9 @@ function App() {
               handleLogin={handleLoginDialog}
               handleSignup={handleSignupDialog}
               handleLogout={handleLogout}
+              isSmallScreen={isSmallScreen}
+              currentLocation={useLocation().pathname}
+              handleSideOpen={handleSideOpen}
             />
           }
         />
@@ -219,6 +233,8 @@ function App() {
                 mapLoaded={mapLoaded}
                 addScript={addScript}
                 user={user}
+                isSideBarOpen={isSideBarOpen}
+                handleSideOpen={handleSideOpen}
               />
             </Protected>
           }

@@ -94,6 +94,8 @@ export default function Planner(props) {
             trip={trip}
             user={user}
             resetInterest={resetInterest}
+            isSideBarOpen={props.isSideBarOpen}
+            handleSideOpen={props.handleSideOpen}
           />
         </Grid>
         <Grid item sm={4} md={5} lg={6}>
