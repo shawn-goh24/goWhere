@@ -30,28 +30,34 @@ export default function NavBar(props) {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
   const settings = [
-    <div
+    <Link
+      to={user ? `/user/${user.displayName}` : ""}
       style={{
+        textDecoration: "none",
+        color: "black",
+        width: "100%",
+        height: "35px",
         display: "flex",
         gap: "10px",
         marginLeft: "-1px",
+        alignItems: "center",
+        padding: "0 15px",
       }}
     >
-      <PersonIcon />{" "}
-      <Link
-        to={user ? `/user/${user.displayName}` : ""}
-        style={{ textDecoration: "none", color: "black" }}
-      >
-        <Typography>Profile</Typography>
-      </Link>
-    </div>,
+      <PersonIcon /> <Typography>Profile</Typography>
+    </Link>,
     <div
       style={{
         display: "flex",
         gap: "10px",
+        width: "100%",
+        height: "35px",
+        alignItems: "center",
+        padding: "0 15px",
       }}
+      onClick={handleLogout}
     >
-      <LogoutIcon /> <Typography onClick={handleLogout}>Log out</Typography>
+      <LogoutIcon /> <Typography>Log out</Typography>
     </div>,
   ];
 
@@ -146,7 +152,7 @@ export default function NavBar(props) {
                 <MenuItem
                   key={index}
                   onClick={handleCloseUserMenu}
-                  sx={{ padding: "0 15px", minWidth: "150px" }}
+                  sx={{ padding: "0", minWidth: "150px" }}
                 >
                   {setting}
                 </MenuItem>
