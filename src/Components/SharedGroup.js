@@ -37,6 +37,7 @@ import {
   Link,
   Snackbar,
 } from "@mui/material";
+import { ReportGmailerrorred } from "@mui/icons-material";
 
 const drawerWidth = 240;
 const link = `${window.location.href}/shared`;
@@ -79,9 +80,36 @@ export default function SharedGroup(props) {
         }
       });
 
-      setAvatarGroup(filterUser);
+      const tmp2 = new Set();
+      const tmp3 = new Set();
+
+      shared.filter((user) => {
+        const tmp = user;
+        const editedTmp = tmp.replace("*", ".");
+        for (let item of users) {
+          if (item.email !== editedTmp) {
+            tmp2.add(editedTmp);
+          } else if (item.email === editedTmp) {
+            tmp3.add(editedTmp);
+          }
+        }
+      });
+
+      const tmp4 = [];
+      for (let i of tmp2) {
+        if (!tmp3.has(i)) {
+          console.log(i);
+          tmp4.push(i);
+        }
+      }
+
+      console.log(tmp4);
+
+      setAvatarGroup([...filterUser, ...tmp4]);
     });
   }, [shared]);
+
+  console.log(avatarGroup);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -292,8 +320,8 @@ export default function SharedGroup(props) {
   const avatars = avatarGroup.map((user) => {
     return (
       <Avatar
-        key={user.email}
-        alt={user.email}
+        key={user.email ? user.email : user}
+        alt={user.email ? user.email : user}
         src={user.avatarUrl ? user.avatarUrl : ""}
       />
     );
