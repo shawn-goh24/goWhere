@@ -14,8 +14,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import MailIcon from "@mui/icons-material/Mail";
-import MenuIcon from "@mui/icons-material/Menu";
-import Toolbar from "@mui/material/Toolbar";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import Typography from "@mui/material/Typography";
 import NavBar from "../../Components/NavBar";
 import InterestedPlaces from "./InterestedPlaces";
@@ -385,27 +384,6 @@ function LeftCol(props) {
         }}
       >
         <CssBaseline />
-        {/* <AppBar
-        position="fixed"
-        sx={{
-          ml: { sm: `${drawerWidth}px` },
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          backgroundColor: "white",
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <NavBar isPlanner={true} />
-        </Toolbar>
-      </AppBar> */}
         <Box
           component="nav"
           sx={{
@@ -500,9 +478,24 @@ function LeftCol(props) {
                   component="p"
                   onClick={handleDatesClick}
                 >
-                  {tripDetails
-                    ? `${tripDetails.startDate} - ${tripDetails.endDate}`
-                    : "Error"}
+                  {tripDetails ? (
+                    <div style={{ display: "flex" }}>
+                      {/* {`${tripDetails.startDate} - ${tripDetails.endDate}`} */}
+
+                      <IconButton aria-label="Example">
+                        <CalendarMonthIcon sx={{ fontSize: 15 }} />
+                      </IconButton>
+                      <Typography
+                        sx={{
+                          fontSize: "0.9375rem",
+                          cursor: "pointer",
+                          margin: "auto",
+                        }}
+                      >{`${tripDetails.startDate} - ${tripDetails.endDate}`}</Typography>
+                    </div>
+                  ) : (
+                    "Error"
+                  )}
                 </Typography>
               </Paper>
             </Box>
@@ -521,6 +514,7 @@ function LeftCol(props) {
       </Snackbar>
       <Dialog
         open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
         sx={{
           "& .MuiDialog-container": {
             "& .MuiPaper-root": {
@@ -530,7 +524,7 @@ function LeftCol(props) {
         }}
       >
         <DialogTitle>Change Date</DialogTitle>
-        <DialogContent>
+        <DialogContent style={{ paddingTop: "10px" }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DesktopDatePicker
               label="Start Date"
@@ -545,7 +539,12 @@ function LeftCol(props) {
           </LocalizationProvider>
         </DialogContent>
         <DialogActions>
-          <Button className="btn-green" autoFocus onClick={handleChangeDate}>
+          <Button
+            className="btn-green"
+            autoFocus
+            onClick={handleChangeDate}
+            style={{ color: "#FFFFFF" }}
+          >
             Change Date
           </Button>
           <Button onClick={() => setDialogOpen(false)} sx={{ color: "black" }}>
