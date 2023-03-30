@@ -251,7 +251,7 @@ export default function Place(props) {
             </Grid>
             <Grid item xs={11}>
               <Grid container>
-                <Grid item xs={12} sm={8} md={8}>
+                <Grid item xs={12} sm={7} md={8}>
                   <Typography
                     sx={{
                       fontSize: "1.2rem",
@@ -285,7 +285,7 @@ export default function Place(props) {
                     )
                   ) : null}
                 </Grid>
-                <Grid item xs={12} sm={4} md={4}>
+                <Grid item xs={12} sm={5} md={4}>
                   <Grid
                     container
                     justifyContent={{ sm: "flex-end", xs: "flex-start" }}
@@ -334,7 +334,7 @@ export default function Place(props) {
                         padding: "0 5px 0 0",
                       }}
                       sx={{ textAlign: { sm: "right", xs: "left" } }}
-                      sm={source === "InterestedPlace" ? 5 : 5}
+                      sm={source === "InterestedPlace" ? 6 : 5}
                       xs={source === "InterestedPlace" ? 3 : 5}
                     >
                       <IconButton

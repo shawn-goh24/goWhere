@@ -430,7 +430,7 @@ function LeftCol(props) {
         <Box
           component="nav"
           sx={{
-            width: { sm: drawerWidth },
+            width: { md: drawerWidth },
             flexShrink: { sm: 0 },
           }}
           aria-label="mailbox folders"
@@ -447,7 +447,7 @@ function LeftCol(props) {
               keepMounted: true, // Better open performance on mobile.
             }}
             sx={{
-              display: { xs: "block", sm: "none" },
+              display: { xs: "block", md: "none" },
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
@@ -464,7 +464,7 @@ function LeftCol(props) {
             }}
             variant="permanent"
             sx={{
-              display: { xs: "none", sm: "flex" },
+              display: { xs: "none", md: "flex" },
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,

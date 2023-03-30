@@ -168,7 +168,7 @@ function App() {
 
   // Check if current screen size is xs
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleSideOpen = () => {
     console.log("side clicked");
