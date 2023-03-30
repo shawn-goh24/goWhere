@@ -79,7 +79,8 @@ export default function AddToItinerary(props) {
           alignItems: "center",
         }}
       >
-        Add to Itinerary
+        {props.source === "itinerary" ? "Change Date" : "Add to Itinerary"}
+
         <IconButton onClick={() => handleClose()}>
           <CloseIcon />
         </IconButton>

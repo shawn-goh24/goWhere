@@ -267,25 +267,23 @@ export default function Place(props) {
                   >
                     Added by {item.addedBy}
                   </Typography>
-                  <Typography variant="subtitle2">
-                    {source !== "itinerary" ? (
-                      item.date ? (
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ color: "#575958", fontWeight: 400 }}
-                        >
-                          Date: {item.date}
-                        </Typography>
-                      ) : (
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ color: "#575958", fontWeight: 400 }}
-                        >
-                          <i> Not added to itinerary</i>
-                        </Typography>
-                      )
-                    ) : null}
-                  </Typography>
+                  {source !== "itinerary" ? (
+                    item.date ? (
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ color: "#575958", fontWeight: 400 }}
+                      >
+                        Date: {item.date}
+                      </Typography>
+                    ) : (
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ color: "#575958", fontWeight: 400 }}
+                      >
+                        <i> Not added to itinerary</i>
+                      </Typography>
+                    )
+                  ) : null}
                 </Grid>
                 <Grid item xs={12} sm={4} md={4}>
                   <Grid
@@ -305,7 +303,6 @@ export default function Place(props) {
                         variant="standard"
                         value={"SGD " + cost}
                         multiline
-                        // defaultValue={0}
                         onChange={(e) => handleCostChange(e.target.value)}
                         onBlur={() => handleCostFocusOut(item.uid)}
                         InputProps={{
@@ -367,19 +364,43 @@ export default function Place(props) {
                         {item.likeCount ? item.likeCount : "0"}
                       </Typography>
                     </Grid>
-                    {source === "InterestedPlace" || props.isSmallScreen ? (
+                    {source === "itinerary" && !props.isSmallScreen ? (
+                      <Grid
+                        item
+                        sm={2}
+                        xs={1}
+                        sx={{
+                          textAlign: "right",
+                          mr: { md: "6px", sm: "-5px", xs: "0" },
+                          mt: {
+                            xs: source === "itinerary" ? "-3px" : "-2px",
+                            sm: source === "itinerary" ? "-3px" : "-2px",
+                          },
+                        }}
+                        order={4}
+                      >
+                        <IconButton>
+                          <DragIndicatorIcon
+                            onMouseDown={handleDragMouseDown}
+                            onMouseUp={handleDragMouseUp}
+                          />
+                        </IconButton>
+                      </Grid>
+                    ) : (
                       <Grid
                         item
                         style={{ margin: "-5px 0 0 0px", textAlign: "right" }}
                         sm={2}
-                        xs={source === "itinerary" ? 6 : 1}
-                        order={{ xs: source === "InterestedPlace" && 4 }}
+                        xs={1}
+                        order={4}
                       >
-                        <IconButton onClick={() => handleAddItinerary(item)}>
+                        <IconButton
+                          onClick={() => handleAddItinerary(item, source)}
+                        >
                           <AddIcon sx={{ width: "22px", height: "22px" }} />
                         </IconButton>
                       </Grid>
-                    ) : null}
+                    )}
                     <Grid
                       item
                       sm={3}
@@ -407,29 +428,6 @@ export default function Place(props) {
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Grid>
-
-                    {source === "itinerary" && !props.isSmallScreen ? (
-                      <Grid
-                        item
-                        sm={2}
-                        xs={1}
-                        sx={{
-                          textAlign: "right",
-                          mr: { md: "6px", sm: "-5px", xs: "0" },
-                          mt: {
-                            xs: source === "itinerary" ? "-3px" : "-2px",
-                            sm: source === "itinerary" ? "-3px" : "-2px",
-                          },
-                        }}
-                      >
-                        <IconButton>
-                          <DragIndicatorIcon
-                            onMouseDown={handleDragMouseDown}
-                            onMouseUp={handleDragMouseUp}
-                          />
-                        </IconButton>
-                      </Grid>
-                    ) : null}
                   </Grid>
                 </Grid>
               </Grid>

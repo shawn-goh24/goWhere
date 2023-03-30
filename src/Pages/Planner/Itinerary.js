@@ -183,7 +183,7 @@ export default function Itinerary(props) {
                             item={item}
                             user={user}
                             trip={trip}
-                            handleAddItinerary=""
+                            handleAddItinerary={props.handleAddItinerary}
                             source="itinerary"
                             id={item.name}
                             index={index}

@@ -32,11 +32,11 @@ export const findTripsMember = (tripsObj, email) => {
 
   for (const trip in tripsObj) {
     if (tripsObj[trip].members) {
-      console.log(
-        tripsObj[trip].country,
-        editedEmail,
-        Object.keys(tripsObj[trip].members).includes(editedEmail)
-      );
+      // console.log(
+      //   tripsObj[trip].country,
+      //   editedEmail,
+      //   Object.keys(tripsObj[trip].members).includes(editedEmail)
+      // );
       if (Object.keys(tripsObj[trip].members).includes(editedEmail)) {
         requiredTrips[trip] = tripsObj[trip];
       }
@@ -361,10 +361,6 @@ export const sortPlaces = (placeArr) => {
     }
     return 0;
   });
-  // console.log("PlaceArr START");
-  // console.log(placeArr);
-  // console.log("PlaceArr END");
-
   return placeArr;
 };
 

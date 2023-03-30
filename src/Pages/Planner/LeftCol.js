@@ -30,6 +30,7 @@ import {
   DialogActions,
   DialogContent,
   Button,
+  Grid,
 } from "@mui/material";
 import { database } from "../../firebase";
 import {
@@ -40,6 +41,7 @@ import {
   createUpdateObj,
   createArray,
   generateNextId,
+  findDuplicate,
 } from "../../utils";
 import {
   Timeline,
@@ -74,10 +76,12 @@ function LeftCol(props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  //
+  // Add to Itinerary States
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [dates, setDates] = useState([]);
+  const [source, setSource] = useState("");
+
   const datesRef = useRef(null);
 
   const { trip, user } = props;
@@ -301,6 +305,7 @@ function LeftCol(props) {
           setSnackStatus={setSnackStatus}
           updatePlaceNum={updatePlaceNum}
           isSmallScreen={props.isSmallScreen}
+          handleAddItinerary={handleAddItinerary}
         />
       );
     }
@@ -336,6 +341,8 @@ function LeftCol(props) {
         places = resetDates(places);
       }
       return places;
+    }).then(() => {
+      setDialogOpen(false);
     });
   };
 
@@ -350,12 +357,9 @@ function LeftCol(props) {
       })
       .then((placesArr) => {
         const placesObj = createUpdateObj(placesArr);
-        console.log("Inside updatePlaceNum - createUpdateObj");
-        console.log(placesObj);
         return placesObj;
       })
       .then((placesObj) => {
-        console.log("Inside updatePlaceNum - update");
         update(placeRef, placesObj);
       })
       .catch((e) => {
@@ -363,9 +367,10 @@ function LeftCol(props) {
       });
   };
 
-  const handleAddItinerary = (item) => {
+  const handleAddItinerary = (item, source) => {
     setIsOpen(!isOpen);
     setSelected(item);
+    setSource(source);
 
     const tmpDates = [];
     setDates(...tmpDates, [tripDetails.startDate, tripDetails.endDate]);
@@ -377,7 +382,6 @@ function LeftCol(props) {
   };
 
   const addToDate = (placeId, selectedDate) => {
-    console.log("addToDate");
     const addToDateRef = ref(database, `trips/${trip}/places/${placeId}`);
     const placesRef = ref(database, `trips/${trip}/places`);
     const date = { date: selectedDate };
@@ -388,13 +392,14 @@ function LeftCol(props) {
         if (snapshot.exists()) {
           const data = createArray(snapshot.val());
           const existingPlaces = getPlaces(data, selectedDate);
-          if (existingPlaces.length > 0) {
+          const isDuplicated = findDuplicate(existingPlaces, placeId);
+          if (!isDuplicated[0] && existingPlaces.length > 0) {
             positionId = generateNextId(existingPlaces);
+          } else {
+            console.log("Get no Data");
           }
-        } else {
-          console.log("Get no Data");
+          return positionId;
         }
-        return positionId;
       })
       .then((positionNum) => {
         runTransaction(addToDateRef, (place) => {
@@ -495,7 +500,7 @@ function LeftCol(props) {
             <Box>
               <img
                 src={coverImg}
-                alt="cover image"
+                alt="cover"
                 style={{ width: "100%", height: "275px", objectFit: "cover" }}
               />
             </Box>
@@ -513,30 +518,22 @@ function LeftCol(props) {
                 <Typography variant="h5" component="h1">
                   {tripDetails ? `${tripDetails.country}` : "Error"}
                 </Typography>
-                <Typography
-                  variant="subtitle"
-                  component="p"
-                  onClick={handleDatesClick}
-                >
-                  {tripDetails ? (
-                    <div style={{ display: "flex" }}>
-                      {/* {`${tripDetails.startDate} - ${tripDetails.endDate}`} */}
-
-                      <IconButton aria-label="calendar-button">
-                        <CalendarMonthIcon sx={{ fontSize: 15 }} />
-                      </IconButton>
-                      <Typography
-                        sx={{
-                          fontSize: "0.9375rem",
-                          cursor: "pointer",
-                          margin: "auto",
-                        }}
-                      >{`${tripDetails.startDate} - ${tripDetails.endDate}`}</Typography>
-                    </div>
-                  ) : (
-                    "Error"
-                  )}
-                </Typography>
+                {tripDetails ? (
+                  <div style={{ display: "flex" }} onClick={handleDatesClick}>
+                    <IconButton aria-label="calendar-button">
+                      <CalendarMonthIcon sx={{ fontSize: 15 }} />
+                    </IconButton>
+                    <Typography
+                      sx={{
+                        fontSize: "0.9375rem",
+                        cursor: "pointer",
+                        margin: "auto",
+                      }}
+                    >{`${tripDetails.startDate} - ${tripDetails.endDate}`}</Typography>
+                  </div>
+                ) : (
+                  "Error"
+                )}
               </Paper>
             </Box>
           </Box>
@@ -563,19 +560,32 @@ function LeftCol(props) {
           },
         }}
       >
-        <DialogTitle>Change Date</DialogTitle>
+        <DialogTitle sx={{ pb: 0 }}>Change Date</DialogTitle>
         <DialogContent style={{ paddingTop: "10px" }}>
+          <Typography sx={{ mb: 4 }}>
+            Changing dates will reset your itinerary.
+          </Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDatePicker
-              label="Start Date"
-              sx={{ width: "175px", mr: "15px" }}
-              onChange={(date) => setStartDate(onDateChange(date))}
-            />
-            <DesktopDatePicker
-              label="End Date"
-              sx={{ width: "175px" }}
-              onChange={(date) => setEndDate(onDateChange(date))}
-            />
+            <Grid container>
+              <Grid item xs={12} sm={6}>
+                <DesktopDatePicker
+                  label="Start Date"
+                  sx={{
+                    width: { xs: "100%", sm: "175px" },
+                    mr: "15px",
+                    mb: { xs: 2, sm: 0 },
+                  }}
+                  onChange={(date) => setStartDate(onDateChange(date))}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <DesktopDatePicker
+                  label="End Date"
+                  sx={{ width: { xs: "100%", sm: "175px" } }}
+                  onChange={(date) => setEndDate(onDateChange(date))}
+                />
+              </Grid>
+            </Grid>
           </LocalizationProvider>
         </DialogContent>
         <DialogActions>
@@ -600,6 +610,7 @@ function LeftCol(props) {
         trip={trip}
         user={user}
         addToDate={addToDate}
+        source={source}
       />
     </>
   );

@@ -69,8 +69,6 @@ export default function NavBar(props) {
     setAnchorElUser(null);
   };
 
-  console.log(props.currentLocation);
-
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>

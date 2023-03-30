@@ -50,13 +50,6 @@ export default function Home(props) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // console.log(isSmallScreen);
-
-  // console.log("location: " + location);
-  // console.log("start date: " + startDate);
-  // console.log("end date: " + endDate);
-  // console.log("budget: " + budget);
-
   const planNow = (e) => {
     e.preventDefault();
     if (!auth.currentUser) {
@@ -67,7 +60,7 @@ export default function Home(props) {
       return "";
     }
     addTrip(location).then((tripId) => {
-      console.log("Create new trip");
+      // console.log("Create new trip");
       navigate(`/planner/${tripId}`);
     });
   };
@@ -117,7 +110,7 @@ export default function Home(props) {
             orientation: "landscape",
           })
           .then((coverImgUrl) => {
-            console.log(coverImgUrl.response.results[0].urls.regular);
+            //console.log(coverImgUrl.response.results[0].urls.regular);
             runTransaction(newTripRef, (trip) => {
               if (trip) {
                 if (!trip.coverImgUrl) {
@@ -155,8 +148,6 @@ export default function Home(props) {
         setSampleImg(result.response.results);
       });
   }, []);
-
-  console.log(sampleImg);
 
   return (
     <>
