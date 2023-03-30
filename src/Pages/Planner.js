@@ -16,8 +16,14 @@ import TestMap from "../Components/TestMap";
 import SearchBox from "../Components/SearchBox";
 import SideBar from "../Components/SideBar";
 import LeftCol from "./Planner/LeftCol";
+import AddToItinerary from "./Planner/AddToItinerary";
+
+import { ref, runTransaction, get } from "firebase/database";
+import { database } from "../firebase";
 
 import { useNavigate, useParams } from "react-router-dom";
+
+import { createArray, generateNextId, getPlaces } from "../utils";
 
 const style = {
   position: "absolute",
@@ -96,6 +102,7 @@ export default function Planner(props) {
             resetInterest={resetInterest}
             isSideBarOpen={props.isSideBarOpen}
             handleSideOpen={props.handleSideOpen}
+            isSmallScreen={props.isSmallScreen}
           />
         </Grid>
         <Grid item sm={4} md={5} lg={6}>

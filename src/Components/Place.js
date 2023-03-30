@@ -367,7 +367,7 @@ export default function Place(props) {
                         {item.likeCount ? item.likeCount : "0"}
                       </Typography>
                     </Grid>
-                    {source === "InterestedPlace" && (
+                    {source === "InterestedPlace" || props.isSmallScreen ? (
                       <Grid
                         item
                         style={{ margin: "-5px 0 0 0px", textAlign: "right" }}
@@ -379,7 +379,7 @@ export default function Place(props) {
                           <AddIcon sx={{ width: "22px", height: "22px" }} />
                         </IconButton>
                       </Grid>
-                    )}
+                    ) : null}
                     <Grid
                       item
                       sm={3}
@@ -408,7 +408,7 @@ export default function Place(props) {
                       </IconButton>
                     </Grid>
 
-                    {source === "itinerary" && (
+                    {source === "itinerary" && !props.isSmallScreen ? (
                       <Grid
                         item
                         sm={2}
@@ -429,7 +429,7 @@ export default function Place(props) {
                           />
                         </IconButton>
                       </Grid>
-                    )}
+                    ) : null}
                   </Grid>
                 </Grid>
               </Grid>

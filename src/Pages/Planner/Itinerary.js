@@ -10,6 +10,7 @@ import {
   Alert,
 } from "@mui/material";
 import Place from "../../Components/Place";
+import AddToItinerary from "./AddToItinerary";
 import CollapseToggle from "../../Components/CollaspeToggle";
 import {
   getDatesInRange,
@@ -20,6 +21,7 @@ import {
   sortPlaces,
   createUpdateObj,
   createArray,
+  generateNextId,
 } from "../../utils";
 import {
   onValue,
@@ -34,6 +36,9 @@ import { database } from "../../firebase";
 export default function Itinerary(props) {
   const { tripDetails, user, trip, item } = props;
   const [currentItem, setCurrentItem] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [dates, setDates] = useState([]);
 
   const [itineraryItems, setItineraryItems] = useState(
     item && getItineraryItems(item)
@@ -131,6 +136,19 @@ export default function Itinerary(props) {
     }
   };
 
+  // const handleAddItinerary = (item) => {
+  //   setIsOpen(!isOpen);
+  //   setSelected(item);
+
+  //   const tmpDates = [];
+  //   setDates(...tmpDates, [tripDetails.startDate, tripDetails.endDate]);
+  //   // console.log(item);
+  // };
+
+  // const handleClose = () => {
+  //   setIsOpen(!isOpen);
+  // };
+
   //console.log(itinerary);
 
   return (
@@ -176,6 +194,7 @@ export default function Itinerary(props) {
                             setSnackStatus={props.setSnackStatus}
                             snackStatus={props.snackStatus}
                             updatePlaceNum={props.updatePlaceNum}
+                            isSmallScreen={props.isSmallScreen}
                           />
                         </Grid>
                       )
@@ -197,15 +216,6 @@ export default function Itinerary(props) {
           </Typography>
         )}
       </Box>
-      {/* <Snackbar
-        open={snackStatus.open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-      >
-        <Alert onClose={handleClose} sx={{ width: "100%" }}>
-          {snackStatus.msg}
-        </Alert>
-      </Snackbar> */}
     </>
   );
 }

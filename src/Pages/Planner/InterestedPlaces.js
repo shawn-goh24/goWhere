@@ -82,18 +82,18 @@ export default function InterestedPlaces(props) {
     setNote("");
   };
 
-  const handleAddItinerary = (item) => {
-    setIsOpen(!isOpen);
-    setSelected(item);
+  // const handleAddItinerary = (item) => {
+  //   setIsOpen(!isOpen);
+  //   setSelected(item);
 
-    const tmpDates = [];
-    setDates(...tmpDates, [tripDetails.startDate, tripDetails.endDate]);
-    // console.log(item);
-  };
+  //   const tmpDates = [];
+  //   setDates(...tmpDates, [tripDetails.startDate, tripDetails.endDate]);
+  //   // console.log(item);
+  // };
 
-  const handleClose = () => {
-    setIsOpen(!isOpen);
-  };
+  // const handleClose = () => {
+  //   setIsOpen(!isOpen);
+  // };
 
   const handleInterest = (name, add, lat, lng) => {
     const tmp = {
@@ -127,40 +127,40 @@ export default function InterestedPlaces(props) {
   //   );
   // });
 
-  const addToDate = (placeId, selectedDate) => {
-    console.log("addToDate");
-    const addToDateRef = ref(database, `trips/${trip}/places/${placeId}`);
-    const placesRef = ref(database, `trips/${trip}/places`);
-    const date = { date: selectedDate };
+  // const addToDate = (placeId, selectedDate) => {
+  //   console.log("addToDate");
+  //   const addToDateRef = ref(database, `trips/${trip}/places/${placeId}`);
+  //   const placesRef = ref(database, `trips/${trip}/places`);
+  //   const date = { date: selectedDate };
 
-    get(placesRef)
-      .then((snapshot) => {
-        let positionId = 0;
-        if (snapshot.exists()) {
-          const data = createArray(snapshot.val());
-          const existingPlaces = getPlaces(data, selectedDate);
-          if (existingPlaces.length > 0) {
-            positionId = generateNextId(existingPlaces);
-          }
-        } else {
-          console.log("Get no Data");
-        }
-        return positionId;
-      })
-      .then((positionNum) => {
-        runTransaction(addToDateRef, (place) => {
-          place.position = positionNum;
-          if (place) {
-            if (place.date) {
-              place.date = selectedDate;
-            } else if (!place.date) {
-              place.date = selectedDate;
-            }
-          }
-          return place;
-        });
-      });
-  };
+  //   get(placesRef)
+  //     .then((snapshot) => {
+  //       let positionId = 0;
+  //       if (snapshot.exists()) {
+  //         const data = createArray(snapshot.val());
+  //         const existingPlaces = getPlaces(data, selectedDate);
+  //         if (existingPlaces.length > 0) {
+  //           positionId = generateNextId(existingPlaces);
+  //         }
+  //       } else {
+  //         console.log("Get no Data");
+  //       }
+  //       return positionId;
+  //     })
+  //     .then((positionNum) => {
+  //       runTransaction(addToDateRef, (place) => {
+  //         place.position = positionNum;
+  //         if (place) {
+  //           if (place.date) {
+  //             place.date = selectedDate;
+  //           } else if (!place.date) {
+  //             place.date = selectedDate;
+  //           }
+  //         }
+  //         return place;
+  //       });
+  //     });
+  // };
 
   // console.log("Interested Places START");
   // console.log(item);
@@ -252,7 +252,7 @@ export default function InterestedPlaces(props) {
                   item={item}
                   trip={trip}
                   user={user}
-                  handleAddItinerary={handleAddItinerary}
+                  handleAddItinerary={props.handleAddItinerary}
                   source="InterestedPlace"
                   setSnackStatus={props.setSnackStatus}
                   snackStatus={props.snackStatus}
@@ -262,7 +262,7 @@ export default function InterestedPlaces(props) {
             ))}
         </Grid>
       </Box>
-      <AddToItinerary
+      {/* <AddToItinerary
         isOpen={isOpen}
         handleClose={handleClose}
         item={selected}
@@ -270,7 +270,7 @@ export default function InterestedPlaces(props) {
         trip={trip}
         user={user}
         addToDate={addToDate}
-      />
+      /> */}
     </Box>
   );
 }

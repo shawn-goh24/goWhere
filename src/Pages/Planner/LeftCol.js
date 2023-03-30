@@ -16,7 +16,7 @@ import ListItemText from "@mui/material/ListItemText";
 import MailIcon from "@mui/icons-material/Mail";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import Typography from "@mui/material/Typography";
-import NavBar from "../../Components/NavBar";
+import AddToItinerary from "./AddToItinerary";
 import InterestedPlaces from "./InterestedPlaces";
 import PackingList from "./PackingList";
 import Documents from "./Documents";
@@ -39,6 +39,7 @@ import {
   sortPlaces,
   createUpdateObj,
   createArray,
+  generateNextId,
 } from "../../utils";
 import {
   Timeline,
@@ -73,6 +74,10 @@ function LeftCol(props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  //
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [dates, setDates] = useState([]);
   const datesRef = useRef(null);
 
   const { trip, user } = props;
@@ -276,6 +281,7 @@ function LeftCol(props) {
           snackStatus={snackStatus}
           setSnackStatus={setSnackStatus}
           updatePlaceNum={updatePlaceNum}
+          handleAddItinerary={handleAddItinerary}
         />
       );
     } else if (selection === "Packing List") {
@@ -294,6 +300,7 @@ function LeftCol(props) {
           snackStatus={snackStatus}
           setSnackStatus={setSnackStatus}
           updatePlaceNum={updatePlaceNum}
+          isSmallScreen={props.isSmallScreen}
         />
       );
     }
@@ -332,17 +339,6 @@ function LeftCol(props) {
     });
   };
 
-  // const updateTrip = () => {
-  //   const tripRef = ref(database, `trips/${trip}`);
-  //   get(tripRef).then((snapshot) => {
-  //     const newTrip = snapshot.val();
-  //     console.log("Update Trip START");
-  //     console.log(newTrip);
-  //     console.log("Update Trip END");
-  //     setTripDetails(newTrip);
-  //   });
-  // };
-
   const updatePlaceNum = (date) => {
     const placeRef = ref(database, `trips/${trip}/places`);
     return get(placeRef)
@@ -350,10 +346,6 @@ function LeftCol(props) {
         const placesInDay = sortPlaces(
           getPlaces(createArray(snapshot.val()), date)
         );
-        // if (placesInDay.length === 0) {
-        //   updateTrip();
-        //   throw new Error("No Array");
-        // }
         return placesInDay;
       })
       .then((placesArr) => {
@@ -368,6 +360,54 @@ function LeftCol(props) {
       })
       .catch((e) => {
         console.log(e);
+      });
+  };
+
+  const handleAddItinerary = (item) => {
+    setIsOpen(!isOpen);
+    setSelected(item);
+
+    const tmpDates = [];
+    setDates(...tmpDates, [tripDetails.startDate, tripDetails.endDate]);
+    // console.log(item);
+  };
+
+  const handleAddToItineraryClose = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const addToDate = (placeId, selectedDate) => {
+    console.log("addToDate");
+    const addToDateRef = ref(database, `trips/${trip}/places/${placeId}`);
+    const placesRef = ref(database, `trips/${trip}/places`);
+    const date = { date: selectedDate };
+
+    get(placesRef)
+      .then((snapshot) => {
+        let positionId = 0;
+        if (snapshot.exists()) {
+          const data = createArray(snapshot.val());
+          const existingPlaces = getPlaces(data, selectedDate);
+          if (existingPlaces.length > 0) {
+            positionId = generateNextId(existingPlaces);
+          }
+        } else {
+          console.log("Get no Data");
+        }
+        return positionId;
+      })
+      .then((positionNum) => {
+        runTransaction(addToDateRef, (place) => {
+          place.position = positionNum;
+          if (place) {
+            if (place.date) {
+              place.date = selectedDate;
+            } else if (!place.date) {
+              place.date = selectedDate;
+            }
+          }
+          return place;
+        });
       });
   };
 
@@ -552,6 +592,15 @@ function LeftCol(props) {
           </Button>
         </DialogActions>
       </Dialog>
+      <AddToItinerary
+        isOpen={isOpen}
+        handleClose={handleAddToItineraryClose}
+        item={selected}
+        dates={dates}
+        trip={trip}
+        user={user}
+        addToDate={addToDate}
+      />
     </>
   );
 }

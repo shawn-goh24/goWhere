@@ -235,6 +235,7 @@ function App() {
                 user={user}
                 isSideBarOpen={isSideBarOpen}
                 handleSideOpen={handleSideOpen}
+                isSmallScreen={isSmallScreen}
               />
             </Protected>
           }
