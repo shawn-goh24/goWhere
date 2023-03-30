@@ -32,7 +32,11 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
     <div ref={ref}>
       <ListItemButton
         onClick={handleClick}
-        sx={{ p: "8px 8px 8px 0", minHeight: "60px" }}
+        sx={{ p: "8px 8px 8px 0" }}
+        style={{
+          minHeight: isDragOver ? "100px" : "60px",
+          transition: "all 0.5s",
+        }}
         ref={ref}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -57,7 +61,7 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
       >
         <div
           style={{
-            height: isDragOver ? "130px" : 0,
+            height: isDragOver ? "150px" : 0,
             transition: "all 0.5s",
           }}
         ></div>

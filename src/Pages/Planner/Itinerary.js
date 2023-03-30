@@ -169,6 +169,7 @@ export default function Itinerary(props) {
             to add a place.
           </Typography>
         )}
+        <div style={{ height: "100px" }}></div>
       </Box>
     </>
   );
