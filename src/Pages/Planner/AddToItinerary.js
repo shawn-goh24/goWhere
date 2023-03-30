@@ -15,15 +15,8 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import Drawer from "@mui/material/Drawer";
-import CssBaseline from "@mui/material/CssBaseline";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import Place from "../../Components/Place";
 import { database } from "../../firebase";
@@ -52,19 +45,6 @@ export default function AddToItinerary(props) {
       setItinerary([...tmp, ...list]);
     });
   }, [selected]);
-
-  // const getDatesInRange = (startDate, endDate) => {
-  //   if (!startDate) return [];
-  //   const date = new Date(startDate.getTime());
-  //   const dates = [];
-
-  //   while (date <= endDate) {
-  //     dates.push(new Date(date).toLocaleDateString());
-  //     date.setDate(date.getDate() + 1);
-  //   }
-
-  //   return dates;
-  // };
 
   const showItinerary = itinerary.map((place) => {
     return <Place key={place.uid} item={place} user={user} />;

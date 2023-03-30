@@ -1,7 +1,6 @@
 // import * as React from "react";
-import React, { useEffect, useState, useRef, forwardRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
-import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
@@ -423,7 +422,6 @@ function LeftCol(props) {
           display: "flex",
           overflowY: "auto",
           height: "calc(100vh - 64px)",
-          // backgroundColor: "red",
         }}
       >
         <CssBaseline />
@@ -440,9 +438,7 @@ function LeftCol(props) {
             container={container}
             variant="temporary"
             open={props.isSideBarOpen}
-            // open={mobileOpen}
             onClose={props.handleSideOpen}
-            // onClose={handleDrawerToggle}
             ModalProps={{
               keepMounted: true, // Better open performance on mobile.
             }}
@@ -476,11 +472,7 @@ function LeftCol(props) {
             open
           >
             <Box>{drawer}</Box>
-            <SharedGroup
-              tripId={trip}
-              // location={tripDetails.country}
-              user={user}
-            />
+            <SharedGroup tripId={trip} user={user} />
           </Drawer>
         </Box>
         <Box
@@ -495,7 +487,6 @@ function LeftCol(props) {
             //overflowY: "auto",
           }}
         >
-          {/* <Toolbar /> */}
           <Box>
             <Box>
               <img

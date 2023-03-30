@@ -1,37 +1,23 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  FormControl,
   Grid,
-  OutlinedInput,
   TextField,
   Typography,
   InputAdornment,
-  InputLabel,
   Button,
 } from "@mui/material";
 import { database } from "../../firebase";
-import {
-  onValue,
-  push,
-  ref,
-  runTransaction,
-  set,
-  get,
-} from "firebase/database";
+import { onValue, push, ref, set, get } from "firebase/database";
 import Place from "../../Components/Place";
 import SearchBox from "../../Components/SearchBox";
 
 const DB_PLACES_KEY = "places";
 
 export default function InterestedPlaces(props) {
-  const [location, setLocation] = useState("");
   const [cost, setCost] = useState(0);
   const [note, setNote] = useState("");
   const [item, setItem] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [dates, setDates] = useState([]);
   const [interest, setInterest] = useState({});
 
   // const { tripDetails, trip, user, item } = props;

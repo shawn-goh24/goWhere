@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
 import NavBar from "./Components/NavBar";
 import NotFound from "./Pages/NotFound";
@@ -17,10 +17,7 @@ import SharedGroup from "./Components/SharedGroup";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-// Add react router and authentication here
-
 const DB_TRIPS_KEY = "trips";
-const DB_USERS_KEY = "users";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
@@ -177,7 +174,6 @@ function App() {
 
   return (
     <>
-      {/* <Planner /> */}
       <Routes>
         <Route
           path="/*"

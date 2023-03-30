@@ -1,24 +1,8 @@
 import React, { forwardRef } from "react";
-import {
-  Box,
-  FormControl,
-  Grid,
-  OutlinedInput,
-  TextField,
-  Typography,
-  Button,
-  List,
-  ListItemText,
-  ListItemButton,
-  Collapse,
-} from "@mui/material";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import { Typography, List, ListItemButton, Collapse } from "@mui/material";
+
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import StarBorder from "@mui/icons-material/StarBorder";
-
-import Place from "./Place";
-import { set } from "firebase/database";
 
 const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
   const [open, setOpen] = React.useState(true);
@@ -45,12 +29,7 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
   };
 
   return (
-    <div
-      // onDrop={() => props.handleDrop(props.date)}
-      // onDragOver={handleDragOver}
-      // droppable
-      ref={ref}
-    >
+    <div ref={ref}>
       <ListItemButton
         onClick={handleClick}
         sx={{ p: "8px 8px 8px 0", minHeight: "60px" }}
@@ -76,9 +55,6 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
           exit: "linear",
         }}
       >
-        {/* <div>
-          <ListItemButton sx={{ p: 0 }}>{props.children}</ListItemButton>
-        </div> */}
         <div
           style={{
             height: isDragOver ? "130px" : 0,

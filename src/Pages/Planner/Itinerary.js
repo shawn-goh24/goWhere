@@ -1,45 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  FormControl,
-  Grid,
-  OutlinedInput,
-  TextField,
-  Typography,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import Place from "../../Components/Place";
-import AddToItinerary from "./AddToItinerary";
+
 import CollapseToggle from "../../Components/CollaspeToggle";
 import {
   getDatesInRange,
   getItineraryItems,
-  createItinerary,
-  findDuplicate,
   getPlaces,
   sortPlaces,
   createUpdateObj,
-  createArray,
-  generateNextId,
 } from "../../utils";
-import {
-  onValue,
-  push,
-  ref,
-  runTransaction,
-  update,
-  get,
-} from "firebase/database";
+import { onValue, ref, update } from "firebase/database";
 import { database } from "../../firebase";
 
 export default function Itinerary(props) {
   const { tripDetails, user, trip, item } = props;
   const [currentItem, setCurrentItem] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [dates, setDates] = useState([]);
-
   const [itineraryItems, setItineraryItems] = useState(
     item && getItineraryItems(item)
   );
@@ -93,15 +69,8 @@ export default function Itinerary(props) {
     );
     const placesRef = ref(database, `trips/${trip}/places`);
 
-    // console.log(`Date: ${date}`);
-    // console.log(`itemDragOverDate: ${itemDragOverDate.current}`);
-
     const updatedPlace = { ...currentItem };
     updatedPlace.date = date;
-
-    // console.log(updatedPlace);
-    // console.log(date);
-    // console.log(itemDraggedDate.current);
 
     if (date === itemDraggedDate.current) {
       console.log("replace");
@@ -135,21 +104,6 @@ export default function Itinerary(props) {
       update(placesRef, mergedUpdates);
     }
   };
-
-  // const handleAddItinerary = (item) => {
-  //   setIsOpen(!isOpen);
-  //   setSelected(item);
-
-  //   const tmpDates = [];
-  //   setDates(...tmpDates, [tripDetails.startDate, tripDetails.endDate]);
-  //   // console.log(item);
-  // };
-
-  // const handleClose = () => {
-  //   setIsOpen(!isOpen);
-  // };
-
-  //console.log(itinerary);
 
   return (
     <>

@@ -1,23 +1,13 @@
 import React, { useEffect, useState } from "react";
 import emailjs from "@emailjs/browser";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import MailIcon from "@mui/icons-material/Mail";
+
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import AddIcon from "@mui/icons-material/Add";
 import { database } from "../firebase";
 import { get, onValue, ref, runTransaction, set } from "firebase/database";
-import Fade from "@mui/material/Fade";
-import Paper from "@mui/material/Paper";
-import Popper from "@mui/material/Popper";
+
 import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -25,19 +15,14 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Modal,
   TextField,
   IconButton,
-  Autocomplete,
-  FormControl,
-  FilledInput,
   Button,
   Tooltip,
   DialogActions,
   Link,
   Snackbar,
 } from "@mui/material";
-import { ReportGmailerrorred } from "@mui/icons-material";
 
 const drawerWidth = 240;
 const link = `${window.location.href}/shared`;

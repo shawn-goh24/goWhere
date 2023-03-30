@@ -17,10 +17,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import MenuIcon from "@mui/icons-material/Menu";
-import { auth } from "../firebase";
 
 export default function NavBar(props) {
-  const [isLoggedIn, setLoggedIn] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
   const { handleLogin, handleSignup, user, handleLogout, isPlanner } = props;

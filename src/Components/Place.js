@@ -292,78 +292,84 @@ export default function Place(props) {
                     width="100%"
                     gap={0}
                   >
-                    <Grid
-                      item
-                      sm={source === "InterestedPlace" ? 6 : 7}
-                      xs={source === "InterestedPlace" ? 3 : 3}
-                      sx={{ mt: "2px" }}
-                    >
-                      <TextField
-                        fullWidth
-                        variant="standard"
-                        value={"SGD " + cost}
-                        multiline
-                        onChange={(e) => handleCostChange(e.target.value)}
-                        onBlur={() => handleCostFocusOut(item.uid)}
-                        InputProps={{
-                          disableUnderline: true,
-                          inputProps: {
-                            style: {
-                              color: "#733D29",
-                              margin: 0,
-                              padding: 0,
-                              fontWeight: "700",
+                    {source === "itinerary" || source === "InterestedPlace" ? (
+                      <>
+                        {" "}
+                        <Grid
+                          item
+                          sm={source === "InterestedPlace" ? 6 : 7}
+                          xs={source === "InterestedPlace" ? 3 : 3}
+                          sx={{ mt: "2px" }}
+                        >
+                          <TextField
+                            fullWidth
+                            variant="standard"
+                            value={"SGD " + cost}
+                            multiline
+                            onChange={(e) => handleCostChange(e.target.value)}
+                            onBlur={() => handleCostFocusOut(item.uid)}
+                            InputProps={{
+                              disableUnderline: true,
+                              inputProps: {
+                                style: {
+                                  color: "#733D29",
+                                  margin: 0,
+                                  padding: 0,
+                                  fontWeight: "700",
+                                  display: "inline-block",
+                                },
+                              },
+                            }}
+                            InputLabelProps={{ style: { color: "#733D29" } }}
+                            sx={{
+                              textAlign: { sm: "right", xs: "left" },
+                              mt: {
+                                sm: source === "itinerary" ? "-4px" : "-5px",
+                                xs: source === "itinerary" ? "-4px" : "-4px",
+                              },
+                            }}
+                          />
+                        </Grid>
+                        <Grid
+                          item
+                          style={{
+                            margin: "-4px 0 0 0px",
+                            padding: "0 5px 0 0",
+                          }}
+                          sx={{ textAlign: { sm: "right", xs: "left" } }}
+                          sm={source === "InterestedPlace" ? 6 : 5}
+                          xs={source === "InterestedPlace" ? 3 : 5}
+                        >
+                          <IconButton
+                            onClick={() => handleLikes(item.uid)}
+                            sx={{
+                              mr: { lg: "2px", xs: "0" },
+                              mt: {
+                                sm: source === "itinerary" ? "-1px" : "-4px",
+                                xs: source === "itinerary" ? "-2px" : "-2px",
+                              },
+                            }}
+                          >
+                            <FavoriteIcon
+                              color={likeColor}
+                              sx={{ width: "22px", height: "22px" }}
+                            />
+                          </IconButton>
+                          <Typography
+                            style={{
+                              textAlign: { sm: "right", xs: "left" },
+                              fontSize: "1rem",
+                              m: 0,
+                              p: 0,
                               display: "inline-block",
-                            },
-                          },
-                        }}
-                        InputLabelProps={{ style: { color: "#733D29" } }}
-                        sx={{
-                          textAlign: { sm: "right", xs: "left" },
-                          mt: {
-                            sm: source === "itinerary" ? "-4px" : "-5px",
-                            xs: source === "itinerary" ? "-4px" : "-4px",
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid
-                      item
-                      style={{
-                        margin: "-4px 0 0 0px",
-                        padding: "0 5px 0 0",
-                      }}
-                      sx={{ textAlign: { sm: "right", xs: "left" } }}
-                      sm={source === "InterestedPlace" ? 6 : 5}
-                      xs={source === "InterestedPlace" ? 3 : 5}
-                    >
-                      <IconButton
-                        onClick={() => handleLikes(item.uid)}
-                        sx={{
-                          mr: { lg: "2px", xs: "0" },
-                          mt: {
-                            sm: source === "itinerary" ? "-1px" : "-4px",
-                            xs: source === "itinerary" ? "-2px" : "-2px",
-                          },
-                        }}
-                      >
-                        <FavoriteIcon
-                          color={likeColor}
-                          sx={{ width: "22px", height: "22px" }}
-                        />
-                      </IconButton>
-                      <Typography
-                        style={{
-                          textAlign: { sm: "right", xs: "left" },
-                          fontSize: "1rem",
-                          m: 0,
-                          p: 0,
-                          display: "inline-block",
-                        }}
-                      >
-                        {item.likeCount ? item.likeCount : "0"}
-                      </Typography>
-                    </Grid>
+                            }}
+                          >
+                            {item.likeCount ? item.likeCount : "0"}
+                          </Typography>
+                        </Grid>
+                      </>
+                    ) : null}
+
                     {source === "itinerary" && !props.isSmallScreen ? (
                       <Grid
                         item
@@ -386,7 +392,8 @@ export default function Place(props) {
                           />
                         </IconButton>
                       </Grid>
-                    ) : (
+                    ) : source === "InterestedPlace" ||
+                      source === "itinerary" ? (
                       <Grid
                         item
                         style={{ margin: "-5px 0 0 0px", textAlign: "right" }}
@@ -400,67 +407,70 @@ export default function Place(props) {
                           <AddIcon sx={{ width: "22px", height: "22px" }} />
                         </IconButton>
                       </Grid>
-                    )}
-                    <Grid
-                      item
-                      sm={3}
-                      xs={source === "itinerary" ? 3 : 5}
-                      sx={{
-                        textAlign: { sm: "right", xs: "right" },
-                        mr: {
-                          sm: source === "itinerary" ? "0" : "-10px",
-                          xs: "0",
-                        },
-                        mt: {
-                          sm: "2px",
-                          xs: source === "itinerary" ? "-2px" : "-4px",
-                          md: source === "itinerary" ? "-1px" : "-5px",
-                        },
-                      }}
-                    >
-                      <IconButton
-                        onClick={() => setIsOpen(true)}
+                    ) : null}
+                    {source === "itinerary" || source === "InterestedPlace" ? (
+                      <Grid
+                        item
+                        sm={3}
+                        xs={source === "itinerary" ? 3 : 5}
                         sx={{
-                          opacity: isHovering ? "1" : "0",
-                          transition: "opacity 0.7s",
+                          textAlign: { sm: "right", xs: "right" },
+                          mr: {
+                            sm: source === "itinerary" ? "0" : "-10px",
+                            xs: "0",
+                          },
+                          mt: {
+                            sm: "2px",
+                            xs: source === "itinerary" ? "-2px" : "-4px",
+                            md: source === "itinerary" ? "-1px" : "-5px",
+                          },
                         }}
                       >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Grid>
+                        <IconButton
+                          onClick={() => setIsOpen(true)}
+                          sx={{
+                            opacity: isHovering ? "1" : "0",
+                            transition: "opacity 0.7s",
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Grid>
+                    ) : null}
                   </Grid>
                 </Grid>
               </Grid>
-
-              <Grid
-                container
-                sx={{
-                  mt: {
-                    sm: source === "itinerary" ? "-18px" : "-5px",
-                    xs: source === "itinerary" ? "-8px" : "-5px",
-                  },
-                }}
-              >
-                <TextField
-                  id="outlined-textarea"
-                  label={
-                    <span style={{ fontSize: "0.9rem" }}>
-                      {note.length > 0 ? "Notes:" : "Add notes"}
-                    </span>
-                  }
-                  size="small"
-                  multiline
-                  fullWidth
-                  variant="standard"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  onBlur={() => handleNoteFocusOut(item.uid)}
-                  InputProps={{
-                    disableUnderline: true,
+              {source === "itinerary" || source === "InterestedPlace" ? (
+                <Grid
+                  container
+                  sx={{
+                    mt: {
+                      sm: source === "itinerary" ? "-18px" : "-5px",
+                      xs: source === "itinerary" ? "-8px" : "-5px",
+                    },
                   }}
-                  InputLabelProps={{ style: { color: "#733D29" } }}
-                />
-              </Grid>
+                >
+                  <TextField
+                    id="outlined-textarea"
+                    label={
+                      <span style={{ fontSize: "0.9rem" }}>
+                        {note.length > 0 ? "Notes:" : "Add notes"}
+                      </span>
+                    }
+                    size="small"
+                    multiline
+                    fullWidth
+                    variant="standard"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    onBlur={() => handleNoteFocusOut(item.uid)}
+                    InputProps={{
+                      disableUnderline: true,
+                    }}
+                    InputLabelProps={{ style: { color: "#733D29" } }}
+                  />
+                </Grid>
+              ) : null}
             </Grid>
           </Grid>
         </Paper>
