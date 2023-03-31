@@ -8,7 +8,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Typography,
 } from "@mui/material";
 
 import MuiDrawer from "@mui/material/Drawer";
@@ -145,5 +144,3 @@ export default function SideBar(props) {
     </Box>
   );
 }
-
-// https://codesandbox.io/s/e17o9w?file=/demo.js:3177-3711

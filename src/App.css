@@ -46,12 +46,21 @@
 }
 
 .btn-red {
-  background-color: #CC0000 !important;
+  background-color: #cc0000 !important;
   color: white !important;
 }
 
 .btn-red:hover {
   background-color: #510000 !important;
+}
+
+.btn-orange {
+  background-color: #ff5c19 !important;
+  color: white !important;
+}
+
+.btn-orange:hover {
+  background-color: #802d0d !important;
 }
 
 .btn-text:hover {
@@ -75,13 +84,12 @@
   transition: all 0.3s;
 }
 
-.place:hover {
-  cursor: pointer;
+/* .place:hover {
   transform: scale(1.03);
   transition: all 0.3s;
-}
+} */
 
-/* Remove hover background in MUI ListItemButton component */
-.css-1j72ahl-MuiButtonBase-root-MuiListItemButton-root:hover {
-  background-color: inherit !important;
+.place-drag {
+  transform: scale(1.03);
+  transition: all 0.3s;
 }

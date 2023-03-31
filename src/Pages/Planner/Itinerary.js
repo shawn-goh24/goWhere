@@ -1,54 +1,40 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  FormControl,
-  Grid,
-  OutlinedInput,
-  TextField,
-  Typography,
-  Button,
-  List,
-  ListItemText,
-  ListItemButton,
-  Collapse,
-} from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import Place from "../../Components/Place";
+
 import CollapseToggle from "../../Components/CollaspeToggle";
 import {
   getDatesInRange,
   getItineraryItems,
-  createItinerary,
-  findDuplicate,
   getPlaces,
   sortPlaces,
   createUpdateObj,
 } from "../../utils";
-import { onValue, push, ref, runTransaction, update } from "firebase/database";
+import { onValue, ref, update } from "firebase/database";
 import { database } from "../../firebase";
 
 export default function Itinerary(props) {
   const { tripDetails, user, trip, item } = props;
-  // const [itinerary, setItinerary] = useState(null);
   const [currentItem, setCurrentItem] = useState(null);
-  //const [itineraryItems, setItineraryItems] = useState(getItineraryItems(item));
+  const [itineraryItems, setItineraryItems] = useState(
+    item && getItineraryItems(item)
+  );
 
-  // useEffect(() => {
-  //   setItinerary(createItinerary(tripDetails));
-  // }, [tripDetails]);
-
-  // useEffect(() => {
-  //   const temp = item && getItineraryItems(item);
-  //   setItineraryItems(temp);
-  // }, [item]);
+  useEffect(() => {
+    const placeRef = ref(database, `trips/${trip}/places`);
+    onValue(placeRef, (data) => {
+      if (data.val()) {
+        const newItem = getItineraryItems(data.val());
+        const tmpItem = [];
+        setItineraryItems([...tmpItem, ...newItem]);
+      } else if (data.val() === null || data.val() === undefined) {
+        setItineraryItems([]);
+      }
+    });
+  }, []);
 
   const tripDates =
     tripDetails && getDatesInRange(tripDetails.startDate, tripDetails.endDate);
-
-  const itineraryItems = item && getItineraryItems(item);
-
-  // console.log("Itinerary Items START");
-  // console.log(itineraryItems);
-  // console.log("Itinerary Items END");
 
   let itemDragged = useRef();
   let itemDraggedDate = useRef();
@@ -83,18 +69,8 @@ export default function Itinerary(props) {
     );
     const placesRef = ref(database, `trips/${trip}/places`);
 
-    // console.log(`Date: ${date}`);
-    // console.log(`itemDragOverDate: ${itemDragOverDate.current}`);
-
     const updatedPlace = { ...currentItem };
     updatedPlace.date = date;
-    // if (source === "toggle") {
-    //   updatedPlace.position = position;
-    // }
-
-    // console.log(updatedPlace);
-    // console.log(date);
-    // console.log(itemDraggedDate.current);
 
     if (date === itemDraggedDate.current) {
       console.log("replace");
@@ -127,25 +103,21 @@ export default function Itinerary(props) {
       const mergedUpdates = { ...placesInDayObj, ...placesInPrevDayObj };
       update(placesRef, mergedUpdates);
     }
-
-    // console.log(placesInDay);
-
-    // const updates = createUpdateObj(placesInDay);
-    // update(placesRef, updates);
   };
-
-  //console.log(itinerary);
 
   return (
     <>
       <Box sx={{ p: "0 10px", height: "100%" }}>
-        <Typography variant="h5" component="h2" sx={{ fontWeight: "bold" }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          sx={{ fontWeight: "bold", pl: 2 }}
+        >
           Itinerary
         </Typography>
         {itineraryItems.length > 0 ? (
           tripDates &&
           tripDates.map((date, index) => {
-            //const date = Object.keys(day).toString();
             return (
               <CollapseToggle
                 date={date}
@@ -156,67 +128,31 @@ export default function Itinerary(props) {
                 handleDrop={handleDrop}
                 handleDragEnter={handleDragEnter}
               >
-                {/* <Grid container>
-                  {day[date].map((item, index) => {
-                    // if (item.date === date) {
-                    return (
-                      <Grid item xs={12} key={`${item.name}-${index}`}>
-                        <Place
-                          item={item}
-                          user={user}
-                          trip={trip}
-                          handleAddItinerary=""
-                          source="itinerary"
-                          handleDragStart={handleDragStart}
-                        />
-                      </Grid>
-                    );
-                    //}
-                  })}
-                </Grid> */}
-                <Grid container>
-                  {
-                    itineraryItems &&
-                      sortPlaces(getPlaces(itineraryItems, date)).map(
-                        (item, index) => (
-                          <Grid item xs={12} key={`${item.name}-${index}`}>
-                            <Place
-                              item={item}
-                              user={user}
-                              trip={trip}
-                              handleAddItinerary=""
-                              source="itinerary"
-                              id={item.name}
-                              index={index}
-                              handleDragStart={handleDragStart}
-                              handleDragEnter={handleDragEnter}
-                              handleDragEnd={handleDragEnd}
-                              handleDrop={handleDrop}
-                            />
-                          </Grid>
-                        )
+                <Grid container gap={3}>
+                  {itineraryItems &&
+                    sortPlaces(getPlaces(itineraryItems, date)).map(
+                      (item, index) => (
+                        <Grid item xs={12} key={`${item.name}-${index}`}>
+                          <Place
+                            item={item}
+                            user={user}
+                            trip={trip}
+                            handleAddItinerary={props.handleAddItinerary}
+                            source="itinerary"
+                            id={item.name}
+                            index={index}
+                            handleDragStart={handleDragStart}
+                            handleDragEnter={handleDragEnter}
+                            handleDragEnd={handleDragEnd}
+                            handleDrop={handleDrop}
+                            setSnackStatus={props.setSnackStatus}
+                            snackStatus={props.snackStatus}
+                            updatePlaceNum={props.updatePlaceNum}
+                            isSmallScreen={props.isSmallScreen}
+                          />
+                        </Grid>
                       )
-                    // itineraryItems.map((item, index) => {
-                    //   const placeArr = [];
-                    //   if (item.date === date) {
-                    //     placeArr.push(item);
-                    //     return (
-                    //       <Grid item xs={12} key={`${item.name}-${index}`}>
-                    //         <Place
-                    //           item={item}
-                    //           user={user}
-                    //           trip={trip}
-                    //           handleAddItinerary=""
-                    //           source="itinerary"
-                    //           id={item.name}
-                    //           index={index}
-                    //           handleDragStart={handleDragStart}
-                    //         />
-                    //       </Grid>
-                    //     );
-                    //   }
-                    // })
-                  }
+                    )}
                 </Grid>
               </CollapseToggle>
             );
@@ -233,6 +169,7 @@ export default function Itinerary(props) {
             to add a place.
           </Typography>
         )}
+        <div style={{ height: "100px" }}></div>
       </Box>
     </>
   );

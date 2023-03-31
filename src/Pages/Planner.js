@@ -1,8 +1,6 @@
-import React, { useState, useRef, forwardRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
-  Container,
-  Paper,
   Backdrop,
   CircularProgress,
   Button,
@@ -12,9 +10,6 @@ import {
 } from "@mui/material";
 
 import Map from "../Components/Map";
-import TestMap from "../Components/TestMap";
-import SearchBox from "../Components/SearchBox";
-import SideBar from "../Components/SideBar";
 import LeftCol from "./Planner/LeftCol";
 
 import { useNavigate, useParams } from "react-router-dom";
@@ -33,21 +28,12 @@ const style = {
 
 export default function Planner(props) {
   const [open, setOpen] = useState(true);
-  const [location, setLocation] = useState("");
-  const [address, setAddress] = useState("");
-  const [lat, setLat] = useState(0);
-  const [lng, setLng] = useState(0);
   const [interest, setInterest] = useState({});
-
   const { trip } = useParams();
 
   const { user } = props;
 
   const handleDetails = (name, add, lat, lng) => {
-    // setLocation(name);
-    // setAddress(add);
-    // setLat(lat);
-    // setLng(lng);
     const tmp = {
       name: name,
       address: add,
@@ -88,15 +74,18 @@ export default function Planner(props) {
   return (
     <>
       <Grid container>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={9} md={8} lg={6}>
           <LeftCol
             interest={interest}
             trip={trip}
             user={user}
             resetInterest={resetInterest}
+            isSideBarOpen={props.isSideBarOpen}
+            handleSideOpen={props.handleSideOpen}
+            isSmallScreen={props.isSmallScreen}
           />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={0} sm={3} md={4} lg={6}>
           {props.mapLoaded && (
             <Map
               id="GoogleMap"

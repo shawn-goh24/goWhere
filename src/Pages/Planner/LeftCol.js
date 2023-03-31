@@ -1,7 +1,6 @@
 // import * as React from "react";
-import React, { useEffect, useState, useRef, forwardRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
-import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
@@ -14,17 +13,35 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import MailIcon from "@mui/icons-material/Mail";
-import MenuIcon from "@mui/icons-material/Menu";
-import Toolbar from "@mui/material/Toolbar";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import Typography from "@mui/material/Typography";
-import NavBar from "../../Components/NavBar";
+import AddToItinerary from "./AddToItinerary";
 import InterestedPlaces from "./InterestedPlaces";
 import PackingList from "./PackingList";
 import Documents from "./Documents";
 import Itinerary from "./Itinerary";
-import { Paper } from "@mui/material";
+import {
+  Paper,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  Button,
+  Grid,
+} from "@mui/material";
 import { database } from "../../firebase";
-import { getDatesInRange } from "../../utils";
+import {
+  getDatesInRange,
+  resetDates,
+  getPlaces,
+  sortPlaces,
+  createUpdateObj,
+  createArray,
+  generateNextId,
+  findDuplicate,
+} from "../../utils";
 import {
   Timeline,
   TimelineItem,
@@ -34,11 +51,13 @@ import {
   TimelineContent,
   timelineItemClasses,
 } from "@mui/lab";
+import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-import { onValue, ref } from "firebase/database";
+import { onValue, ref, runTransaction, get, update } from "firebase/database";
 import SharedGroup from "../../Components/SharedGroup";
 
-const drawerWidth = 240;
+const drawerWidth = 210;
 
 function LeftCol(props) {
   const { window, interest, resetInterest } = props;
@@ -49,6 +68,19 @@ function LeftCol(props) {
   const [scrollTarget, setSrcollTarget] = useState(null);
   const [selectedIndex, getSelectedIndex] = useState("Interested Places");
   const [coverImg, setCoverImg] = useState("");
+  const [snackStatus, setSnackStatus] = useState({
+    open: false,
+    msg: "",
+  });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  // Add to Itinerary States
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [dates, setDates] = useState([]);
+  const [source, setSource] = useState("");
+
   const datesRef = useRef(null);
 
   const { trip, user } = props;
@@ -139,40 +171,46 @@ function LeftCol(props) {
 
   const datesArrayLastItem = datesArray !== null ? datesArray.length - 1 : null;
 
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackStatus({ open: false, msg: "" });
+  };
+
   const drawer = (
     <div>
       <Divider />
       <List>
-        {["Interested Places", "Packing List", "Documents"].map(
-          (text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton
-                selected={selectedIndex === text}
-                onClick={(e) => {
-                  getSelection(e.target.innerText);
-                  getSelectedIndex(e.target.innerText);
-                }}
-                sx={{
-                  "&.Mui-selected": {
-                    backgroundColor: "#a5c4b6",
-                  },
-                  "&.Mui-focusVisible": {
-                    backgroundColor: "#77A690",
-                  },
-                  ":hover": {
-                    backgroundColor: "#d3e2db",
-                  },
-                }}
-              >
-                {console.log(text)}
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          )
-        )}
+        {["Interested Places"].map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton
+              selected={selectedIndex === text}
+              onClick={(e) => {
+                getSelection(e.target.innerText);
+                getSelectedIndex(e.target.innerText);
+              }}
+              sx={{
+                "&.Mui-selected": {
+                  backgroundColor: "#a5c4b6",
+                },
+                "&.Mui-focusVisible": {
+                  backgroundColor: "#77A690",
+                },
+                ":hover": {
+                  backgroundColor: "#d3e2db",
+                },
+              }}
+            >
+              {console.log(text)}
+              <ListItemIcon sx={{ minWidth: "30px" }}>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
       <Divider />
       <List>
@@ -196,7 +234,7 @@ function LeftCol(props) {
                 },
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: "30px" }}>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
@@ -204,7 +242,6 @@ function LeftCol(props) {
           </ListItem>
         ))}
       </List>
-      <Divider />
 
       <Timeline
         sx={{
@@ -212,6 +249,7 @@ function LeftCol(props) {
             flex: 0,
             padding: 1,
           },
+          m: 0,
         }}
       >
         {datesArray &&
@@ -243,6 +281,10 @@ function LeftCol(props) {
           user={user}
           resetInterest={resetInterest}
           item={item}
+          snackStatus={snackStatus}
+          setSnackStatus={setSnackStatus}
+          updatePlaceNum={updatePlaceNum}
+          handleAddItinerary={handleAddItinerary}
         />
       );
     } else if (selection === "Packing List") {
@@ -258,6 +300,11 @@ function LeftCol(props) {
           item={item}
           updateDateRef={updateDateRef}
           setSelection={setSelection}
+          snackStatus={snackStatus}
+          setSnackStatus={setSnackStatus}
+          updatePlaceNum={updatePlaceNum}
+          isSmallScreen={props.isSmallScreen}
+          handleAddItinerary={handleAddItinerary}
         />
       );
     }
@@ -266,137 +313,297 @@ function LeftCol(props) {
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
+  const handleDatesClick = () => {
+    console.log("Dates Clicked");
+    setDialogOpen(true);
+  };
+
+  const onDateChange = (date) => {
+    const newMonth = date["$M"] + 1;
+    const newDate = `${date["$D"]}/${newMonth}/${date["$y"]}`;
+    console.log(newDate);
+    return newDate;
+  };
+
+  const handleChangeDate = () => {
+    const tripRef = ref(database, `trips/${trip}`);
+    runTransaction(tripRef, (trip) => {
+      if (trip) {
+        trip.startDate = startDate;
+        trip.endDate = endDate;
+      }
+      return trip;
+    });
+    const placesRef = ref(database, `trips/${trip}/places`);
+    runTransaction(placesRef, (places) => {
+      if (places) {
+        places = resetDates(places);
+      }
+      return places;
+    }).then(() => {
+      setDialogOpen(false);
+    });
+  };
+
+  const updatePlaceNum = (date) => {
+    const placeRef = ref(database, `trips/${trip}/places`);
+    return get(placeRef)
+      .then((snapshot) => {
+        const placesInDay = sortPlaces(
+          getPlaces(createArray(snapshot.val()), date)
+        );
+        return placesInDay;
+      })
+      .then((placesArr) => {
+        const placesObj = createUpdateObj(placesArr);
+        return placesObj;
+      })
+      .then((placesObj) => {
+        update(placeRef, placesObj);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  const handleAddItinerary = (item, source) => {
+    setIsOpen(!isOpen);
+    setSelected(item);
+    setSource(source);
+
+    const tmpDates = [];
+    setDates(...tmpDates, [tripDetails.startDate, tripDetails.endDate]);
+    // console.log(item);
+  };
+
+  const handleAddToItineraryClose = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const addToDate = (placeId, selectedDate) => {
+    const addToDateRef = ref(database, `trips/${trip}/places/${placeId}`);
+    const placesRef = ref(database, `trips/${trip}/places`);
+    const date = { date: selectedDate };
+
+    get(placesRef)
+      .then((snapshot) => {
+        let positionId = 0;
+        if (snapshot.exists()) {
+          const data = createArray(snapshot.val());
+          const existingPlaces = getPlaces(data, selectedDate);
+          const isDuplicated = findDuplicate(existingPlaces, placeId);
+          if (!isDuplicated[0] && existingPlaces.length > 0) {
+            positionId = generateNextId(existingPlaces);
+          } else {
+            console.log("Get no Data");
+          }
+          return positionId;
+        }
+      })
+      .then((positionNum) => {
+        runTransaction(addToDateRef, (place) => {
+          place.position = positionNum;
+          if (place) {
+            if (place.date) {
+              place.date = selectedDate;
+            } else if (!place.date) {
+              place.date = selectedDate;
+            }
+          }
+          return place;
+        });
+      });
+  };
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        overflowY: "auto",
-        height: "calc(100vh - 64px)",
-        // backgroundColor: "red",
-      }}
-    >
-      <CssBaseline />
-      {/* <AppBar
-        position="fixed"
+    <>
+      <Box
         sx={{
-          ml: { sm: `${drawerWidth}px` },
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          backgroundColor: "white",
+          display: "flex",
+          overflowY: "auto",
+          height: "calc(100vh - 64px)",
         }}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
+        <CssBaseline />
+        <Box
+          component="nav"
+          sx={{
+            width: { md: drawerWidth },
+            flexShrink: { sm: 0 },
+          }}
+          aria-label="mailbox folders"
+        >
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Drawer
+            container={container}
+            variant="temporary"
+            open={props.isSideBarOpen}
+            onClose={props.handleSideOpen}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            sx={{
+              display: { xs: "block", md: "none" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
           >
-            <MenuIcon />
-          </IconButton>
-          <NavBar isPlanner={true} />
-        </Toolbar>
-      </AppBar> */}
-      <Box
-        component="nav"
-        sx={{
-          width: { sm: drawerWidth },
-          flexShrink: { sm: 0 },
-        }}
-        aria-label="mailbox folders"
-      >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          PaperProps={{
-            style: {
-              position: "relative",
-            },
-          }}
-          variant="permanent"
-          sx={{
-            display: { xs: "none", sm: "flex" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-              justifyContent: "space-between",
-            },
-            height: "calc(100vh - 64px)",
-            flexDirection: "column",
-          }}
-          open
-        >
-          <Box>{drawer}</Box>
-          <SharedGroup
-            tripId={trip}
-            // location={tripDetails.country}
-            user={user}
-          />
-        </Drawer>
-      </Box>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          // mt: "64px",
-          // width: { sm: `calc(100% - ${drawerWidth}px)` },
-          height: "100%", // original is 100vh
-          // maxHeight: "calc(100vh - 64px)", // original is 100vh
-          overflowX: "hidden",
-          //overflowY: "auto",
-        }}
-      >
-        {/* <Toolbar /> */}
-        <Box>
-          <Box>
-            <img
-              src={coverImg}
-              alt="cover image"
-              style={{ width: "100%", height: "275px", objectFit: "cover" }}
-            />
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Paper
-              elevation={6}
-              sx={{
-                px: "40px",
-                py: "15px",
+            {drawer}
+          </Drawer>
+          <Drawer
+            PaperProps={{
+              style: {
                 position: "relative",
-                bottom: "50px",
-                textAlign: "center",
-              }}
-            >
-              <Typography variant="h5" component="h1">
-                {tripDetails ? `${tripDetails.country}` : "Error"}
-              </Typography>
-              <Typography variant="subtitle" component="p">
-                {tripDetails
-                  ? `${tripDetails.startDate} - ${tripDetails.endDate}`
-                  : "Error"}
-              </Typography>
-            </Paper>
-          </Box>
+              },
+            }}
+            variant="permanent"
+            sx={{
+              display: { xs: "none", md: "flex" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+                justifyContent: "space-between",
+              },
+              height: "calc(100vh - 64px)",
+              flexDirection: "column",
+            }}
+            open
+          >
+            <Box>{drawer}</Box>
+            <SharedGroup tripId={trip} user={user} />
+          </Drawer>
         </Box>
-        {content()}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            // mt: "64px",
+            // width: { sm: `calc(100% - ${drawerWidth}px)` },
+            height: "100%", // original is 100vh
+            // maxHeight: "calc(100vh - 64px)", // original is 100vh
+            overflowX: "hidden",
+            //overflowY: "auto",
+          }}
+        >
+          <Box>
+            <Box>
+              <img
+                src={coverImg}
+                alt="cover"
+                style={{ width: "100%", height: "275px", objectFit: "cover" }}
+              />
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Paper
+                elevation={6}
+                sx={{
+                  px: "40px",
+                  py: "15px",
+                  position: "relative",
+                  bottom: "50px",
+                  textAlign: "center",
+                }}
+              >
+                <Typography variant="h5" component="h1">
+                  {tripDetails ? `${tripDetails.country}` : "Error"}
+                </Typography>
+                {tripDetails ? (
+                  <div style={{ display: "flex" }} onClick={handleDatesClick}>
+                    <IconButton aria-label="calendar-button">
+                      <CalendarMonthIcon sx={{ fontSize: 15 }} />
+                    </IconButton>
+                    <Typography
+                      sx={{
+                        fontSize: "0.9375rem",
+                        cursor: "pointer",
+                        margin: "auto",
+                      }}
+                    >{`${tripDetails.startDate} - ${tripDetails.endDate}`}</Typography>
+                  </div>
+                ) : (
+                  "Error"
+                )}
+              </Paper>
+            </Box>
+          </Box>
+          {content()}
+        </Box>
       </Box>
-    </Box>
+      <Snackbar
+        open={snackStatus.open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} sx={{ width: "100%" }}>
+          {snackStatus.msg}
+        </Alert>
+      </Snackbar>
+      <Dialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        sx={{
+          "& .MuiDialog-container": {
+            "& .MuiPaper-root": {
+              padding: "5px",
+            },
+          },
+        }}
+      >
+        <DialogTitle sx={{ pb: 0 }}>Change Date</DialogTitle>
+        <DialogContent style={{ paddingTop: "10px" }}>
+          <Typography sx={{ mb: 4 }}>
+            Changing dates will reset your itinerary.
+          </Typography>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Grid container>
+              <Grid item xs={12} sm={6}>
+                <DesktopDatePicker
+                  label="Start Date"
+                  sx={{
+                    width: { xs: "100%", sm: "175px" },
+                    mr: "15px",
+                    mb: { xs: 2, sm: 0 },
+                  }}
+                  onChange={(date) => setStartDate(onDateChange(date))}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <DesktopDatePicker
+                  label="End Date"
+                  sx={{ width: { xs: "100%", sm: "175px" } }}
+                  onChange={(date) => setEndDate(onDateChange(date))}
+                />
+              </Grid>
+            </Grid>
+          </LocalizationProvider>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            className="btn-green"
+            autoFocus
+            onClick={handleChangeDate}
+            style={{ color: "#FFFFFF" }}
+          >
+            Change Date
+          </Button>
+          <Button onClick={() => setDialogOpen(false)} sx={{ color: "black" }}>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <AddToItinerary
+        isOpen={isOpen}
+        handleClose={handleAddToItineraryClose}
+        item={selected}
+        dates={dates}
+        trip={trip}
+        user={user}
+        addToDate={addToDate}
+        source={source}
+      />
+    </>
   );
 }
 

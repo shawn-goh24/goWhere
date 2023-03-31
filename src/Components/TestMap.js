@@ -1,23 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  Container,
-  Paper,
-  Backdrop,
-  CircularProgress,
-} from "@mui/material";
-import { PlaylistAddCheck } from "@mui/icons-material";
 
 export default function Map(props) {
   const [markers, setMarkers] = useState([]);
 
   const { handleDetails } = props;
-
-  // if (markers.length !== 0) {
-  //   console.log(markers);
-  //   console.log("Lat: " + markers[0].position.lat());
-  //   console.log("Lng: " + markers[0].position.lng());
-  // }
 
   let timeOut;
   // Function to generate a map after the script tag is added into the head
@@ -31,9 +17,6 @@ export default function Map(props) {
         fields: ["place_id", "geometry", "name", "formatted_address"],
       }
     );
-    // const searchBox = new window.google.maps.places.SearchBox(
-    //   document.getElementById(props.inputId)
-    // );
 
     autocomplete.addListener("place_changed", (e) => {
       onPlaceChanged(autocomplete, map, markers);
@@ -50,36 +33,12 @@ export default function Map(props) {
       return;
     }
 
-    // get details of location
-    // console.log("Location name: \n" + place.name);
-    // console.log("Location address: \n" + place.formatted_address);
-    // console.log("Location lat/lng: \n" + place.geometry.location);
-
     handleDetails(
       place.name,
       place.formatted_address,
       place.geometry.location.lat(),
       place.geometry.location.lng()
     );
-
-    // const { lat, lng } = place.geometry.location;
-    // console.log(lat);
-
-    // If the place has a geometry, then present it on a map.
-    ///// Uncomment below to revert
-    // if (place.geometry.viewport) {
-    //   setMarkers([
-    //     ...markers,
-    //     new window.google.maps.Marker({
-    //       position: place.geometry.location,
-    //       map: map,
-    //     }),
-    //   ]);
-    //   map.fitBounds(place.geometry.viewport);
-    // } else {
-    //   map.setCenter(place.geometry.location);
-    //   map.setZoom(17);
-    // }
   };
 
   // Function to check if the script tag is already in the head

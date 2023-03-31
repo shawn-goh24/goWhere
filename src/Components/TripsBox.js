@@ -19,7 +19,6 @@ import {
 import { convertTripDate } from "../utils";
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
-import userEvent from "@testing-library/user-event";
 import { get, ref, remove } from "firebase/database";
 import { database } from "../firebase";
 
@@ -45,8 +44,6 @@ export default function TripsBox(props) {
       lat: props.trip.locationLat,
       lng: props.trip.locationLng,
     };
-    // console.log(tripGeolocation);
-    // console.log(props.trip.mapViewBound);
     props.setTripGeolocation(tripGeolocation);
     props.setMapViewBound(props.trip.mapViewBound);
     navigate(`/planner/${props.trip.tripId}`);
@@ -124,12 +121,7 @@ export default function TripsBox(props) {
           <Button onClick={() => setIsOpen(false)} sx={{ color: "black" }}>
             Cancel
           </Button>
-          <Button
-            onClick={() => deleteTrip()}
-            className="btn-red"
-            // sx={{ backgroundColor: "#8e1600", color: "white" }}
-            autoFocus
-          >
+          <Button onClick={() => deleteTrip()} className="btn-red" autoFocus>
             Delete
           </Button>
         </DialogActions>

@@ -3,18 +3,16 @@ import {
   Button,
   Container,
   Divider,
-  FormControl,
   Grid,
   Paper,
   TextField,
-  Input,
   Typography,
   Autocomplete,
 } from "@mui/material";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import React, { useState, useMemo, useEffect } from "react";
 import hero from "../../Assets/hero-1920x890.png";
@@ -26,7 +24,7 @@ import { useTheme } from "@mui/material/styles";
 import { createApi } from "unsplash-js";
 
 import { auth, database } from "../../firebase";
-import { set, ref, push, update, runTransaction } from "firebase/database";
+import { set, ref, push, runTransaction } from "firebase/database";
 
 import { useNavigate } from "react-router-dom";
 
@@ -50,13 +48,6 @@ export default function Home(props) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // console.log(isSmallScreen);
-
-  // console.log("location: " + location);
-  // console.log("start date: " + startDate);
-  // console.log("end date: " + endDate);
-  // console.log("budget: " + budget);
-
   const planNow = (e) => {
     e.preventDefault();
     if (!auth.currentUser) {
@@ -67,7 +58,7 @@ export default function Home(props) {
       return "";
     }
     addTrip(location).then((tripId) => {
-      console.log("Create new trip");
+      // console.log("Create new trip");
       navigate(`/planner/${tripId}`);
     });
   };
@@ -117,7 +108,7 @@ export default function Home(props) {
             orientation: "landscape",
           })
           .then((coverImgUrl) => {
-            console.log(coverImgUrl.response.results[0].urls.regular);
+            //console.log(coverImgUrl.response.results[0].urls.regular);
             runTransaction(newTripRef, (trip) => {
               if (trip) {
                 if (!trip.coverImgUrl) {
@@ -155,8 +146,6 @@ export default function Home(props) {
         setSampleImg(result.response.results);
       });
   }, []);
-
-  console.log(sampleImg);
 
   return (
     <>
@@ -199,7 +188,6 @@ export default function Home(props) {
                       alignItems: "flex-start",
                     }}
                   >
-                    {/* <FmdGoodIcon sx={{ color: "#77a690" }} /> */}
                     <Autocomplete
                       options={options}
                       renderInput={(params) => (

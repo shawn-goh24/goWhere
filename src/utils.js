@@ -32,11 +32,11 @@ export const findTripsMember = (tripsObj, email) => {
 
   for (const trip in tripsObj) {
     if (tripsObj[trip].members) {
-      console.log(
-        tripsObj[trip].country,
-        editedEmail,
-        Object.keys(tripsObj[trip].members).includes(editedEmail)
-      );
+      // console.log(
+      //   tripsObj[trip].country,
+      //   editedEmail,
+      //   Object.keys(tripsObj[trip].members).includes(editedEmail)
+      // );
       if (Object.keys(tripsObj[trip].members).includes(editedEmail)) {
         requiredTrips[trip] = tripsObj[trip];
       }
@@ -361,10 +361,6 @@ export const sortPlaces = (placeArr) => {
     }
     return 0;
   });
-  // console.log("PlaceArr START");
-  // console.log(placeArr);
-  // console.log("PlaceArr END");
-
   return placeArr;
 };
 
@@ -385,6 +381,12 @@ export const generateNextId = (placesArr) => {
   return nextId;
 };
 
+/**
+ * Function to create and object from places array
+ * used to update Firebase Realtime Database
+ * @param {array} arr
+ * @returns {object} Places object
+ */
 export const createUpdateObj = (arr) => {
   const obj = {};
 
@@ -393,5 +395,12 @@ export const createUpdateObj = (arr) => {
     obj[place.uid] = place;
   });
 
+  return obj;
+};
+
+export const resetDates = (obj) => {
+  for (const place in obj) {
+    obj[place].date = "";
+  }
   return obj;
 };

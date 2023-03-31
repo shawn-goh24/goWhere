@@ -1,24 +1,8 @@
 import React, { forwardRef } from "react";
-import {
-  Box,
-  FormControl,
-  Grid,
-  OutlinedInput,
-  TextField,
-  Typography,
-  Button,
-  List,
-  ListItemText,
-  ListItemButton,
-  Collapse,
-} from "@mui/material";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import { Typography, List, ListItemButton, Collapse } from "@mui/material";
+
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import StarBorder from "@mui/icons-material/StarBorder";
-
-import Place from "./Place";
-import { set } from "firebase/database";
 
 const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
   const [open, setOpen] = React.useState(true);
@@ -45,15 +29,14 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
   };
 
   return (
-    <div
-      // onDrop={() => props.handleDrop(props.date)}
-      // onDragOver={handleDragOver}
-      // droppable
-      ref={ref}
-    >
+    <div ref={ref}>
       <ListItemButton
         onClick={handleClick}
         sx={{ p: "8px 8px 8px 0" }}
+        style={{
+          minHeight: isDragOver ? "100px" : "60px",
+          transition: "all 0.5s",
+        }}
         ref={ref}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -76,21 +59,15 @@ const CollapseToggle = forwardRef(function CollapseToggle(props, ref) {
           exit: "linear",
         }}
       >
-        {/* <div>
-          <ListItemButton sx={{ p: 0 }}>{props.children}</ListItemButton>
-        </div> */}
         <div
           style={{
-            height: isDragOver ? "70px" : 0,
+            height: isDragOver ? "150px" : 0,
             transition: "all 0.5s",
           }}
         ></div>
         <List component="div" disablePadding>
-          <ListItemButton sx={{ p: 0 }}>{props.children}</ListItemButton>
+          {props.children}
         </List>
-        {/* {isDragOver && (
-          <div style={{ height: "50px", transition: "all 0.8s" }}></div>
-        )} */}
       </Collapse>
     </div>
   );
