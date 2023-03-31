@@ -50,15 +50,17 @@ function App() {
   }, [user]);
 
   // Temporary update user's info
-  const updateUserInfo = (name, email, photoURL) => {
+  const updateUserInfo = (name, email, photoURL, userUid) => {
     const newUser = { ...user };
     if (photoURL === null || photoURL === undefined || photoURL === "") {
       newUser.displayName = name;
       newUser.email = email;
+      newUser.uid = userUid;
     } else {
       newUser.displayName = name;
       newUser.email = email;
       newUser.photoURL = photoURL;
+      newUser.uid = userUid;
     }
     setUser(newUser);
   };
