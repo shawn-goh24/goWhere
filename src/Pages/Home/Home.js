@@ -116,6 +116,7 @@ export default function Home(props) {
                     coverImgUrl.response.results[0].urls.regular;
                 }
               }
+
               return trip;
             });
           });

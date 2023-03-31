@@ -106,7 +106,7 @@ export function Signup(props) {
             const currUserRef = ref(database, `users/${userUid}/avatarUrl`);
             set(currUserRef, avatarUrl);
 
-            props.updateUserInfo(username, email, avatarUrl);
+            props.updateUserInfo(username, email, avatarUrl, userUid);
             updateProfile(auth.currentUser, {
               photoURL: avatarUrl,
               displayName: username,
