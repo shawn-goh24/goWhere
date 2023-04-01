@@ -1,72 +1,68 @@
-# Getting Started with Create React App
+# goWhere
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<img src="./src/Assets/goWhere-logo.svg"  width="70%" height="40%" alt='goWhere'>\
+A travel planner website for users to plan their travels together with their families/friends.
+_Project 2 for Rocket Academy Bootcamp_
 
-## Available Scripts
+### Preview
 
-In the project directory, you can run:
+![goWhere gif](./src/Assets/gowhere-gif.gif)
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Allowing users to login/signup with [Firebase](https://firebase.google.com/)
+- Add and delete places of interest
+- Markers will be displayed on map for each added location
+- Add places of interest to initerary
+- Invite family/friends to plan the trip together
+  - Trips invitation sent using [Emailjs](https://www.emailjs.com/)
+  - Allowing members to add new places
+  - Enabling like buttons to each places
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Tech Used
 
-### `npm test`
+- Front end: [React](https://react.dev/)
+- Routing: [React Router](https://reactrouter.com/en/main)
+- UI: [Material-UI](https://mui.com/)
+- Storage/Database/Auth: [Firebase](https://firebase.google.com/)
+- Map: [Google Maps](https://developers.google.com/maps)
+- Trip Invitation: [Emailjs](https://www.emailjs.com/docs/sdk/installation/)
+- [Unsplash](https://unsplash.com/developers) used for trip cover image when created
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Setup
 
-### `npm run build`
+This project is created using create-react-app. Before starting, it is required to run the following steps for the application to work
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone repo to local
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Configure `.env` file, make sure to get your own API keys stated below and insert it into your `.env` file
+   - If unsure where to get API keys, refer to the Tech Used for the documents
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+REACT_APP_MAPS_API = <Insert Google Map API key>
+REACT_APP_FIREBASE_API = <Insert Firebase API key>
+REACT_APP_EMAILJS_SERVICEID = <Insert emailjs service id key>
+REACT_APP_EMAILJS_TEMPLATEID = <Insert emailjs template id key>
+REACT_APP_EMAILJS_PUBLICKEY =  <Insert emailjs public key key>
+REACT_APP_UNSPLASH_KEY = <Insert unsplash api key>
+```
 
-### `npm run eject`
+3. Install all dependencies required in this repo, and run locally
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
+npm i
+npm start
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. Enjoy!
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Future improvements
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Custom markers to show places belongs to which day
+- Allowing refresh to planner page (Current limitations: not able to refresh)
+- Adding more validations to start-end dates (prevent creating dates before selected start dates and current day)
 
-## Learn More
+## Contributors
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
-### Testing
+- [Me, Shawn](https://github.com/shawn-goh24)
+- [Huang Wei Tian](https://github.com/hWeitian)
