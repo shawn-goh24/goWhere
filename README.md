@@ -13,7 +13,8 @@ _Project 2 for Rocket Academy Bootcamp_
 - Allowing users to login/signup with [Firebase](https://firebase.google.com/)
 - Add and delete places of interest
 - Markers will be displayed on map for each added location
-- Add places of interest to initerary
+- Add and delete notes and cost of places of interest
+- Create itinerary by adding, deleting or rearranging places of interest
 - Invite family/friends to plan the trip together
   - Trips invitation sent using [Emailjs](https://www.emailjs.com/)
   - Allowing members to add new places
@@ -61,8 +62,12 @@ npm start
 - Custom markers to show places belongs to which day
 - Allowing refresh to planner page (Current limitations: not able to refresh)
 - Adding more validations to start-end dates (prevent creating dates before selected start dates and current day)
+- Enhance the user experience of the map feature by preventing the current map from refreshing upon each re-render
+- Refine the UI design for better user experience
+- Add budget calculation to calculate the estimated cost of the trip
+- Add function of allowing users to create their packing list for the trip
 
 ## Contributors
 
 - [Me, Shawn](https://github.com/shawn-goh24)
-- [Huang Wei Tian](https://github.com/hWeitian)
+- [Huang Weitian](https://github.com/hWeitian)
