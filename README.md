@@ -1,6 +1,6 @@
 # goWhere
 
-<img src="./src/Assets/goWhere-logo.svg"  width="70%" height="40%" alt='goWhere'>\
+<img src="./src/Assets/goWhere-logo.svg"  width="100%" height="40%" alt='goWhere'>\
 A travel planner website for users to plan their travels together with their families/friends.
 _Project 2 for Rocket Academy Bootcamp_
 
